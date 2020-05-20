@@ -212,7 +212,7 @@
                   <th>Apellidos</th>
                   <th>Correo</th>
                   <th>Genero</th>
-                  <th>ID Rol</th>
+                  <th>Rol</th>
                   <th>Acciones</th> 
                                    
                   </tr>
@@ -225,7 +225,7 @@
                   <th>Apellidos</th>
                   <th>Correo</th>
                   <th>Genero</th>
-                  <th>ID Rol</th>
+                  <th>Rol</th>
                   <th>Accion</th>
                   
                   </tr>
