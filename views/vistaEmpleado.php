@@ -16,7 +16,7 @@
   <!-- Page level plugin CSS-->
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
   <!-- Custom styles for this template-->
-  <link href="css/sb-admin.css" rel="stylesheet">
+  <link href="vendor/sb-admin.css" rel="stylesheet">
   
 </head>
 <body id="page-top">
@@ -272,13 +272,7 @@
       <!-- /.container-fluid -->
 
       <!-- Sticky Footer -->
-      <footer class="sticky-footer">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright © Your Website 2019</span>
-          </div>
-        </div>
-      </footer>
+      
 
     </div>
     <!-- /.content-wrapper -->
