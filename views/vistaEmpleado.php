@@ -241,9 +241,8 @@
                   $apellido=$e->getApellido();
                   $correo=$e->getCorreo();
                   $genero=$e->getGenero();
-                  $idRol=$e->getIdRol();
                   
-
+                  $idRol=$e->getIdRol();
 
                   echo "<tr>
                   <td>$idEmpleado</td>
