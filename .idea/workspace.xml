@@ -4,6 +4,7 @@
     <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/Empleado.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/Empleado.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/vistaEmpleado.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaEmpleado.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +66,7 @@
       <updated>1589904374805</updated>
       <workItem from="1589904376389" duration="6568000" />
       <workItem from="1589955732828" duration="343000" />
-      <workItem from="1589996638123" duration="146000" />
+      <workItem from="1589996638123" duration="635000" />
     </task>
     <task id="LOCAL-00001" summary="hfhfh">
       <created>1589956058198</created>

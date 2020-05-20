@@ -241,8 +241,8 @@
                   $apellido=$e->getApellido();
                   $correo=$e->getCorreo();
                   $genero=$e->getGenero();
-                  
                   $idRol=$e->getIdRol();
+                  $idcargo=$e->getCargo();
 
                   echo "<tr>
                   <td>$idEmpleado</td>
@@ -251,7 +251,7 @@
                   <td>$correo</td>
                   <td>$genero</td>
                   <td>$idRol</td>
-          
+                  <td>$idcargo</td>
                   <td><button class='btn btn-danger' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
                   </tr>";
                }
