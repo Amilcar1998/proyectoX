@@ -1,4 +1,4 @@
 <?php
+header('Location:controllers/controllerEmpleado.php');
 
-  header('Location:controllers/controlEmpleado.php');
 ?>

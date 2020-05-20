@@ -1,9 +1,6 @@
 <?php
 include "../models/empleadoModel.php";
 var_dump($_REQUEST);
-
-
-
 $obEmp=new EmpleadoModel();
 if(isset($_REQUEST["insertar"])){
 
