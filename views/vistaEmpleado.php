@@ -213,6 +213,7 @@
                   <th>Correo</th>
                   <th>Genero</th>
                   <th>Rol</th>
+                  <th>Cargo</th>
                   <th>Acciones</th> 
                                    
                   </tr>
@@ -226,6 +227,7 @@
                   <th>Correo</th>
                   <th>Genero</th>
                   <th>Rol</th>
+                  <th>Cargo</th>
                   <th>Accion</th>
                   
                   </tr>
