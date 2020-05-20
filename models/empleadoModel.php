@@ -9,13 +9,12 @@ class empleadoModel extends conexion
        parent::__construct();
     }
     function getEmpleado(){
-        $res=$this->con->query("select idEmpleado,nombreEmp,apellido,genero,correo,rol.nombreRol,pass,idPuesto from empleado inner join rol on empleado.id_Rol=rol.id_Rol");
+        $res=$this->con->query("select * from empleado");
         $r=array();
         while($row=$res->fetch_assoc()) {
-            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["correo"],$row["genero"],$row["nombreRol"],$row["pass"],$row["idPuesto"]);
+            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["correo"],$row["genero"],$row["id_Rol"],$row["pass"],$row["idPuesto"]);
             $r[]=$e;
         }
-       
         return $r;
     }
     function getRol(){

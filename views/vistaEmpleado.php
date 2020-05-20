@@ -212,7 +212,6 @@
                   <th>Apellidos</th>
                   <th>Correo</th>
                   <th>Genero</th>
-                  <th>Rol</th>
                   <th>Cargo</th>
                   <th>Acciones</th> 
                                    
@@ -226,7 +225,6 @@
                   <th>Apellidos</th>
                   <th>Correo</th>
                   <th>Genero</th>
-                  <th>Rol</th>
                   <th>Cargo</th>
                   <th>Accion</th>
                   
@@ -250,9 +248,10 @@
                   <td>$apellido</td>
                   <td>$correo</td>
                   <td>$genero</td>
-                  <td>$idRol</td>
+                  
                   <td>$idcargo</td>
-                  <td><button class='btn btn-danger' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
+                  <td>
+                  <button class='btn btn-danger' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
                   </tr>";
                }
                   
