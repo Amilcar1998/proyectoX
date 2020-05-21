@@ -268,7 +268,7 @@
                   <td>$genero</td>
                   <td>$idcargo</td>
                   <td>
-                  <button class='btn btn-danger' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
+                  <button class='btn btn-danger' id='agregarC' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
                   </tr>";
                }
                   
