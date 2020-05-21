@@ -25,20 +25,29 @@ class empleadoModel extends conexion
         }
         return $r;
 }
+function getCargo(){
+        $res=$this->con->query("select * from puesto");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+}
     function insertarEmpleado(){
         function insertarEmpleado($e){
-            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,correo,genero,id_Rol,pass) values(?,?,?,?,?,?,?)");
-            $para->bind_param('sssssss',$a,$b,$c,$d,$f,$g,$h);
+            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,correo,genero,id_Rol,pass,idPuesto) values(?,?,?,?,?,?,?,?)");
+            $para->bind_param('ssssssss',$a,$b,$c,$d,$f,$g,$h,$i);
             $a='';
             $b=$e->getNombre();
             $c=$e->getApellido();
             $d=$e->getCorreo();
             $f=$e->getGenero();
             $g=$e->getIdRol();
-            $h=sha1($e->getPass());            
+            $h=$e->getPass(); 
+            $i=$e->getCargo();
             $para->execute();
 
-        }
+        }/*
         function insertarEmpleado($e){
         $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,correo=?,genero=?,id_Rol,pass WHERE `empleado`.`idEmpleado` = ?");
             $para->bind_param('sssssss',$a,$b,$c,$d,$f,$g,$h);
@@ -59,7 +68,7 @@ class empleadoModel extends conexion
             $para->execute();
 
         }
-
+*/
 
     }
 
