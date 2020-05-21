@@ -33,21 +33,22 @@ function getCargo(){
         }
         return $r;
 }
-    function insertarEmpleado(){
+    
         function insertarEmpleado($e){
-            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,correo,genero,id_Rol,pass,idPuesto) values(?,?,?,?,?,?,?,?)");
+            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,genero,correo,id_Rol,pass,idPuesto) values(?,?,?,?,?,?,?,?)");
             $para->bind_param('ssssssss',$a,$b,$c,$d,$f,$g,$h,$i);
             $a='';
             $b=$e->getNombre();
             $c=$e->getApellido();
-            $d=$e->getCorreo();
-            $f=$e->getGenero();
+            $d=$e->getGenero();
+            $f=$e->getCorreo();
             $g=$e->getIdRol();
             $h=$e->getPass(); 
             $i=$e->getCargo();
             $para->execute();
 
-        }/*
+        }
+        /*
         function insertarEmpleado($e){
         $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,correo=?,genero=?,id_Rol,pass WHERE `empleado`.`idEmpleado` = ?");
             $para->bind_param('sssssss',$a,$b,$c,$d,$f,$g,$h);
@@ -70,7 +71,7 @@ function getCargo(){
         }
 */
 
-    }
+
 
 
 }

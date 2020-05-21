@@ -17,6 +17,7 @@
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
   <!-- Custom styles for this template-->
   <link href="vendor/sb-admin.css" rel="stylesheet">
+  <script type="text/javascript" src="vendor/sweetalert2.all.min.js"></script>
   
 </head>
 <body id="page-top">
