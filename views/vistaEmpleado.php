@@ -258,6 +258,8 @@
                   $idRol=$e->getIdRol();
                   $pass=$e->getPass();
                   $cargo=$e->getCargo();
+
+                  
              
                   echo "<tr>
                   <td>$idEmpleado</td>
@@ -268,12 +270,13 @@
                   <td>$cargo</td>
                   <td>
       <button class='btn btn-danger' id='agregarC' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#txtIdEmpleado').val('$idEmpleado'),
-      $('#txtNombreE').val('$nombre'),
-      $('#txtApellidos').val('$apellido'),
-      $('#txtCorreo').val('$correo'),
-      $('#txtGenero').val('$genero'),
-      $('#idRol').val('$idRol'),
-      $('#txtPass').val('$pass'),
+
+      $('#txtNombreE').val('$nombre');
+      $('#txtApellidos').val('$apellido');
+      $('#txtCorreo').val('$correo');
+      $('#txtGenero').val('$genero');
+      $('#idRol').val('$idRol');
+      $('#txtPass').val('$pass');
       $('#txtCargo').val('$cargo');';>Ver</button></td>
                   </tr>";
                }

@@ -2,7 +2,6 @@
 include "../models/empleadoModel.php";
 $obEmp=new EmpleadoModel();
 
-
 if(isset($_REQUEST["insertar"])){
 
  $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombreE'],$_REQUEST['txtApellidos'],$_REQUEST['txtCorreo'],$_REQUEST['txtGenero'],$_REQUEST['idRol'],sha1($_REQUEST['txtPass']),$_REQUEST['txtCargo']);
