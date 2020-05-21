@@ -230,8 +230,7 @@
                   <th>Correo</th>
                   <th>Genero</th>
                   <th>Cargo</th>
-                  <th>Acciones</th> 
-                                   
+                  <th>Acciones</th>                
                   </tr>
 
                 </thead>
@@ -253,22 +252,29 @@
                foreach ($datos as $e) {
                   $idEmpleado=$e->getIdEmpleado();
                   $nombre=$e->getNombre();
-                  $apellido=$e->getApellido();
-                  $correo=$e->getCorreo();
+                  $apellido=$e->getApellido(); 
                   $genero=$e->getGenero();
+                  $correo=$e->getCorreo();
                   $idRol=$e->getIdRol();
-                  $idcargo=$e->getCargo();
-                  $idRol=$e->getIdRol();
-
+                  $pass=$e->getPass();
+                  $cargo=$e->getCargo();
+             
                   echo "<tr>
                   <td>$idEmpleado</td>
                   <td>$nombre</td>
                   <td>$apellido</td>
                   <td>$correo</td>
                   <td>$genero</td>
-                  <td>$idcargo</td>
+                  <td>$cargo</td>
                   <td>
-                  <button class='btn btn-danger' id='agregarC' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
+      <button class='btn btn-danger' id='agregarC' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#txtIdEmpleado').val('$idEmpleado'),
+      $('#txtNombreE').val('$nombre'),
+      $('#txtApellidos').val('$apellido'),
+      $('#txtCorreo').val('$correo'),
+      $('#txtGenero').val('$genero'),
+      $('#idRol').val('$idRol'),
+      $('#txtPass').val('$pass'),
+      $('#txtCargo').val('$cargo');';>Ver</button></td>
                   </tr>";
                }
                   
