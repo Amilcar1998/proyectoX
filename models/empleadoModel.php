@@ -6,16 +6,15 @@ class empleadoModel extends conexion
 {
     public function __construct()
     {
-        parent::__construct();
+       parent::__construct();
     }
     function getEmpleado(){
-        $res=$this->con->query("select idEmpleado,nombreEmp,apellido,genero,correo,rol.nombreRol,pass,idPuesto from empleado inner join rol on empleado.id_Rol=rol.id_Rol");
+        $res=$this->con->query("select * from empleado");
         $r=array();
         while($row=$res->fetch_assoc()) {
-            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["correo"],$row["genero"],$row["nombreRol"],$row["pass"]);
+            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["correo"],$row["genero"],$row["id_Rol"],$row["pass"],$row["idPuesto"]);
             $r[]=$e;
         }
-       
         return $r;
     }
     function getRol(){
@@ -26,20 +25,29 @@ class empleadoModel extends conexion
         }
         return $r;
 }
+function getCargo(){
+        $res=$this->con->query("select * from puesto");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+}
     function insertarEmpleado(){
         function insertarEmpleado($e){
-            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,correo,genero,id_Rol,pass) values(?,?,?,?,?,?,?)");
-            $para->bind_param('sssssss',$a,$b,$c,$d,$f,$g,$h);
+            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,correo,genero,id_Rol,pass,idPuesto) values(?,?,?,?,?,?,?,?)");
+            $para->bind_param('ssssssss',$a,$b,$c,$d,$f,$g,$h,$i);
             $a='';
             $b=$e->getNombre();
             $c=$e->getApellido();
             $d=$e->getCorreo();
             $f=$e->getGenero();
             $g=$e->getIdRol();
-            $h=sha1($e->getPass());            
+            $h=$e->getPass(); 
+            $i=$e->getCargo();
             $para->execute();
 
-        }
+        }/*
         function insertarEmpleado($e){
         $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,correo=?,genero=?,id_Rol,pass WHERE `empleado`.`idEmpleado` = ?");
             $para->bind_param('sssssss',$a,$b,$c,$d,$f,$g,$h);
@@ -60,7 +68,7 @@ class empleadoModel extends conexion
             $para->execute();
 
         }
-
+*/
 
     }
 

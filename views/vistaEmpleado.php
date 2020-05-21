@@ -130,26 +130,31 @@
               <div class="container-fluid">
              <form method="POST" action="#" enctype="multipart/form-data">
               <div class="container">
-                <div class="col-md-6">
+               
+                <div class="row"> 
+                  <div class="col-md-6">
                     <label>Id Cliente</label>
                     <input type="text" name="txtIdEmpleado" id="txtIdEmpleado" class="form-control" readonly=true>
                   </div>
-                <div class="row">
                     <div class="col-md-6">
                     <label>Nombre</label>
                     <input type="text" name="txtNombreE" id="txtNombreE" class="form-control">
                   </div>
-                  <div class="col-md-6">
-                    <label>Apellidos</label>
-                    <input type="text" name="txtApellidos" id="txtApellidos" class="form-control">
-                  </div>
+                  
                 </div>
                 
                 <div class="row">
                   <div class="col-md-6">
+                    <label>Apellidos</label>
+                    <input type="text" name="txtApellidos" id="txtApellidos" class="form-control">
+                  </div>
+                  <div class="col-md-6">
                     <label>Correo</label>
                     <input type="text" name="txtCorreo" id="txtCorreo" class="form-control" placeholder=".....@gmail.com">
                   </div>
+                  
+                </div>
+                <div class="row">
                   <div class="col-md-6">
                     <label>Genero</label>
                      <select name="txtGenero" id="txtGenero" class="form-control">
@@ -158,8 +163,6 @@
                     <option value="Mujer">Mujer</option>
                   </select>
                   </div>
-                </div>
-                <div class="row">
                   <div class="col-md-6">
                     <label>ID Usuario</label>
                     <select name="idRol" id="idRol" class="form-control">
@@ -173,16 +176,29 @@
 
 
                   </div>
-                  <div class="col-md-6">
+                 
+                </div> 
+                <div class="row">
+                <div class="col-md-6">
                     <label>contraseña</label>
                     <input type="password" name="txtPass" class="form-control" id="txtPass">
                   </div>
-                </div>            
+                  <div class="col-md-6">
+                    <label>Cargo</label>
+                   <select name="txtCargo" id="txtCargo" class="form-control">
+                     <?php 
+                   foreach ($puesto as $c) {
+                    echo "<option value=".$c["idPuesto"].">".$c["nombrePuesto"]."</option>";
+                   } 
+                   ?>
+                   </select>
+                  </div>             
                 </div>
+              </div>
               </div>
               <hr>
              <center>
-              <input type="submit" class="btn btn-warning" name="insertar" id="insertar" value="Agregar Cliente">
+              <input type="submit" class="btn btn-warning" name="insertar" id="insertar" value="insertar">
               <input type="reset" class="btn btn-primary" name="reset" id="reset" value="Reestablecer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                
@@ -212,7 +228,6 @@
                   <th>Apellidos</th>
                   <th>Correo</th>
                   <th>Genero</th>
-                  <th>Rol</th>
                   <th>Cargo</th>
                   <th>Acciones</th> 
                                    
@@ -226,7 +241,6 @@
                   <th>Apellidos</th>
                   <th>Correo</th>
                   <th>Genero</th>
-                  <th>Rol</th>
                   <th>Cargo</th>
                   <th>Accion</th>
                   
@@ -241,7 +255,8 @@
                   $apellido=$e->getApellido();
                   $correo=$e->getCorreo();
                   $genero=$e->getGenero();
-                  
+                  $idRol=$e->getIdRol();
+                  $idcargo=$e->getCargo();
                   $idRol=$e->getIdRol();
 
                   echo "<tr>
@@ -250,9 +265,9 @@
                   <td>$apellido</td>
                   <td>$correo</td>
                   <td>$genero</td>
-                  <td>$idRol</td>
-          
-                  <td><button class='btn btn-danger' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
+                  <td>$idcargo</td>
+                  <td>
+                  <button class='btn btn-danger' onClick=$('#txtIdEmpleado').val('$idEmpleado'),$('#txtNombreE').val('$nombre');';>Ver</button></td>
                   </tr>";
                }
                   
@@ -265,9 +280,7 @@
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
 
-        <p class="small text-center text-muted my-5">
-          <em>More table examples coming soon...</em>
-        </p>
+        
 
       </div>
       <!-- /.container-fluid -->
