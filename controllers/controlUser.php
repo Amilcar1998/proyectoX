@@ -1,18 +1,27 @@
 <?php
-include "../models/validarUsuario.php"
+include "../models/UsuarioModel.php";
 
 $obUser = new UsuarioModel();
 if(isset($_REQUEST["validar"])){
-    $r=$obUser->validarUsuario($_REQUEST["login"],$_REQUEST["pass"]);
+	$login = $_REQUEST["login"];
+	$pass=$_REQUEST["pass"];
+    $r=$obUser->validarUsuario($login,$pass);
+    
     if($r==1){
         session_start();
         $_SESSION["s1"]=$_REQUEST["login"];
-        print("hola");
-    }else{
-        echo"<script>alert('hola te has equivocado en algo');</script>";
+        header("Location:controllerEmpleado.php");
+    }elseif ($r==2) {
+        session_start();
+        $_SESSION["c1"]=$_REQUEST["login"];
+        header("Location:controllerCliente.php");
+    }
+    elseif($r==0){
+    	echo "<script>alert('Usuario o contraseña no validos');</script>";
     }
 }
 
-require "views/vistaCliente.php";
+
+require "../views/login.php";
 
 ?>

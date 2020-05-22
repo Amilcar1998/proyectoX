@@ -23,61 +23,31 @@
 <body id="page-top">
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-
    <a class="navbar-brand mr-1" href="index.html">Concentrados El gordito</a>
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+
+    <!-- Navbar -->
+    
+      <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
         <div class="input-group-append">
-          <button class="btn btn-primary" type="button">
-            <i class="fas fa-search"></i>
+          <button class="btn btn-success"> 
+            <?php foreach ($session as $key) {
+          $nombre = $key['nombreEmp']."&nbsp;&nbsp;".$key['apellido'];
+          echo "$nombre";
+        } ?></button>
+            
           </button>
         </div>
       </div>
     </form>
-
-    <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-bell fa-fw"></i>
-          <span class="badge badge-danger">9+</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-envelope fa-fw"></i>
-          <span class="badge badge-danger">7</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-user-circle fa-fw"></i>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="#">Settings</a>
-          <a class="dropdown-item" href="#">Activity Log</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
-        </div>
-      </li>
+      <div>
+      <form><button class='btn btn-warning' id='c' name='c' value='c'>Cerrar session</button></form>
+      </div>
     </ul>
 
   </nav>
@@ -123,11 +93,11 @@
     <div id="content-wrapper">
 
       <div class="container-fluid">
-      <button class="btn btn-primary" id="agregarC" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Empleado</button>
-        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <button class="btn btn-primary" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Empleado</button>
+        <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
-              <div class="breadcrumb"><h3>REGISTRO DE EMPLEADO</h3></div>
+              <div class="breadcrumb"><h3>EMPLEADO</h3></div>
               <div class="container-fluid">
              <form method="POST" action="#" enctype="multipart/form-data">
               <div class="container">
@@ -141,8 +111,9 @@
                     <label>Nombre</label>
                     <input type="text" name="txtNombreE" id="txtNombreE" class="form-control">
                   </div>
-                  
                 </div>
+
+
                 
                 <div class="row">
                   <div class="col-md-6">
@@ -150,52 +121,48 @@
                     <input type="text" name="txtApellidos" id="txtApellidos" class="form-control">
                   </div>
                   <div class="col-md-6">
-                    <label>Correo</label>
-                    <input type="text" name="txtCorreo" id="txtCorreo" class="form-control" placeholder=".....@gmail.com">
-                  </div>
-                  
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <label>Genero</label>
+                   <label>Genero</label>
                      <select name="txtGenero" id="txtGenero" class="form-control">
                     <option>seleccione...</option>
                     <option value="Hombre">Hombre</option>
                     <option value="Mujer">Mujer</option>
                   </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label>ID Usuario</label>
-                    <select name="idRol" id="idRol" class="form-control">
-                      <option>selecione....</option>
-                      <?php 
-                   foreach ($data as $d) {
-                    echo "<option value=".$d["id_Rol"].">".$d["nombreRol"]."</option>";
-                   } 
-                   ?>
-                    </select>
+
+                  
+                </div>
+              </div>
 
 
-                  </div>
-                 
-                </div> 
                 <div class="row">
                 <div class="col-md-6">
-                    <label>contraseña</label>
-                    <input type="password" name="txtPass" class="form-control" id="txtPass">
-                  </div>
-                  <div class="col-md-6">
-                    <label>Cargo</label>
-                   <select name="txtCargo" id="txtCargo" class="form-control">
+                  <label>Cargo</label>
+                  
+                    <select name="txtCargo" id="txtCargo" class="form-control">
+                      <option>seleccione....</option>
                      <?php 
                    foreach ($puesto as $c) {
                     echo "<option value=".$c["idPuesto"].">".$c["nombrePuesto"]."</option>";
                    } 
                    ?>
                    </select>
+                  </div>
+                  <div class="col-md-6">
+                  <label>Id Usuario</label>
+                  <select class="form-control" name="txtUser" id="txtUser">
+                    <option>seleccione...</option>
+                   <?php 
+                   foreach ($usuario as $us) {
+                    echo "<option value=".$us["idUsuario"].">".$us["username"]."</option>";
+                   } 
+                   ?>
+
+                   </select>
                   </div>             
                 </div>
               </div>
+
+
+
               </div>
               <hr>
              <center>
@@ -227,10 +194,10 @@
                   <th>ID Empleado</th>
                   <th>Nombre</th>
                   <th>Apellidos</th>
-                  <th>Correo</th>
                   <th>Genero</th>
-                  <th>Cargo</th>
-                  <th>Acciones</th>                
+                  <th>Id Cargo</th> 
+                  <th>ID User</th>
+                  <th>Accion</th>               
                   </tr>
 
                 </thead>
@@ -239,9 +206,9 @@
                   <th>ID Empleado</th>
                   <th>Nombre</th>
                   <th>Apellidos</th>
-                  <th>Correo</th>
                   <th>Genero</th>
-                  <th>Cargo</th>
+                  <th>ID Cargo</th>
+                  <th>Usuario</th>
                   <th>Accion</th>
                   
                   </tr>
@@ -254,30 +221,20 @@
                   $nombre=$e->getNombre();
                   $apellido=$e->getApellido(); 
                   $genero=$e->getGenero();
-                  $correo=$e->getCorreo();
-                  $idRol=$e->getIdRol();
-                  $pass=$e->getPass();
                   $cargo=$e->getCargo();
+                  $user=$e->getUsername();
+                
 
-                  
              
                   echo "<tr>
                   <td>$idEmpleado</td>
                   <td>$nombre</td>
                   <td>$apellido</td>
-                  <td>$correo</td>
                   <td>$genero</td>
                   <td>$cargo</td>
+                  <td>$user</td>
                   <td>
-      <button class='btn btn-danger' id='agregarC' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#txtIdEmpleado').val('$idEmpleado'),
-
-      $('#txtNombreE').val('$nombre');
-      $('#txtApellidos').val('$apellido');
-      $('#txtCorreo').val('$correo');
-      $('#txtGenero').val('$genero');
-      $('#idRol').val('$idRol');
-      $('#txtPass').val('$pass');
-      $('#txtCargo').val('$cargo');';>Ver</button></td>
+                  <button class='btn btn-warning' data-toggle='modal' data-target='.modal'>ver</button></td>
                   </tr>";
                }
                   

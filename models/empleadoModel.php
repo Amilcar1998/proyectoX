@@ -12,19 +12,11 @@ class empleadoModel extends conexion
         $res=$this->con->query("select * from empleado");
         $r=array();
         while($row=$res->fetch_assoc()) {
-            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["correo"],$row["genero"],$row["id_Rol"],$row["pass"],$row["idPuesto"]);
+            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["genero"],$row["idPuesto"],$row["idUsuario"]);
             $r[]=$e;
         }
         return $r;
     }
-    function getRol(){
-        $res=$this->con->query("select * from rol");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
-        }
-        return $r;
-}
 function getCargo(){
         $res=$this->con->query("select * from puesto");
         $r=array();
@@ -33,32 +25,47 @@ function getCargo(){
         }
         return $r;
 }
-    
+function getSessionEmp(){
+         $correo=$_SESSION["s1"];
+        $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+}
+
+
+
+    function getUser(){
+        $res=$this->con->query("select * from usuarios");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+}
         function insertarEmpleado($e){
-            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,genero,correo,id_Rol,pass,idPuesto) values(?,?,?,?,?,?,?,?)");
-            $para->bind_param('ssssssss',$a,$b,$c,$d,$f,$g,$h,$i);
+            $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,genero,idPuesto,idUsuario) values(?,?,?,?,?,?)");
+            $para->bind_param('ssssss',$a,$b,$c,$d,$f,$g);
             $a='';
             $b=$e->getNombre();
             $c=$e->getApellido();
             $d=$e->getGenero();
-            $f=$e->getCorreo();
-            $g=$e->getIdRol();
-            $h=$e->getPass(); 
-            $i=$e->getCargo();
+            $f=$e->getCargo();
+            $g=$e->getUsername();
             $para->execute();
         }
 
     function modificarEmpleado($e){
-     $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,correo=?,genero=?,id_Rol,pass,idPuesto WHERE `empleado`.`idEmpleado` = ?");
-            $para->bind_param('ssssssss',$a,$b,$c,$d,$f,$g,$h,$i);
+     $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,genero=?,idPuesto=?,idUsuario=? WHERE `empleado`.`idEmpleado` = ?");
+            $para->bind_param('ssssss',$a,$b,$c,$d,$f,$g);
             $a=$e->getNombre();
             $b=$e->getApellido();
             $c=$e->getGenero();
-            $d=$e->getCorreo();
-            $f=$e->getIdRol();
-            $g=$e->getPass(); 
-            $h=$e->getCargo();
-            $i=$e->getIdEmpleado();
+            $d=$e->getCargo();
+            $f=$e->getUsername();
+            $g=$e->getIdEmpleado();
             $para->execute();
 
         }

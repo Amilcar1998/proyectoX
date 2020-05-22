@@ -6,16 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>SB Admin - Blank Page</title>
+  <title>Cliente</title>
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-  <link href="css/sb-admin.css" rel="stylesheet">
+  <link href="vendor/sb-admin.css" rel="stylesheet">
 </head>
 <body id="page-top">
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-    <a class="navbar-brand mr-1" href="index.html">Start Bootstrap</a>
+    <a class="navbar-brand mr-1" href="index.html">Concentrados El Gordito</a>
 
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
@@ -24,10 +24,9 @@
     <!-- Navbar Search -->
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
         <div class="input-group-append">
-          <button class="btn btn-primary" type="button">
-            <i class="fas fa-search"></i>
+          <button class="btn btn-success"><?php $nombre=$_SESSION['c1']; echo "$nombre";?></button>
+            
           </button>
         </div>
       </div>
@@ -35,41 +34,9 @@
 
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-bell fa-fw"></i>
-          <span class="badge badge-danger">9+</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-envelope fa-fw"></i>
-          <span class="badge badge-danger">7</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-user-circle fa-fw"></i>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="#">Settings</a>
-          <a class="dropdown-item" href="#">Activity Log</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
-        </div>
-      </li>
+      <div>
+      <form><button class='btn btn-warning' id='c' name='c' value='c'>Cerrar session</button></form>
+      </div>
     </ul>
 
   </nav>
@@ -116,18 +83,73 @@
 
       <div class="container-fluid">
 
-        <!-- Breadcrumbs-->
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a href="index.html">Dashboard</a>
-          </li>
-          <li class="breadcrumb-item active">Blank Page</li>
-        </ol>
+       <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+          Datos Empleados</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                  <th>ID CLIENTE</th>
+                  <th>NOMBRE</th>
+                  <th>APELLIDOS</th>
+                  <th>TELEFONO</th>
+                  <th>EDAD</th> 
+                  <th>GENERO</th>
+                  <th>ID USUARIO</th> 
+                  <th>ACCIONES</th>              
+                  </tr>
 
-        <!-- Page Content -->
-        <h1>Blank Page</h1>
-        <hr>
-        <p>This is a great starting point for new custom pages.</p>
+                </thead>
+                <tfoot>
+                 <tr>
+                  <th>ID CLIENTE</th>
+                  <th>NOMBRE</th>
+                  <th>APELLIDOS</th>
+                  <th>TELEFONO</th>
+                  <th>EDAD</th> 
+                  <th>GENERO</th>
+                  <th>ID USUARIO</th> 
+                  <th>ACCIONES</th> 
+                  </tr>
+
+                </tfoot>
+                <tbody>
+              <?php 
+               foreach ($Rcliente as $e) {
+                $id=$e->getIdCliente();
+                $nombre=$e->getNombreCi();
+                $apellidos = $e->getApellidos();
+                $telefono =$e->getTelefono();
+                $edad = $e->getEdad();
+                $genero =$e->getGenero();
+                $idUsuario = $e->getIdUsuario();
+
+             
+                  echo "<tr>
+                  <td>$id</td>
+                  <td>$nombre</td>
+                  <td>$apellidos</td>
+                  <td>$telefono</td>
+                  <td>$edad</td>
+                  <td>$genero</td>
+                  <td>$idUsuario</td>
+                  <td>
+                  <button class='btn btn-warning'>ver</button>
+                  </td>
+                  </tr>";
+               }
+                  
+                
+               ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+        </div>
 
       </div>
       <!-- /.container-fluid -->

@@ -1,25 +1,17 @@
 <?php
 include "../models/empleadoModel.php";
+include "sesiones.php";
 $obEmp=new EmpleadoModel();
 
-if(isset($_REQUEST["insertar"])){
 
- $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombreE'],$_REQUEST['txtApellidos'],$_REQUEST['txtCorreo'],$_REQUEST['txtGenero'],$_REQUEST['idRol'],sha1($_REQUEST['txtPass']),$_REQUEST['txtCargo']);
+if(isset($_REQUEST["insertar"])){
+ $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombreE'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
       $obEmp->insertarEmpleado($e);
 }
-if(isset($_REQUEST["modificar"])){
- $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombreE'],$_REQUEST['txtApellidos'],$_REQUEST['txtCorreo'],$_REQUEST['txtGenero'],$_REQUEST['idRol'],sha1($_REQUEST['txtPass']),$_REQUEST['txtCargo']);
-      $obEmp->modificarEmpleado($e);
-
-}
-if(isset($_REQUEST["eliminar"])){
- $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombreE'],$_REQUEST['txtApellidos'],$_REQUEST['txtCorreo'],$_REQUEST['txtGenero'],$_REQUEST['idRol'],sha1($_REQUEST['txtPass']),$_REQUEST['txtCargo']);
-      $obEmp->eliminarEmpleado($e);
-
-}
+$session = $obEmp->getSessionEmp();
   $datos=$obEmp->getEmpleado();
-  $data=$obEmp->getRol();
   $puesto=$obEmp->getCargo();
+  $usuario=$obEmp->getUser();
 
 
 include "../views/vistaEmpleado.php";

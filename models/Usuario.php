@@ -3,60 +3,88 @@
 class Usuario{
 
     private $idUsuario;
-    private $nombreU;
+    private $username;
     private $pass;
+    private $Rol;
 
+    /**
+     * @return mixed
+     */
     public function getIdUsuario()
     {
         return $this->idUsuario;
     }
 
+    /**
+     * @param mixed $idUsuario
+     */
     public function setIdUsuario($idUsuario)
     {
         $this->idUsuario = $idUsuario;
     }
 
-    public function getNombreU()
+    /**
+     * @return mixed
+     */
+    public function getUsername()
     {
-        return $this->nombreU;
+        return $this->username;
     }
 
-    public function setNombreU($nombreU)
+    /**
+     * @param mixed $username
+     */
+    public function setUsername($username)
     {
-        $this->nombreU = $nombreU;
+        $this->username = $username;
     }
 
+    /**
+     * @return mixed
+     */
     public function getPass()
     {
         return $this->pass;
     }
 
+    /**
+     * @param mixed $pass
+     */
     public function setPass($pass)
     {
         $this->pass = $pass;
     }
 
+    /**
+     * @return mixed
+     */
     public function getRol()
     {
-        return $this->rol;
+        return $this->Rol;
     }
 
-    public function setRol($rol)
+    /**
+     * @param mixed $Rol
+     */
+    public function setRol($Rol)
     {
-        $this->rol = $rol;
+        $this->Rol = $Rol;
     }
-    private $rol;
 
-
-    public function __construct($idUsuario, $nombreU, $pass, $rol)
+    /**
+     * Usuario constructor.
+     * @param $idUsuario
+     * @param $username
+     * @param $pass
+     * @param $Rol
+     */
+    public function __construct($idUsuario, $username, $pass, $Rol)
     {
         $this->idUsuario = $idUsuario;
-        $this->nombreU = $nombreU;
+        $this->username = $username;
         $this->pass = $pass;
-        $this->rol = $rol;
+        $this->Rol = $Rol;
     }
-
-
 }
 
 ?>
