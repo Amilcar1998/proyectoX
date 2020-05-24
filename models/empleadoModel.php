@@ -35,8 +35,6 @@ function getSessionEmp(){
         return $r;
 }
 
-
-
     function getUser(){
         $res=$this->con->query("select * from usuarios");
         $r=array();

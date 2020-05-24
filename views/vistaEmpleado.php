@@ -18,6 +18,17 @@
   <!-- Custom styles for this template-->
   <link href="vendor/sb-admin.css" rel="stylesheet">
   <script type="text/javascript" src="vendor/sweetalert2.all.min.js"></script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+
+      
+    });
+
+
+  </script>
   
 </head>
 <body id="page-top">
@@ -105,11 +116,11 @@
                 <div class="row"> 
                   <div class="col-md-6">
                     <label>Id Cliente</label>
-                    <input type="text" name="txtIdEmpleado" id="txtIdEmpleado" class="form-control" readonly=true>
+                    <input type="text" name="txtIdEmpleado" id="txtIdEmpleado" class="form-control txtIdEmpleado" readonly=true>
                   </div>
                     <div class="col-md-6">
                     <label>Nombre</label>
-                    <input type="text" name="txtNombreE" id="txtNombreE" class="form-control">
+                    <input type="text" name="txtNombres" id="txtNombres" class="form-control">
                   </div>
                 </div>
 
@@ -166,9 +177,10 @@
               </div>
               <hr>
              <center>
-              <input type="submit" class="btn btn-warning" name="insertar" id="insertar" value="insertar">
-              <input type="reset" class="btn btn-primary" name="reset" id="reset" value="Reestablecer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button class="btn btn-warning" name="insertar" id="insertar">Insertar</button>
+              <button class="btn btn-warning" name="eliminar" id="eliminar">Eliminar</button>
+              <button class="btn btn-primary" id="modificar" name="modificar">Modificar</button>
+              <button class="btn btn-secondary" data-dismiss="modal">Close</button></button>
                
                </center>
              </form>
@@ -218,8 +230,8 @@
               <?php 
                foreach ($datos as $e) {
                   $idEmpleado=$e->getIdEmpleado();
-                  $nombre=$e->getNombre();
-                  $apellido=$e->getApellido(); 
+                  $nombres=str_replace(' ', '&nbsp;', $e->getNombre());
+                  $apellido=str_replace(' ', '&nbsp;', $e->getApellido()); 
                   $genero=$e->getGenero();
                   $cargo=$e->getCargo();
                   $user=$e->getUsername();
@@ -228,13 +240,15 @@
              
                   echo "<tr>
                   <td>$idEmpleado</td>
-                  <td>$nombre</td>
+                  <td>$nombres</td>
                   <td>$apellido</td>
                   <td>$genero</td>
                   <td>$cargo</td>
                   <td>$user</td>
                   <td>
-                  <button class='btn btn-warning' data-toggle='modal' data-target='.modal'>ver</button></td>
+                  <button class='btn btn-warning' data-toggle='modal' data-target='.modal' onClick=$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');
+                 
+                  >ver</button></td>
                   </tr>";
                }
                   
