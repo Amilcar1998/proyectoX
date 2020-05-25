@@ -36,7 +36,7 @@ function getSessionEmp(){
 }
 
     function getUser(){
-        $res=$this->con->query("select * from usuarios");
+        $res=$this->con->query("select * from usuarios where id_Rol='1'");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;

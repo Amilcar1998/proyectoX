@@ -108,9 +108,6 @@
                     <input type="text" name="txtNombres" id="txtNombres" class="form-control">
                   </div>
                 </div>
-
-
-                
                 <div class="row">
                   <div class="col-md-6">
                     <label>Apellidos</label>
