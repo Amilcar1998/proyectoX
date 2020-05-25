@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="" />
+    <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controlUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controlUser.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controllerCliente.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerCliente.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Cliente.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/Cliente.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ClienteModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ClienteModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Usuario.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/Usuario.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/UsuarioModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/UsuarioModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/empleadoModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/empleadoModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/validarUsuario.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/validarUsuario.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/vistaCliente.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaCliente.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/vistaEmpleado.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaEmpleado.php" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +80,8 @@
       <workItem from="1590093994049" duration="48000" />
       <workItem from="1590167583560" duration="931000" />
       <workItem from="1590283235933" duration="497000" />
+      <workItem from="1590420569806" duration="637000" />
+      <workItem from="1590439076146" duration="54000" />
     </task>
     <task id="LOCAL-00001" summary="hfhfh">
       <created>1589956058198</created>

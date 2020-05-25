@@ -57,13 +57,16 @@ function getSessionEmp(){
 
     function modificarEmpleado($e){
      $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,genero=?,idPuesto=?,idUsuario=? WHERE `empleado`.`idEmpleado` = ?");
+
             $para->bind_param('ssssss',$a,$b,$c,$d,$f,$g);
+
             $a=$e->getNombre();
             $b=$e->getApellido();
             $c=$e->getGenero();
             $d=$e->getCargo();
             $f=$e->getUsername();
             $g=$e->getIdEmpleado();
+
             $para->execute();
 
         }

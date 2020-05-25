@@ -25,7 +25,6 @@
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
         <div class="input-group-append">
-          <button class="btn btn-success"><?php $nombre=$_SESSION['c1']; echo "$nombre";?></button>
             
           </button>
         </div>
@@ -51,28 +50,13 @@
           <span>Dashboard</span>
         </a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>Pages</span>
-        </a>
-        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-          <h6 class="dropdown-header">Login Screens:</h6>
-          <a class="dropdown-item" href="login.html">Login</a>
-          <a class="dropdown-item" href="register.html">Register</a>
-          <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>
-          <div class="dropdown-divider"></div>
-          <h6 class="dropdown-header">Other Pages:</h6>
-          <a class="dropdown-item" href="404.html">404 Page</a>
-          <a class="dropdown-item active" href="blank.html">Blank Page</a>
-        </div>
-      </li>
+      
       <li class="nav-item">
         <a class="nav-link" href="charts.html">
           <i class="fas fa-fw fa-chart-area"></i>
           <span>Charts</span></a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item ">
         <a class="nav-link" href="tables.html">
           <i class="fas fa-fw fa-table"></i>
           <span>Tables</span></a>
@@ -82,7 +66,78 @@
     <div id="content-wrapper">
 
       <div class="container-fluid">
+        <!-- Large modal -->
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>
 
+              <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <form method="POST" action="#">
+                    <div class="container">
+                      <hr>
+                      <h2><center>Clientes</center></h2>
+                      <hr>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>id Cliente</label>
+                          <input type="text" name="idCliente" id="idCliente" readonly="true" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                          <label>Nombre</label>
+                          <input type="text" name="nombreC" id="nombreC" class="form-control">
+                        </div>
+                      </div>
+                       <div class="row">
+                        <div class="col-md-6">
+                          <label>Apellidos</label>
+                          <input type="text" class="form-control" id="apellidoC" name="apellidoC">
+                        </div>
+                        <div class="col-md-6">
+                          <label>Telefono</label>
+                          <input type="text" class="form-control" id="telefonoC" name="telefonoC">
+                        </div>
+                      </div>
+                       <div class="row">
+                        <div class="col-md-4">
+                          <label>Edad</label>
+                          <input type="text" name="edadC" id="edadC" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                          <label>Genero</label>
+                         <select id="generoC" name="generoC" class="form-control">
+                          <option>seleccione........</option>
+                          <option value="Hombre">Hombre</option>
+                          <option value="Mujer">Mujer</option>
+                           
+
+
+                         </select >
+                          
+                        </div>
+                        
+                        <div class="col-md-4">
+                          <label>Usuario</label>
+                          <select name="usuarioC" id="usuarioC" class="form-control">
+                              <option>seleccione...</option>
+                             <?php 
+                             foreach ($user as $us) {
+                              echo "<option value=".$us["idUsuario"].">".$us["username"]."</option>";
+                             } 
+                             ?>
+                          </select>
+                          
+                        </div>
+                      </div>
+                      <hr>
+                      <button class="btn btn-primary" id="insertar" name="insertar">Agregar</button>
+                      <button class="btn btn-primary" id="modificar" name="modificar">modificar</button>
+                      <button class="btn btn-primary" id="eliminar" name="eliminar">eliminar</button>
+                      <hr>
+                    </div> 
+                  </form> 
+                  </div>
+                </div>
+              </div>
        <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
@@ -120,12 +175,12 @@
               <?php 
                foreach ($Rcliente as $e) {
                 $id=$e->getIdCliente();
-                $nombre=$e->getNombreCi();
-                $apellidos = $e->getApellidos();
+                $nombre = str_replace(' ', '&nbsp;', $e->getNombreCi());
+                $apellidos=str_replace(' ', '&nbsp;', $e->getApellidos());
                 $telefono =$e->getTelefono();
                 $edad = $e->getEdad();
-                $genero =$e->getGenero();
-                $idUsuario = $e->getIdUsuario();
+                $generoC=str_replace(' ', '&nbsp;', $e->getGenero());
+                $idUsuario = $e->getUsuarioC();
 
              
                   echo "<tr>
@@ -134,10 +189,10 @@
                   <td>$apellidos</td>
                   <td>$telefono</td>
                   <td>$edad</td>
-                  <td>$genero</td>
+                  <td>$generoC</td>
                   <td>$idUsuario</td>
                   <td>
-                  <button class='btn btn-warning'>ver</button>
+                  <button class='btn btn-warning' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#idCliente').val('$id');$('#nombreC').val('$nombre');$('#apellidoC').val('$apellidos');$('#telefonoC').val('$telefono');$('#edadC').val('$edad');$('#generoC').val('$generoC');$('#usuarioC').val('$idUsuario'); >ver</button>
                   </td>
                   </tr>";
                }
@@ -152,17 +207,6 @@
         </div>
 
       </div>
-      <!-- /.container-fluid -->
-
-      <!-- Sticky Footer -->
-      <footer class="sticky-footer">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright © Your Website 2019</span>
-          </div>
-        </div>
-      </footer>
-
     </div>
     <!-- /.content-wrapper -->
 

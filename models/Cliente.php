@@ -106,21 +106,21 @@ class Cliente
     /**
      * @return mixed
      */
-    public function getIdUsuario()
+    public function getUsuarioC()
     {
-        return $this->idUsuario;
+        return $this->usuarioC;
     }
 
     /**
-     * @param mixed $idUsuario
+     * @param mixed $usuarioC
      */
-    public function setIdUsuario($idUsuario)
+    public function setUsuarioC($usuarioC)
     {
-        $this->idUsuario = $idUsuario;
+        $this->usuarioC = $usuarioC;
     }
     private $edad;
     private $genero;
-    private $idUsuario;
+    private $usuarioC;
 
     /**
      * Cliente constructor.
@@ -130,9 +130,9 @@ class Cliente
      * @param $telefono
      * @param $edad
      * @param $genero
-     * @param $idUsuario
+     * @param $usuarioC
      */
-    public function __construct($idCliente, $nombreCi, $apellidos, $telefono, $edad, $genero, $idUsuario)
+    public function __construct($idCliente, $nombreCi, $apellidos, $telefono, $edad, $genero, $usuarioC)
     {
         $this->idCliente = $idCliente;
         $this->nombreCi = $nombreCi;
@@ -140,7 +140,7 @@ class Cliente
         $this->telefono = $telefono;
         $this->edad = $edad;
         $this->genero = $genero;
-        $this->idUsuario = $idUsuario;
+        $this->usuarioC = $usuarioC;
     }
 
 
