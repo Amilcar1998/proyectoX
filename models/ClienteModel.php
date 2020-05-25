@@ -20,7 +20,7 @@ class ClienteModel extends conexion
     
 	}
 	    function getUser(){
-        $res=$this->con->query("select * from usuarios");
+        $res=$this->con->query("select * from usuarios where id_Rol ='2'");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;

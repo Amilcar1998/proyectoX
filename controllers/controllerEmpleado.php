@@ -13,7 +13,7 @@ $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['t
       $obEmp->modificarEmpleado($e);
 }
 if(isset($_REQUEST["eliminar"])){
- $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
+ $e=new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
  $obEmp->eliminarEmpleado($e);
 
  }

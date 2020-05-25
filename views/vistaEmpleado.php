@@ -163,7 +163,8 @@
               <hr>
              <center>
               <input type="submit" class="btn btn-warning" name="insertar" id="insertar" value="insertar">
-              <input type="reset" class="btn btn-primary" id="eliminar" name="eliminar" value="Reestablecer">
+              <input type="submit" class="btn btn-warning" name="modificar" id="modificar" value="Modificar">
+              <input type="submit" class="btn btn-primary" id="eliminar" name="eliminar" value="Eliminar">
               <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
                
                </center>

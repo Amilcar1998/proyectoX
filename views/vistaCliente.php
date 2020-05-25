@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Cliente</title>
+
+  <title>Clientes</title>
+
+  <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Page level plugin CSS-->
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
   <link href="vendor/sb-admin.css" rel="stylesheet">
+
 </head>
+
 <body id="page-top">
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
@@ -24,18 +35,16 @@
     <!-- Navbar Search -->
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
-        <div class="input-group-append">
-            
-          </button>
+        
         </div>
       </div>
     </form>
 
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
-      <div>
-      <form><button class='btn btn-warning' id='c' name='c' value='c'>Cerrar session</button></form>
-      </div>
+      <form>
+      <button id="c" name="c" class="btn btn-warning">Cerrar Session</button>
+    </form>
     </ul>
 
   </nav>
@@ -50,13 +59,13 @@
           <span>Dashboard</span>
         </a>
       </li>
-      
+     
       <li class="nav-item">
-        <a class="nav-link" href="charts.html">
+        <a class="nav-link" href="controllerEmpleado.php">
           <i class="fas fa-fw fa-chart-area"></i>
-          <span>Charts</span></a>
+          <span>Empleados</span></a>
       </li>
-      <li class="nav-item ">
+      <li class="nav-item active">
         <a class="nav-link" href="tables.html">
           <i class="fas fa-fw fa-table"></i>
           <span>Tables</span></a>
@@ -66,8 +75,7 @@
     <div id="content-wrapper">
 
       <div class="container-fluid">
-        <!-- Large modal -->
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>
 
               <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -128,20 +136,23 @@
                           
                         </div>
                       </div>
-                      <hr>
+                      <hr><center>
                       <button class="btn btn-primary" id="insertar" name="insertar">Agregar</button>
                       <button class="btn btn-primary" id="modificar" name="modificar">modificar</button>
                       <button class="btn btn-primary" id="eliminar" name="eliminar">eliminar</button>
+                    </center>
                       <hr>
                     </div> 
                   </form> 
                   </div>
                 </div>
               </div>
-       <div class="card mb-3">
+
+        <!-- DataTables Example -->
+        <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-          Datos Empleados</div>
+            Data Table Example</div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -154,12 +165,11 @@
                   <th>EDAD</th> 
                   <th>GENERO</th>
                   <th>ID USUARIO</th> 
-                  <th>ACCIONES</th>              
+                  <th>ACCIONES</th> 
                   </tr>
-
                 </thead>
                 <tfoot>
-                 <tr>
+                  <tr>
                   <th>ID CLIENTE</th>
                   <th>NOMBRE</th>
                   <th>APELLIDOS</th>
@@ -169,10 +179,9 @@
                   <th>ID USUARIO</th> 
                   <th>ACCIONES</th> 
                   </tr>
-
                 </tfoot>
                 <tbody>
-              <?php 
+                  <?php 
                foreach ($Rcliente as $e) {
                 $id=$e->getIdCliente();
                 $nombre = str_replace(' ', '&nbsp;', $e->getNombreCi());
@@ -198,7 +207,7 @@
                }
                   
                 
-               ?>
+      ?>
                 </tbody>
               </table>
             </div>
@@ -206,7 +215,22 @@
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
 
+        <p class="small text-center text-muted my-5">
+          <em>More table examples coming soon...</em>
+        </p>
+
       </div>
+      <!-- /.container-fluid -->
+
+      <!-- Sticky Footer -->
+      <footer class="sticky-footer">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright © Your Website 2019</span>
+          </div>
+        </div>
+      </footer>
+
     </div>
     <!-- /.content-wrapper -->
 
@@ -244,8 +268,15 @@
   <!-- Core plugin JavaScript-->
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
+  <!-- Page level plugin JavaScript-->
+  <script src="vendor/datatables/jquery.dataTables.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
+
+  <!-- Demo scripts for this page-->
+  <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 
