@@ -239,7 +239,7 @@
              
                   echo "<tr>
                   <td>$idEmpleado</td>
-                  <td>$nombre</td>
+                  <td>$nombres</td>
                   <td>$apellido</td>
                   <td>$genero</td>
                   <td>$cargo</td>
