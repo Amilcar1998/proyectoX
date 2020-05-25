@@ -70,41 +70,41 @@
       <li class="nav-item">
         <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Pagina Principal</span>
+          <span>Dashboard</span>
         </a>
       </li>
-      
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-fw fa-folder"></i>
+          <span>Pages</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+          <h6 class="dropdown-header">Login Screens:</h6>
+          <a class="dropdown-item" href="login.html">Login</a>
+          <a class="dropdown-item" href="register.html">Register</a>
+          <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>
+          <div class="dropdown-divider"></div>
+          <h6 class="dropdown-header">Other Pages:</h6>
+          <a class="dropdown-item" href="404.html">404 Page</a>
+          <a class="dropdown-item" href="blank.html">Blank Page</a>
+        </div>
+      </li>
       <li class="nav-item">
-        <a class="nav-link" href="controllerCliente.php">
+        <a class="nav-link" href="charts.html">
           <i class="fas fa-fw fa-chart-area"></i>
-          <span>Clientes</span></a>
+          <span>Charts</span></a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="tables.html">
           <i class="fas fa-fw fa-table"></i>
-          <span>Produccion</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="tables.html">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Pedidos</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="tables.html">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Materia Prima</span></a>
+          <span>Tables</span></a>
       </li>
     </ul>
 
     <div id="content-wrapper">
-      <div class="container">
-        <div class="row">
-            <div class="col-md-2">
-              <button class='btn btn-warning' data-toggle='modal' data-target='.modal'>Agregar</button>
-            </div>
-        </div>
-      </div>
+
       <div class="container-fluid">
+      <button class="btn btn-primary" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Empleado</button>
         <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -177,10 +177,9 @@
               </div>
               <hr>
              <center>
-              <button class="btn btn-warning" name="insertar" id="insertar">Insertar</button>
-              <button class="btn btn-warning" name="eliminar" id="eliminar">Eliminar</button>
-              <button class="btn btn-primary" id="modificar" name="modificar">Modificar</button>
-              <button class="btn btn-secondary" data-dismiss="modal">Close</button></button>
+              <input type="submit" class="btn btn-warning" name="insertar" id="insertar" value="insertar">
+              <input type="reset" class="btn btn-primary" id="eliminar" name="eliminar" value="Reestablecer">
+              <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
                
                </center>
              </form>
@@ -240,15 +239,13 @@
              
                   echo "<tr>
                   <td>$idEmpleado</td>
-                  <td>$nombres</td>
+                  <td>$nombre</td>
                   <td>$apellido</td>
                   <td>$genero</td>
                   <td>$cargo</td>
                   <td>$user</td>
                   <td>
-                  <button class='btn btn-warning' data-toggle='modal' data-target='.modal' onClick=$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');
-                 
-                  >ver</button></td>
+                  <button class='btn btn-warning' data-toggle='modal' data-target='.modal' onClick=$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');>ver</button></td>
                   </tr>";
                }
                   
@@ -258,7 +255,7 @@
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted"><?php setlocale(LC_TIME,"es_ES");echo strftime("%B  %Y  "); ?></div>
+          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
 
         
