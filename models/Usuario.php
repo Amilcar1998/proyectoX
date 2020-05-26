@@ -2,24 +2,24 @@
 
 class Usuario{
 
-    private $idU;
+    private $idUsuario;
     private $username;
-    private $pass;
 
     /**
      * @return mixed
      */
-    public function getIdU()
+ 
+    public function getIdUsuario()
     {
-        return $this->idU;
+        return $this->idUsuario;
     }
 
     /**
-     * @param mixed $idU
+     * @param mixed $idUsuario
      */
-    public function setIdU($idU)
+    public function setIdUsuario($idUsuario)
     {
-        $this->idU = $idU;
+        $this->idUsuario = $idUsuario;
     }
 
     /**
@@ -57,33 +57,34 @@ class Usuario{
     /**
      * @return mixed
      */
-    public function getRol()
+    public function getIdRol()
     {
-        return $this->rol;
+        return $this->id_Rol;
     }
 
     /**
-     * @param mixed $rol
+     * @param mixed $id_Rol
      */
-    public function setRol($rol)
+    public function setIdRol($id_Rol)
     {
-        $this->rol = $rol;
+        $this->id_Rol = $id_Rol;
     }
-    private $rol;
+    private $pass;
+    private $id_Rol;
 
     /**
      * Usuario constructor.
-     * @param $idU
+     * @param $idUsuario
      * @param $username
      * @param $pass
-     * @param $rol
+     * @param $id_Rol
      */
-    public function __construct($idU, $username, $pass, $rol)
+    public function __construct($idUsuario, $username, $pass, $id_Rol)
     {
-        $this->idU = $idU;
+        $this->idUsuario = $idUsuario;
         $this->username = $username;
         $this->pass = $pass;
-        $this->rol = $rol;
+        $this->id_Rol = $id_Rol;
     }
 
 

@@ -1,6 +1,5 @@
 <?php
 include "../db/conexion.php";
-include "Usuario.php";
 
 class UsuarioModel extends conexion
 {

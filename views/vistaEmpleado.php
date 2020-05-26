@@ -124,7 +124,7 @@
                   
                 </div>
               </div>
-
+            <hr>
 
                 <div class="row">
                 <div class="col-md-6">
@@ -140,18 +140,12 @@
                    </select>
                   </div>
                   <div class="col-md-6">
-                  <label>Id Usuario</label>
-                  <select class="form-control" name="txtUser" id="txtUser">
-                    <option>seleccione...</option>
-                   <?php 
-                   foreach ($usuario as $us) {
-                    echo "<option value=".$us["idUsuario"].">".$us["username"]."</option>";
-                   } 
-                   ?>
+                  <label>Usuario</label>
+                  <input type="text" class="form-control" name="txtUser" id="txtUser">
+                  </div>
 
-                   </select>
-                  </div>             
                 </div>
+
               </div>
 
 

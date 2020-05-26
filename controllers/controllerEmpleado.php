@@ -4,7 +4,14 @@ include "sesiones.php";
 $obEmp=new EmpleadoModel();
 
 if(isset($_REQUEST["insertar"])){
- $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
+	$u = new Usuario("",$_REQUEST["txtUser"],sha1('123456'),'1');
+	$obEmp->insertarUsuario($u);
+        $user=$_REQUEST["txtUser"];
+		$usuario=$obEmp->getUser($user);
+		 foreach ($usuario as $us)  {
+		  	$id = $us["idUsuario"];
+            }
+ $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$id);
  $obEmp->insertarEmpleado($e);
 
 }
@@ -14,15 +21,26 @@ $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['t
 }
 if(isset($_REQUEST["eliminar"])){
  $e=new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
- $obEmp->eliminarEmpleado($e);
 
+
+ $emp = $_REQUEST["txtIdEmpleado"];
+      $id=$obEmp->obtenerID($emp);
+     foreach ($id as $i) {
+     	$usuario=$i["idUsuario"];
+
+     }
+ $obEmp->eliminarEmpleado($e);
+	 if(isset($usuario)){
+	  $obEmp->eliminarUsuario($usuario);
+
+		}
  }
 
-$session = $obEmp->getSessionEmp();
+  $session = $obEmp->getSessionEmp();
   $datos=$obEmp->getEmpleado();
   $puesto=$obEmp->getCargo();
-  $usuario=$obEmp->getUser();
-
+  
+  
 
 include "../views/vistaEmpleado.php";
 

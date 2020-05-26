@@ -1,6 +1,7 @@
 <?php
 include "../db/conexion.php";
 include "Empleado.php";
+include "Usuario.php";
 
 class empleadoModel extends conexion
 {
@@ -35,14 +36,41 @@ function getSessionEmp(){
         return $r;
 }
 
-    function getUser(){
-        $res=$this->con->query("select * from usuarios where id_Rol='1'");
+    function getUser($user){
+        $res=$this->con->query("select idUsuario from usuarios where username='$user'");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;
         }
         return $r;
 }
+
+
+        function insertarUsuario($u){
+            $para=$this->con->prepare("insert into usuarios(idUsuario,username,pass,id_Rol) values(?,?,?,?)");
+            $para->bind_param('ssss',$a,$b,$c,$d);
+            $a="";
+            $b=$u->getUsername();
+            $c=$u->getPass();
+            $d=$u->getIdRol();
+            $para->execute();
+        }    
+        function eliminarUsuario($usuario){
+         $para=$this->con->prepare("delete from usuarios where idUsuario=?");
+            $para->bind_param('s',$a);
+            $a=$usuario;
+            $para->execute();
+        }
+        function obtenerID($emp){
+        $res=$this->con->query("select usuarios.idUsuario from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where idEmpleado =$emp;");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+
+        }
+
         function insertarEmpleado($e){
             $para=$this->con->prepare("insert into empleado(idEmpleado,nombreEmp,apellido,genero,idPuesto,idUsuario) values(?,?,?,?,?,?)");
             $para->bind_param('ssssss',$a,$b,$c,$d,$f,$g);
@@ -57,9 +85,7 @@ function getSessionEmp(){
 
     function modificarEmpleado($e){
      $para=$this->con->prepare("UPDATE `empleado` SET nombreEmp =?,apellido=?,genero=?,idPuesto=?,idUsuario=? WHERE `empleado`.`idEmpleado` = ?");
-
             $para->bind_param('ssssss',$a,$b,$c,$d,$f,$g);
-
             $a=$e->getNombre();
             $b=$e->getApellido();
             $c=$e->getGenero();

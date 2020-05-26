@@ -17,7 +17,7 @@ class ModelUser extends conexion
         $r=array();
         while($row=$res->fetch_assoc()) {
         	$e=new Usuario($row["idUsuario"],$row["username"],$row["pass"],$row["id_Rol"]);
-            $r[]=$row;
+            $r[]=$e;
         }
         return $r;
 
@@ -28,7 +28,7 @@ class ModelUser extends conexion
 
 
 
-}
+} 
 
 
 

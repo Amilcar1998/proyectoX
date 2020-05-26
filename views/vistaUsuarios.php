@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin - Tables</title>
+  <title>Usuarios</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -18,7 +18,7 @@
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="css/sb-admin.css" rel="stylesheet">
+  <link href="vendor/sb-admin.css" rel="stylesheet">
 
 </head>
 
@@ -26,7 +26,7 @@
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-    <a class="navbar-brand mr-1" href="index.html">Start Bootstrap</a>
+    <a class="navbar-brand mr-1" href="index.html">Concentrado El Gordito</a>
 
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
@@ -86,6 +86,76 @@
   </nav>
 
   <div id="wrapper">
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <form method="POST" action="#">
+                    <div class="container">
+                      <hr>
+                      <h2><center>Clientes</center></h2>
+                      <hr>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>id Cliente</label>
+                          <input type="text" name="idCliente" id="idCliente" readonly="true" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                          <label>Nombre</label>
+                          <input type="text" name="nombreC" id="nombreC" class="form-control">
+                        </div>
+                      </div>
+                       <div class="row">
+                        <div class="col-md-6">
+                          <label>Apellidos</label>
+                          <input type="text" class="form-control" id="apellidoC" name="apellidoC">
+                        </div>
+                        <div class="col-md-6">
+                          <label>Telefono</label>
+                          <input type="text" class="form-control" id="telefonoC" name="telefonoC">
+                        </div>
+                      </div>
+                       <div class="row">
+                        <div class="col-md-4">
+                          <label>Edad</label>
+                          <input type="text" name="edadC" id="edadC" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                          <label>Genero</label>
+                         <select id="generoC" name="generoC" class="form-control">
+                          <option>seleccione........</option>
+                          <option value="Hombre">Hombre</option>
+                          <option value="Mujer">Mujer</option>
+                           
+
+
+                         </select >
+                          
+                        </div>
+                        
+                        <div class="col-md-4">
+                          <label>Usuario</label>
+                          <select name="usuarioC" id="usuarioC" class="form-control">
+                              <option>seleccione...</option>
+                             <?php 
+                             foreach ($user as $us) {
+                              echo "<option value=".$us["idUsuario"].">".$us["username"]."</option>";
+                             } 
+                             ?>
+                          </select>
+                          
+                        </div>
+                      </div>
+                      <hr><center>
+                      <button class="btn btn-primary" id="insertar" name="insertar">Agregar</button>
+                      <button class="btn btn-primary" id="modificar" name="modificar">modificar</button>
+                      <button class="btn btn-primary" id="eliminar" name="eliminar">eliminar</button>
+                    </center>
+                      <hr>
+                    </div> 
+                  </form> 
+                  </div>
+                </div>
+              </div>
 
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav">
@@ -125,17 +195,12 @@
 
     <div id="content-wrapper">
 
+
+
+
+
       <div class="container-fluid">
-
-        <!-- Breadcrumbs-->
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a href="#">Dashboard</a>
-          </li>
-          <li class="breadcrumb-item active">Tables</li>
-        </ol>
-
-        <!-- DataTables Example -->
+    <button class="btn btn-primary" data-toggle="modal" data-target=".modal" >Agregar Usuario</button>
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
@@ -145,41 +210,26 @@
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
+                    <th>id usuario</th>
+                    <th>Username</th>
+                    <th>contraseña</th>
+                    <th>id Rol</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
+                    <th>id usuario</th>
+                    <th>Username</th>
+                    <th>contraseña</th>
+                    <th>id Rol</th>
+                    <th>Acciones</th>
                   </tr>
                 </tfoot>
                 <tbody>
-                  <tr>
-                    <td>Tiger Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
-                    <td>61</td>
-                    <td>2011/04/25</td>
-                    <td>$320,800</td>
-                  </tr>
-                  <tr>
-                    <td>Garrett Winters</td>
-                    <td>Accountant</td>
-                    <td>Tokyo</td>
-                    <td>63</td>
-                    <td>2011/07/25</td>
-                    <td>$170,750</td>
-                  </tr>
+                 
+                   
+
                 </tbody>
               </table>
             </div>
@@ -187,21 +237,10 @@
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
 
-        <p class="small text-center text-muted my-5">
-          <em>More table examples coming soon...</em>
-        </p>
-
       </div>
       <!-- /.container-fluid -->
 
-      <!-- Sticky Footer -->
-      <footer class="sticky-footer">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright © Your Website 2019</span>
-          </div>
-        </div>
-      </footer>
+      
 
     </div>
     <!-- /.content-wrapper -->
