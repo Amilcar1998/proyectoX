@@ -13,12 +13,12 @@
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-
+  <script type="text/javascript" src="Recursos/validaciones.js"></script>
   <!-- Custom styles for this template-->
   <link href="vendor/sb-admin.css" rel="stylesheet">
 
 </head>
-
+<button id="key" class="key">Hola</button>
 <body style="background-image: url(Recursos/OIP.jpg);">
 
   <div class="container" >

@@ -1,3 +1,8 @@
+<?php 
+
+include 'configuracion.php';
+
+ ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,22 +15,19 @@
   <meta name="author" content="">
 
   <title>Empleado</title>
+  
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <!-- Page level plugin CSS-->
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
-  <!-- Custom styles for this template-->
+  
   <link href="vendor/sb-admin.css" rel="stylesheet">
   <script type="text/javascript" src="vendor/sweetalert2.all.min.js"></script>
 
 
 
   <script type="text/javascript">
-    $(document).ready(function() {
-
-      
-    });
 
 
   </script>
@@ -66,36 +68,26 @@
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="sidebar navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
- 
-      <li class="nav-item">
-        <a class="nav-link" href="controllerCliente.php">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Clientes</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="tables.html">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Tables</span></a>
-      </li>
-    </ul>
+
+<?php 
+  echo "$menu";
+
+
+ ?>
+
+
+
 
     <div id="content-wrapper">
 
       <div class="container-fluid">
-      <button class="btn btn-primary" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Empleado</button>
+      <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Empleado</button>
         <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="breadcrumb"><h3>EMPLEADO</h3></div>
               <div class="container-fluid">
-             <form method="POST" action="#" enctype="multipart/form-data">
+             <form method="POST" id="miForm" action="#" enctype="multipart/form-data">
               <div class="container">
                
                 <div class="row"> 
@@ -153,10 +145,11 @@
               </div>
               <hr>
              <center>
-              <input type="submit" class="btn btn-warning" name="insertar" id="insertar" value="insertar">
-              <input type="submit" class="btn btn-warning" name="modificar" id="modificar" value="Modificar">
-              <input type="submit" class="btn btn-primary" id="eliminar" name="eliminar" value="Eliminar">
-              <button type="reset" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <input type="submit" class="btn btn-warning agregar" name="insertar" id="insertar" value="insertar">
+              <input type="submit" class="btn btn-warning modificar" name="modificar" id="modificar" value="Modificar">
+              <input type="submit" class="btn btn-primary eliminar" id="eliminar " name="eliminar" value="Eliminar">
+              <input type="submit"  class="btn btn-success reset" data-dismiss="modal"  value="Cerrar">
+              
                
                </center>
              </form>
@@ -222,7 +215,7 @@
                   <td>$cargo</td>
                   <td>$user</td>
                   <td>
-                  <button class='btn btn-warning' data-toggle='modal' data-target='.modal' onClick=$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');>ver</button></td>
+                  <button class='btn btn-warning cargar' data-toggle='modal' data-target='.modal' onClick=$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');>ver</button></td>
                   </tr>";
                }
                   
@@ -284,8 +277,10 @@
   <script src="vendor/datatables/jquery.dataTables.js"></script>
   <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
+
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
+  <script type="text/javascript" src="Recursos/validaciones.js"></script>
 
   <!-- Demo scripts for this page-->
   <script src="js/demo/datatables-demo.js"></script>

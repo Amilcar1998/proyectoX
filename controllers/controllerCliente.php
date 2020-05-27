@@ -19,6 +19,12 @@ if(isset($_REQUEST["eliminar"])) {
 
 $user=$cliente->getUser();
 $Rcliente = $cliente->getCliente();
+$session = $cliente->getSessionEmp();
+
+foreach ($session as $key) {
+ $nombre = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+      
+   }
 
 
 include "../views/vistaCliente.php";

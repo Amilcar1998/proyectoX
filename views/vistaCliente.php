@@ -1,3 +1,4 @@
+<?php include 'configuracion.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,65 +24,27 @@
 </head>
 
 <body id="page-top">
-
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-    <a class="navbar-brand mr-1" href="index.html">Concentrados El Gordito</a>
-
-    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-      <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-      <div class="input-group">
-        
-        </div>
-      </div>
-    </form>
-
-    <!-- Navbar -->
-    <ul class="navbar-nav ml-auto ml-md-0">
-      <form>
-      <button id="c" name="c" class="btn btn-warning">Cerrar Session</button>
-    </form>
-    </ul>
-
-  </nav>
+  <?php echo "$nav"; ?>
 
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="sidebar navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
-     
-      <li class="nav-item">
-        <a class="nav-link" href="controllerEmpleado.php">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Empleados</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="tables.html">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Tables</span></a>
-      </li>
-    </ul>
+    <?php 
+    include 'configuracion.php';
+    echo "$menu";
+
+     ?>
 
     <div id="content-wrapper">
 
       <div class="container-fluid">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>
+            <button type="button" class="btn btn-primary Nagregar" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>
             <hr>
 
               <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                   <div class="modal-content">
-                    <form method="POST" action="#">
+                    <form method="POST" id="miForm" action="#">
                     <div class="container">
                       <hr>
                       <h2><center>Clientes</center></h2>
@@ -126,7 +89,7 @@
                         
                         <div class="col-md-4">
                           <label>Usuario</label>
-                          <select name="usuarioC" id="usuarioC" class="form-control">
+                          <select name="usuarioC" id="usuarioC" class="form-control idU">
                               <option>seleccione...</option>
                              <?php 
                              foreach ($user as $us) {
@@ -138,9 +101,10 @@
                         </div>
                       </div>
                       <hr><center>
-                      <button class="btn btn-primary" id="insertar" name="insertar">Agregar</button>
-                      <button class="btn btn-primary" id="modificar" name="modificar">modificar</button>
-                      <button class="btn btn-primary" id="eliminar" name="eliminar">eliminar</button>
+                      <button class="btn btn-primary agregar" id="insertar" name="insertar">Agregar</button>
+                      <button class="btn btn-warning modificar" id="modificar" name="modificar">modificar</button>
+                      <button class="btn btn-danger eliminar" id="eliminar" name="eliminar">eliminar</button>
+                      <input type="submit"  class="btn btn-success reset" data-dismiss="modal"  value="Cerrar">
                     </center>
                       <hr>
                     </div> 
@@ -191,6 +155,7 @@
                 $edad = $e->getEdad();
                 $generoC=str_replace(' ', '&nbsp;', $e->getGenero());
                 $idUsuario = $e->getUsuarioC();
+                var_dump($idUsuario);
 
              
                   echo "<tr>
@@ -202,7 +167,7 @@
                   <td>$generoC</td>
                   <td>$idUsuario</td>
                   <td>
-                  <button class='btn btn-warning' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#idCliente').val('$id');$('#nombreC').val('$nombre');$('#apellidoC').val('$apellidos');$('#telefonoC').val('$telefono');$('#edadC').val('$edad');$('#generoC').val('$generoC');$('#usuarioC').val('$idUsuario'); >ver</button>
+                  <button class='btn btn-warning cargar' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#idCliente').val('$id');$('#nombreC').val('$nombre');$('#apellidoC').val('$apellidos');$('#telefonoC').val('$telefono');$('#edadC').val('$edad');$('#generoC').val('$generoC');$('.idU').val('$idUsuario'); >ver</button>
                   </td>
                   </tr>";
                }
@@ -275,6 +240,7 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
+  <script type="text/javascript" src="Recursos/validaciones.js"></script>
 
   <!-- Demo scripts for this page-->
   <script src="js/demo/datatables-demo.js"></script>

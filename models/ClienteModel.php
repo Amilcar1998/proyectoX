@@ -19,6 +19,15 @@ class ClienteModel extends conexion
         return $r;
     
 	}
+  function getSessionEmp(){
+         $correo=$_SESSION["s1"];
+        $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+      }
 	    function getUser(){
         $res=$this->con->query("select * from usuarios where id_Rol ='2'");
         $r=array();
