@@ -1,6 +1,7 @@
 <?php 
 include "../db/conexion.php";
 include "Cliente.php";
+include 'Usuario.php';
 
 class ClienteModel extends conexion
 {
@@ -9,6 +10,22 @@ class ClienteModel extends conexion
 	{
 		parent::__construct();
 	}
+
+  function getAddUs($u){
+            $para=$this->con->prepare("insert into usuarios(idUsuario,username,pass,id_Rol) values(?,?,?,?)");
+            $para->bind_param('ssss',$a,$b,$c,$d);
+            $a="";
+            $b=$u->getUsername();
+            $c=$u->getPass();
+            $d=$u->getIdRol();
+            $para->execute();    
+
+
+
+  }
+
+
+
 	function getCliente(){
         $res=$this->con->query("select * from cliente");
         $r=array();

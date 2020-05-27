@@ -89,15 +89,7 @@
                         
                         <div class="col-md-4">
                           <label>Usuario</label>
-                          <select name="usuarioC" id="usuarioC" class="form-control idU">
-                              <option>seleccione...</option>
-                             <?php 
-                             foreach ($user as $us) {
-                              echo "<option value=".$us["idUsuario"].">".$us["username"]."</option>";
-                             } 
-                             ?>
-                          </select>
-                          
+                          <input name="usuarioC" id="usuarioC" class="form-control idU">
                         </div>
                       </div>
                       <hr><center>

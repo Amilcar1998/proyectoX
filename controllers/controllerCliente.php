@@ -5,7 +5,16 @@ include "sesiones.php";
 $cliente = new ClienteModel();
 
 if(isset($_REQUEST["insertar"])) {
-	$e = new Cliente($_REQUEST["idCliente"],$_REQUEST["nombreC"],$_REQUEST["apellidoC"],$_REQUEST["telefonoC"],$_REQUEST["edadC"],$_REQUEST["generoC"],$_REQUEST["usuarioC"]);
+	$u = new Usuario("",$_REQUEST["usuarioC"],sha1('123456'),'2');
+	$cliente->getAddUs($u);
+        $user=$_REQUEST["usuarioC"];
+		$usuario=$cliente->getUser($user);
+		 foreach ($usuario as $us)  {
+		  	$id = $us["idUsuario"];
+            }
+    
+
+	$e = new Cliente($_REQUEST["idCliente"],$_REQUEST["nombreC"],$_REQUEST["apellidoC"],$_REQUEST["telefonoC"],$_REQUEST["edadC"],$_REQUEST["generoC"],$id);
 	$cliente->agregarCliente($e);
 }
 if(isset($_REQUEST["modificar"])) {
@@ -22,7 +31,7 @@ $Rcliente = $cliente->getCliente();
 $session = $cliente->getSessionEmp();
 
 foreach ($session as $key) {
- $nombre = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+ $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
       
    }
 

@@ -49,7 +49,7 @@ include 'configuracion.php';
                   <div class="modal-content">
                     <div class="modal-header btn-info">
                       <h5 class="modal-title" id="exampleModalLabel">Panel Usuarios</h5>
-                      
+                       
                     </div>
                     <div class="modal-body">
                     <form method="POST" action="#">

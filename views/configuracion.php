@@ -15,7 +15,7 @@ $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
       <div class='input-group'>
         <div class='input-group-append'>
           <button class='btn btn-success'> 
-          $nombre
+          $nombres
             </button>
             
           </button>
