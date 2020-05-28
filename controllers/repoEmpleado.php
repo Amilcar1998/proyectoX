@@ -1,12 +1,10 @@
 <?php 
-include '../models/ClienteModel.php';
+
 
 require_once __DIR__ . '/vendor/autoload.php';
 // Create an instance of the class:
-$datos = new ClienteModel();
-$data=$datos->getCliente();
-var_dump($data);
-die();
+
+
 
 $mpdf = new \Mpdf\Mpdf();
 
