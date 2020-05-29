@@ -15,7 +15,7 @@ if(isset($_REQUEST["validar"])){
     }elseif ($r==2) {
         session_start();
         $_SESSION["c1"]=$_REQUEST["login"];
-        echo("ERES CLIENTE");
+    echo "<script>alert('eres cliente');</script>";
     }
     elseif($r==0){
     	echo "<script>alert('Usuario o contraseña no validos');</script>";

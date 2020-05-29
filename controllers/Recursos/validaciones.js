@@ -5,7 +5,9 @@ $(document).ready(function() {
 		$('.modificar').hide();
 		$('.eliminar').hide();
 		$('.reset').show();
-		$('.agregar').show()
+		$('.agregar').show();
+    	
+    	document.getElementById('miForm').reset();
 
 		
 	});

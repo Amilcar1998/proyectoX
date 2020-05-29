@@ -48,10 +48,9 @@ include 'configuracion.php';
       <div class="input-group">
         <div class="input-group-append">
           <button class="btn btn-success"> 
-            <?php //foreach ($session as $key) {
-          //$nombre = $key['nombreEmp']."&nbsp;&nbsp;".$key['apellido'];
-          //echo "$nombre";
-      //  } ?></button>
+            <?php  
+          echo "$nombres";
+       ?></button>
             
           </button>
         </div>
@@ -182,22 +181,24 @@ include 'configuracion.php';
                 $nit=$fila["NIT"];
                 $correoP=$fila["correoP"];
                 $telefono=$fila["telefono"];
-                echo "<tr>
-                      <td></td  
-                      </tr>";
+ 
+               echo "
+               <tr>
+                  <td>$idProv</td>
+                  <td>$nombres</td>
+                  <td>$contacto</td>
+                  <td>$nit</td>
+                  <td>$correoP</td>
+                  <td>$telefono</td>
+                  <td>
+                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');>Cargar</button>
+                  </td>
+                  
+                  </tr>
 
+               ";
 
-                /*echo "<tr>
-                      <td>$idProv</td>
-                      <td>$nombre</td>
-                      <td>$contacto</td>
-                      <td>$nit</td>
-                      <td>$correoP</td>
-                      <td>$telefono</td>
-                      <td>
-                      <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');>Cargar</button>
-                      </td>
-                <tr>";*/
+               
               }
                
                   
@@ -263,6 +264,7 @@ include 'configuracion.php';
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
   <script type="text/javascript" src="Recursos/validaciones.js"></script>
+  <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
 
   <!-- Demo scripts for this page-->
   <script src="js/demo/datatables-demo.js"></script>

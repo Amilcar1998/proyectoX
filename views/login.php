@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin - Login</title>
+  <title>Login</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -18,12 +18,11 @@
   <link href="vendor/sb-admin.css" rel="stylesheet">
 
 </head>
-<button id="key" class="key">Hola</button>
 <body style="background-image: url(Recursos/OIP.jpg);">
 
   <div class="container" >
     <div class="card card-login mx-auto mt-5">
-      <div class="card-header">Login</div>
+      <div class="card-header bg-info">Login</div>
       <div class="card-body">
         <form method="POST" action="#">
               <div class="container">

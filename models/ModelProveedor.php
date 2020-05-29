@@ -42,7 +42,10 @@ class ModelProveedor extends Conexion {
     }
 
     public function modificar($p){
-     $res=$this->con->prepare("update proveedor set idProveedor=?,nombreProveedor=?,contacto=?,NIT=?,correoP=?,telefono=? where idProveedor=?");
+        var_dump($p);
+        $prueba = $p->getIdProveedor();
+        var_dump($prueba);
+     $res=$this->con->prepare("update proveedor set nombreProveedor=?,contacto=?,NIT=?,correoP=?,telefono=? where idProveedor=?");
         $res->bind_param('ssssss',$a,$b,$c,$d,$e,$f);
         $a=$p->getNombreProveedor();
         $b=$p->getContacto();

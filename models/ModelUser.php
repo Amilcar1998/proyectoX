@@ -10,7 +10,7 @@ class ModelUser extends conexion
 	parent::__construct();	
 	}
 	function getUsuario(){
-		$res=$this->con->query("select usuarios.idUsuario,nombreEmp,apellido,username,pass,id_Rol from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario");
+		$res=$this->con->query("select usuarios.idUsuario,nombreEmp,apellido,username,pass,id_Rol from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where id_Rol=1");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;
@@ -19,7 +19,7 @@ class ModelUser extends conexion
 
 	}
 	function getUsuarioCli(){
-		$res=$this->con->query("select usuarios.idUsuario,nombreCliente,username,pass,id_Rol from cliente inner join usuarios on cliente.idUsuario=usuarios.idUsuario where id_Rol=1");
+		$res=$this->con->query("select usuarios.idUsuario,nombreCliente,username,pass,id_Rol from cliente inner join usuarios on cliente.idUsuario=usuarios.idUsuario where id_Rol=2");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;

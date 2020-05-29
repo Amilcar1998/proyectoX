@@ -21,7 +21,9 @@ class UsuarioModel extends conexion
                     $a=$login;
                     $b=sha1($pass);
                     $para->execute();
+                    if($para->fetch()){
                         return 2;
+                    }
             }else{
                 return 0;
             }

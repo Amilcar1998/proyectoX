@@ -1,5 +1,6 @@
 <?php
 include '../models/modelProveedor.php';
+include "Sesiones.php";
 $prov =new 	ModelProveedor();
 
 if(isset($_REQUEST["btnGuardar"])){
@@ -17,6 +18,7 @@ if(isset($_REQUEST["btnModificar"])){
 }
 
 $tab = $prov->getTabla();
+$nombres = $prov->getSessionEmp();
 
 
 include "../views/vistaProveedor.php";

@@ -44,11 +44,16 @@
               <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                   <div class="modal-content">
+                    <div class="modal-header bg-info">
+                      <h2><center>Registro de Clientes</center></h2>
+                    </div>
+                    <hr>
+
                     <form method="POST" id="miForm" action="#">
                     <div class="container">
-                      <hr>
-                      <h2><center>Clientes</center></h2>
-                      <hr>
+
+                      
+                                            
                       <div class="row">
                         <div class="col-md-6">
                           <label>id Cliente</label>
@@ -147,7 +152,6 @@
                 $edad = $e->getEdad();
                 $generoC=str_replace(' ', '&nbsp;', $e->getGenero());
                 $idUsuario = $e->getUsuarioC();
-                var_dump($idUsuario);
 
              
                   echo "<tr>
