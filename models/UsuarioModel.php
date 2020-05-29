@@ -14,6 +14,7 @@ class UsuarioModel extends conexion
             $b=sha1($pass);
             $para->execute();
             if($para->fetch()) {
+                
                 return 1;
             }elseif (!$para->fetch()) {
                     $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='2'");

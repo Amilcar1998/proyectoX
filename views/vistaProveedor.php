@@ -81,6 +81,7 @@ include 'configuracion.php';
 
       <div class="container-fluid">
       <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Proveedor</button>
+      &nbsp;&nbsp;<a href="repoProveedor.php"><button class="btn btn-success">Imprimir</button></a>
         <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">

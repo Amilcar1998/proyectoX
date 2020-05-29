@@ -38,7 +38,7 @@
     <div id="content-wrapper">
 
       <div class="container-fluid">
-            <button type="button" class="btn btn-primary Nagregar" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>
+            <button type="button" class="btn btn-primary Nagregar" data-toggle="modal" data-target=".bd-example-modal-lg">Agregar Cliente</button>&nbsp;&nbsp;<a href="repoClientes.php"><button class="btn btn-success">Imprimir</button></a>
             <hr>
 
               <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

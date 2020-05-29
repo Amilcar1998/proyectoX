@@ -15,6 +15,22 @@ class ReportModel extends Conexion
         }
         return $r;
     }
+    function dataClientes(){
+		$res=$this->con->query("select idCliente,NombreCliente,apellidosCliente,telefono,edad,genero,username from cliente inner join usuarios on cliente.idUsuario=usuarios.idUsuario");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+    }
+        function dataProveedor(){
+		$res=$this->con->query("select * from Proveedor");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+    }
 
 
 
