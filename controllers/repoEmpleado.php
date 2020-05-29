@@ -14,10 +14,28 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 $dataEmp= new ReportModel();
 $dataEmpleado = $dataEmp->dataEmpleados();
+$html='<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Reporte Empleados</title>
+    <link rel="stylesheet" href="style.css" media="all" />
+  </head>
+  <body>
+    <header class="clearfix">
+      <div id="logo">
+        <img src="Recursos/logo.jpg" style="width: 200px;">
+      </div>
+      <h1>Concentrados El Gordito</h1>
+      <div id="project">
+        <div><span>Reporte</span>: Empleados</div>
+      </div>
+    </header>
+    <main>';
 
 
-$tabla = "<table class='table table-striped'>"."<thead class='table table-striped table-dark'>";
-        $tabla .="<tr>"
+$html.="<table class='table table-striped'>"."<thead class='table table-striped table-dark'>";
+        $html.="<tr>"
                     ."<th>ID Empleado</th>"
                     ."<th>Nombre</th>"
                     ."<th>Apellidos</th>"
@@ -25,8 +43,8 @@ $tabla = "<table class='table table-striped'>"."<thead class='table table-stripe
                     ."<th>Cargo</th>"
                     ."<th>Usuario</th>"                                        
                ."</tr></thead><tbody>";
-foreach ($dataEmpleado as $fila){
-            $tabla .= "<tr>"
+                foreach ($dataEmpleado as $fila){
+                            $html.= "<tr>"
                         ."<td nowrap='nowrap'>".$fila["idEmpleado"]."</td>"
                         ."<td nowrap='nowrap'>".$fila["nombreEmp"]."</td>"
                         ."<td nowrap='nowrap'>".$fila["apellido"]."</td>"                        
@@ -34,14 +52,21 @@ foreach ($dataEmpleado as $fila){
                         ."<td nowrap='nowrap'>".$fila["nombrePuesto"]."</td>"
                         ."<td nowrap='nowrap'>".$fila["username"]."</td>"
                     ."</tr>";
-        }$tabla .="</tbody></table>";
-        //echo "$tabla";
-        //die();
+        }$html.="</tbody></table>";
+    
+
+$html.='</main>
+    <footer>
+      Aqui pondre la fecha
+    </footer>
+  </body>
+</html>';
+
         
 $mpdf = new \Mpdf\Mpdf();
-
-$mpdf->shrink_tables_to_fit = 1;
-$mpdf->WriteHTML($tabla);
+$css=file_get_contents('css/style.css');
+$mpdf->WriteHTML($css,1);
+$mpdf->WriteHTML($html);
 
 $mpdf->Output();
 
