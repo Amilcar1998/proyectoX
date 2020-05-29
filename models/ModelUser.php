@@ -58,7 +58,7 @@ class ModelUser extends conexion
       $res->bind_param("ssss",$a,$b,$c,$d);
       $a=$u->getUsername();
       $b=$u->getPass();
-      $c=$u->getIdRol();-
+      $c=$u->getIdRol();
       $d=$u->getIdUsuario();
 
       $res->execute();

@@ -12,7 +12,12 @@ if(isset($_REQUEST["validar"])){
         session_start();
         $_SESSION["s1"]=$_REQUEST["login"];
         header("Location:controllerEmpleado.php");
-    }elseif ($r==2) {
+    }elseif($r==2){
+        session_start();
+        $_SESSION["s1"]=$_REQUEST["login"];
+        echo "<script>alert('aqui puede ir un empleado comun');</script>";
+    }
+    elseif ($r==3) {
         session_start();
         $_SESSION["c1"]=$_REQUEST["login"];
     echo "<script>alert('eres cliente');</script>";

@@ -8,22 +8,33 @@ class UsuarioModel extends conexion
         parent::__construct();
     }
     function validarUsuario($login,$pass){
+            $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='3'");
+            $para->bind_param("ss",$a,$b);
+            $a=$login;
+            $b=sha1($pass);
+            $para->execute();
+
+            if($para->fetch()) {
+                return 1;
+            }
+            elseif(!$para->fetch()){
             $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='1'");
             $para->bind_param("ss",$a,$b);
             $a=$login;
             $b=sha1($pass);
             $para->execute();
             if($para->fetch()) {
-                
-                return 1;
-            }elseif (!$para->fetch()) {
+                return 2;
+                }
+
+            }elseif (!$para->fetch()){
                     $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='2'");
                     $para->bind_param("ss",$a,$b);
                     $a=$login;
                     $b=sha1($pass);
                     $para->execute();
                     if($para->fetch()){
-                        return 2;
+                        return 3;
                     }
             }else{
                 return 0;

@@ -4,7 +4,7 @@ include "sesiones.php";
 $obEmp=new EmpleadoModel();
 
 if(isset($_REQUEST["insertar"])){
-	$u = new Usuario("",$_REQUEST["txtUser"],sha1('123456'),'1');
+	$u = new Usuario("",$_REQUEST["txtUser"],sha1('123456'),$_REQUEST['txtCargo']);
 	$obEmp->insertarUsuario($u);
         $user=$_REQUEST["txtUser"];
 		$usuario=$obEmp->getUser($user);
