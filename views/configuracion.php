@@ -49,8 +49,14 @@ $menu="<ul class='sidebar navbar-nav'>
           <i class='fas fa-fw fa-table'></i>
           <span>Usuarios</span></a>
       </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerProveedor.php'>
+          <i class='fas fa-fw fa-table'></i>
+          <span>Proveedores</span></a>
+      </li>
     </ul>
 ";
+
 
 
 

@@ -1,10 +1,13 @@
 $(document).ready(function() {
+	$('.form').hide();
+			
 	$(document).on('click', '.Nagregar', function() {
 		$('.modificar').hide();
 		$('.eliminar').hide();
 		$('.reset').show();
-		$('.agregar').show();
-		document.getElementById("miForm").reset();
+		$('.agregar').show()
+
+		
 	});
 	$(document).on('click', '.cargar', function() {
 		$('.modificar').show();

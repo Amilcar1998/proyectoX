@@ -17,7 +17,7 @@ class empleadoModel extends conexion
             $r[]=$e;
         }
         return $r;
-    }
+    } 
 function getCargo(){
         $res=$this->con->query("select * from puesto");
         $r=array();

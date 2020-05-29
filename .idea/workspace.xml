@@ -2,13 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/controllerUsuario" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/controllerUsuario.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/ModelUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelUser.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Usuario.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/Usuario.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/UsuarioModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/UsuarioModel.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/vistaUsuarios.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaUsuarios.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/Recursos/validaciones.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/Recursos/validaciones.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/repoEmpleado.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/repoEmpleado.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ReportModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ReportModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/empleadoModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/empleadoModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proveedor/DAOProveedor.php" beforeDir="false" afterPath="$PROJECT_DIR$/proveedor/DAOProveedor.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proveedor/vistaProveedor.php" beforeDir="false" afterPath="$PROJECT_DIR$/proveedor/vistaProveedor.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/configuracion.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/configuracion.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -79,6 +79,7 @@
       <workItem from="1590420569806" duration="637000" />
       <workItem from="1590439076146" duration="680000" />
       <workItem from="1590450208349" duration="73000" />
+      <workItem from="1590708121620" duration="107000" />
     </task>
     <task id="LOCAL-00001" summary="hfhfh">
       <created>1589956058198</created>
