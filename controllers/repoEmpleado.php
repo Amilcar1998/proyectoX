@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-	<link rel="stylesheet" href="vendor/sb-admin.min.css">
-</head>
-<body>
-
-
 <?php 
 include '../models/ReportModel.php';
 
