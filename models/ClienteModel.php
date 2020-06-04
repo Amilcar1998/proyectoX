@@ -1,5 +1,6 @@
 <?php 
 include "../db/conexion.php";
+
 include "Cliente.php";
 include 'Usuario.php';
 
@@ -19,10 +20,7 @@ class ClienteModel extends conexion
             $c=$u->getPass();
             $d=$u->getIdRol();
             $para->execute();    
-
-
-
-  }
+      }
 
 
 

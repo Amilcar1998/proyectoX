@@ -14,20 +14,19 @@ class UsuarioModel extends conexion
             $b=sha1($pass);
             $para->execute();
 
-            if($para->fetch()) {
+            while($para->fetch()) {
                 return 1;
             }
-            elseif(!$para->fetch()){
+            if(!$para->fetch()){
             $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='1'");
             $para->bind_param("ss",$a,$b);
             $a=$login;
             $b=sha1($pass);
             $para->execute();
-            if($para->fetch()) {
+            while($para->fetch()) {
                 return 2;
                 }
-
-            }elseif (!$para->fetch()){
+            }if(!$para->fetch()){
                     $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='2'");
                     $para->bind_param("ss",$a,$b);
                     $a=$login;

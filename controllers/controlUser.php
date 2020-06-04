@@ -15,12 +15,12 @@ if(isset($_REQUEST["validar"])){
     }elseif($r==2){
         session_start();
         $_SESSION["s1"]=$_REQUEST["login"];
-        echo "<script>alert('aqui puede ir un empleado comun');</script>";
+       header("Location:controllerIndividualC.php");
     }
     elseif ($r==3) {
         session_start();
         $_SESSION["c1"]=$_REQUEST["login"];
-    echo "<script>alert('eres cliente');</script>";
+        header("Location:controllerIndividualC.php");
     }
     elseif($r==0){
     	echo "<script>alert('Usuario o contraseña no validos');</script>";
