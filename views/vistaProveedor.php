@@ -34,33 +34,11 @@ include 'configuracion.php';
   
 </head>
 <body id="page-top">
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-   <a class="navbar-brand mr-1" href="index.html">Concentrados El gordito</a>
-    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-      <i class="fas fa-bars"></i>
-    </button>
+ <?php 
+      echo "$nav";
 
 
-    <!-- Navbar -->
-    
-      <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-      <div class="input-group">
-        <div class="input-group-append">
-          <button class="btn btn-success"> 
-            <?php  
-          echo "$nombres";
-       ?></button>
-            
-          </button>
-        </div>
-      </div>
-    </form>
-    <ul class="navbar-nav ml-auto ml-md-0">
-      <div>
-      <form><button class='btn btn-warning' id='c' name='c' value='c'>Cerrar session</button></form>
-      </div>
-    </ul>
+     ?>
 
   </nav>
 
@@ -68,11 +46,11 @@ include 'configuracion.php';
 
     <!-- Sidebar -->
 
-<?php 
-  echo "$menu";
+    <?php 
+      echo "$menu";
 
 
- ?>
+     ?>
 
 
 
