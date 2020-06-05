@@ -9,16 +9,16 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin - Tables</title>
+  <title>Produccion</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
   <!-- Page level plugin CSS-->
-  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="../controllers/vendor/sb-admin.min.css" rel="stylesheet">
+  <link href="vendor/sb-admin.min.css" rel="stylesheet">
 
 </head>
 
@@ -26,7 +26,7 @@
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-    <a class="navbar-brand mr-1" href="index.html">Start Bootstrap</a>
+    <a class="navbar-brand mr-1" href="index.html">Concentrados El Gordito</a>
 
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
@@ -126,10 +126,6 @@
     <div id="content-wrapper">
 
       <div class="container-fluid">
-          <h1>Aqui empieza el contenido</h1>
-
-        <!--Este es el body de toda tu pagina-->
-
 
 
 
@@ -257,22 +253,22 @@
   </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-  <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-  <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="vendor/datatables/jquery.dataTables.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="../controllers/js/sb-admin.min.js"></script>
+  <script src="js/sb-admin.min.js"></script>
 
   <!-- Demo scripts for this page-->
-  <script src="../controllers/js/demo/datatables-demo.js"></script>
-  <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+  <script src="js/demo/datatables-demo.js"></script>
+  <script src="vendor/sweetalert2.all.min.js"></script>
 
 </body>
 
