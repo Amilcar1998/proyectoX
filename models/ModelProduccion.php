@@ -11,7 +11,7 @@ class ModelProduccion extends Conexion
 	 parent::__construct();
 	}
   function getProduccion(){
-  	$res=$this->con->query("select idProduccion,fechaP,estadoP,produccion.idPedido,fechaPedido,NombreCliente from produccion inner join pedido on produccion.idPedido=pedido.idPedido inner join cliente on pedido.idCliente=cliente.idCliente");
+  	$res=$this->con->query("select  idProduccion,fechaP,estadoP,produccion.idPedido,fechaPedido,NombreCliente,empleado.nombreEmp from produccion inner join empleado on produccion.idEmpleado=empleado.idEmpleado inner join pedido on produccion.idPedido=pedido.idPedido inner join cliente on pedido.idCliente=cliente.idCliente");
       $r=array();
       while($row=$res->fetch_assoc()) {
             $r[]=$row;
@@ -19,10 +19,37 @@ class ModelProduccion extends Conexion
         return $r;
 
   }
+    function getSessionEmp(){
+        $correo=$_SESSION["s1"];
+        $res=$this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+    }
+    function insertar($p){
+        $para=$this->con->prepare("insert into produccion(idProduccion,fechaP,estadoP,idPedido,idEmpleado) values(?,?,?,?,?)");
+        $para->bind_param('sssss',$a,$b,$c,$d,$e);
+        $a='';
+        $b=$p->getFechaProduccion();
+        $c=$p->getEstadoProduccion();
+        $d=$p->getIdPedido();
+        $e=$p->getIdEmpleado();
+        $para->execute();
+    }
+    public function eliminar($p){
+       $res=$this->con->prepare("DELETE FROM `produccion` WHERE `produccion`.`idProduccion`=?");
+        $res->bind_param('s',$a);
+        $a=$p->getIdProduccion();
+        $res->execute();
+    }
+
+
 }
 
 
-
+?>
 
 
  

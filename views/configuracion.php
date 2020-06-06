@@ -57,13 +57,13 @@ $menu="<ul class='sidebar navbar-nav'>
       <li class='nav-item'>
         <a class='nav-link' href='controllerPedidos.php'>
           <i class='fas fa-fw fa-tachometer-alt'></i>
-          <span>Produccion</span>
+          <span>Pedidos</span>
         </a>
       </li>
       <li class='nav-item'>
         <a class='nav-link' href='controllerProduccionIn.php'>
           <i class='fas fa-fw fa-tachometer-alt'></i>
-          <span>Pedidos</span>
+          <span>Produccion</span>
         </a>
       </li>
     </ul>

@@ -43,17 +43,18 @@ include 'configuracion.php';
 
      ?>
     <div id="content-wrapper">
+    
 
       <div class="container-fluid">
         <!-- DataTables Example -->
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            Data Table Example</div>
+            Produccion</div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead class="bg-info">
+                <thead>
                   <tr>
                     <th>ID Produccion</th>
                     <th>Fecha Produccion</th>
@@ -61,10 +62,11 @@ include 'configuracion.php';
                     <th>Id Pedido</th>
                     <th>FechaPedido</th>
                     <th>Nombre Cliente</th>
+                    <th>Empleado</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
-                <tfoot class="bg-info">
+                <tfoot>
                   <tr>
                     <th>ID Produccion</th>
                     <th>Fecha Produccion</th>
@@ -72,11 +74,13 @@ include 'configuracion.php';
                     <th>Id Pedido</th>
                     <th>FechaPedido</th>
                     <th>Nombre Cliente</th>
+                    <th>Empleado</th>
                     <th>Acciones</th>
                   </tr>
                 </tfoot>
                 <tbody>
                   <?php
+
                    foreach ($data as $key) {
                     $idProduccion =$key['idProduccion'];
                     $fechaProduccion=$key['fechaP'];
@@ -84,7 +88,7 @@ include 'configuracion.php';
                     $idPedido=$key['idPedido'];
                     $fechaPedido=$key['fechaPedido'];
                     $nombreCliente=$key['NombreCliente'];
-
+                    $emp=$key['nombreEmp'];
                     echo "<tr>
                             <td>$idProduccion</td>
                             <td>$fechaProduccion</td>
@@ -92,13 +96,13 @@ include 'configuracion.php';
                             <td>$idPedido</td>
                             <td>$fechaPedido</td>
                             <td>$nombreCliente</td>
-                            <td><button class='btn btn-info'>Cargar</button></td>
+                            <td>$emp</td>
+                            <td><form method='POST'><input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'><button class='btn btn-info' id='eliminar' name='eliminar'>Cargar</button></form></td>
                         </tr>";
                    }
 
 
-                   $datas=getdate();
-                   var_dump($datas);
+
 
                   ?>
                 </tbody>

@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/models/ModelPedido.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Pedidos.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controllerPedidos.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerPedidos.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/controllerProduccionIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerProduccionIn.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ModelPedido.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelPedido.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ModelProduccion.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelProduccion.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/configuracion.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/configuracion.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/invento.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/vistaPedidos.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaPedidos.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/vistaProduccion.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaProduccion.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/vistaProveedor.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaProveedor.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,6 +46,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Examen" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="copyright" />
   </component>
   <component name="RunDashboard">
@@ -81,7 +82,8 @@
       <workItem from="1590439076146" duration="680000" />
       <workItem from="1590450208349" duration="73000" />
       <workItem from="1590708121620" duration="107000" />
-      <workItem from="1591378203012" duration="6517000" />
+      <workItem from="1591378203012" duration="16865000" />
+      <workItem from="1591422202257" duration="5505000" />
     </task>
     <task id="LOCAL-00001" summary="hfhfh">
       <created>1589956058198</created>

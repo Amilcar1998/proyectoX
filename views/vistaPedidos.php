@@ -12,7 +12,7 @@ include 'configuracion.php';
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin - Tables</title>
+    <title>Pedidos</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -48,82 +48,125 @@ include 'configuracion.php';
 
         <div class="container-fluid">
 
-            <!-- Breadcrumbs-->
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="#">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item active">Tables</li>
-            </ol>
+         <hr>
+            
+                            <?php
+                            if (isset($id)) {
+                                echo "<div class='row'>
+                                        <div class='col-md-3'>
+                                        <form action='controllerProduccionIn.php' method='POST'>
+                                        <input type='hidden' name='id' id='id' value=$id>
+                                        <button class='btn btn-info' name='agregar' id='agregar'>agregar a Produccion</button></form></div>
+                                        <div class='col-md-3'><a href='controllerPedidos.php' <button class='btn btn-primary' >Regresar</button></a></div>
+                        
+                                    </div>";
+                                echo "<hr>";
 
-            <!-- DataTables Example -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="fas fa-table"></i>
-                    Data Table Example</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Age</th>
-                                <th>Start date</th>
-                                <th>Salary</th>
-                            </tr>
-                            </thead>
-                            <tfoot>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Age</th>
-                                <th>Start date</th>
-                                <th>Salary</th>
-                            </tr>
-                            </tfoot>
-                            <tbody>
-                            <tr>
-                                <td>Tiger Nixon</td>
-                                <td>System Architect</td>
-                                <td>Edinburgh</td>
-                                <td>61</td>
-                                <td>2011/04/25</td>
-                                <td>$320,800</td>
-                            </tr>
-                            <tr>
-                                <td>Garrett Winters</td>
-                                <td>Accountant</td>
-                                <td>Tokyo</td>
-                                <td>63</td>
-                                <td>2011/07/25</td>
-                                <td>$170,750</td>
-                            </tr>
+                                echo "<table class='table table-striped' id='dataTable' width='100%' cellspacing='0'>
+                                        <tr>'
+                                        <th>ID Detalle</th>
+                                        <th>Unidades</th>
+                                        <th>Nombre Producto</th>
+                                        </tr>";
+                                foreach ($detalle as $key) {
+                                    $ped=$key['idDetallePedido'];
+                                    $cantidad=$key['cantidad'];
+                                    $nRes=$key['nombreReceta'];
+
+                                    echo "<tr>
+                                          <td>$ped</td>
+                                          <td>$cantidad</td>
+                                          <td>$nRes</td>      
+                                          </tr>";
+                                }
+                                echo "</table>";
+                                echo "<hr>";
+                                echo "<hr>";
+                                echo "<table class='table table-striped' id='dataTable' width='100%' cellspacing='0'>
+                                        <tr>
+                                        <th>ID Receta</th>
+                                        <th>Materia Prima</th>
+                                        <th>cantidad</th>
+                                        <th>Fecha</th>
+                                        <th>Producto</th>
+                                        </tr>
+                                        ";
+                                        
+                                foreach ($receta as $res) {
+                                    $idR=$res['idDetalleReceta'];
+                                    $Mp=$res['NombreMP'];
+                                    $cantida=$res['cantidaSa'];
+                                    $fecha=$res['fechaSa'];
+                                    $producto=$res['nombreReceta'];
+                                    $id=$res['idPedido'];
+                                    echo "<tr>
+                                          <td>$idR</td>  
+                                          <td>$Mp</td>
+                                          <td>$cantida</td>
+                                          <td>$fecha</td>
+                                          <td>$producto</td>
+                                          </tr>";
+                                }echo "</table>";
+                            
+                        }else{
+                        $tabla="<div class='card mb-3'>
+                                    <div class='card-header'>
+                                        <i class='fas fa-table'></i>
+                                       Pedidos</div>
+                                    <div class='card-body'>
+                                        <div class='table-responsive'>
+                                            <table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>
+                                                <thead>
+                                                <tr>
+                                                    <th>id Pedido</th>
+                                                    <th>fecha Pedido</th>
+                                                    <th>Cliente</th>
+                                                    <th>Apellidos</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                                </thead>
+                                                <tfoot>
+                                                <tr>
+                                                    <th>id Pedido</th>
+                                                    <th>fecha Pedido</th>
+                                                    <th>Cliente</th>
+                                                    <th>Apellidos</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                                </tfoot>
+                                                <tbody>";
+                                                echo $tabla;
+                            foreach ($datos as $key){
+                                $id=$key['idPedido'];
+                                $fecha=$key['fechaPedido'];
+                                $nombre=$key['NombreCliente'];
+                                $apellidos=$key['ApellidosCliente'];
+                                $estado=$key['nombreEstado'];
+                                echo "<tr>
+                                      <td>$id</td>
+                                      <td>$fecha</td>
+                                      <td>$nombre</td>
+                                      <td>$apellidos</td>
+                                      <td>$estado</td>
+                                      <td><form method='POST'><input type='hidden' id='id' name='id' value='$id'><button class='btn btn-primary' name='detalle'id='detalle'>Detalle Pedido</button></form></td>
+                                      </tr>";
+                                      
+                            }
+                        }
+                            ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
             </div>
 
-            <p class="small text-center text-muted my-5">
-                <em>More table examples coming soon...</em>
-            </p>
-
+         
         </div>
         <!-- /.container-fluid -->
 
-        <!-- Sticky Footer -->
-        <footer class="sticky-footer">
-            <div class="container my-auto">
-                <div class="copyright text-center my-auto">
-                    <span>Copyright © Your Website 2019</span>
-                </div>
-            </div>
-        </footer>
-
+       
     </div>
     <!-- /.content-wrapper -->
 
@@ -135,26 +178,6 @@ include 'configuracion.php';
     <i class="fas fa-angle-up"></i>
 </a>
 
-<!-- Logout Modal-->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Bootstrap core JavaScript-->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
