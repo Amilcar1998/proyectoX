@@ -5,6 +5,7 @@ $obEmp=new EmpleadoModel();
 $correo=$_SESSION["s1"];
 
 
+
 if(isset($_REQUEST["insertar"])){
 	$u = new Usuario("",$_REQUEST["txtUser"],sha1('123456'),$_REQUEST['txtCargo']);
 	$obEmp->insertarUsuario($u);

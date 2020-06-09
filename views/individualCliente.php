@@ -1,27 +1,134 @@
 <?php 
 include 'configuracion/configuracionCliente.php';
 ?>
+<div class="modal fade" id="exampleModals" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header btn-info">
+                      <h5 class="modal-title" id="exampleModalLabel">Detalle Pedido</h5>
+                       
+                    </div>
+                    <div class="modal-body">
+                    <form method="GET" action="#">
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <label>Id </label>
+                            <input type="text" class="form-control" name="txtUsuario" id="txtUsuario" readonly>
+                          </div>
+                          <div class="col-md-6">
+                            <label>Cantidad Unidades</label>
+                            <input type="text" class="form-control" name="txtUser" id="txtUser">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Rol</label>
+                            <select class="form-control" name="producto" id="producto" >
+                              <?php foreach ($receta as $res) {
+                               echo "<option value='".$res['idReceta']."'>".$res['nombreReceta']."</option>";
+                              } ?>
+                                                            
 
 
+                            </select>
+                            
+                          </div>
+                        </div>
+                      </div>
+                      <hr>
+                      <center>
+                      <button class="btn btn-success" id="agregarP" name="agregarP">Agregar</button>
+                      <button type="button" class="btn btn-info reset" data-dismiss="modal">Close</button>
+                    </center>
+                    </form>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+
+              <!--Modal Receta-->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header btn-info">
+                      <h5 class="modal-title" id="exampleModalLabel">Detalle Pedido</h5>
+                       
+                    </div>
+                    <div class="modal-body">
+                    <form method="GET" action="#">
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <label>Id </label>
+                            <input type="text" class="form-control" name="txtUsuario" id="txtUsuario" readonly>
+                          </div>
+                          <div class="col-md-6">
+                            <label>Cantidad Unidades</label>
+                            <input type="text" class="form-control" name="txtUser" id="txtUser">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Rol</label>
+                            <select class="form-control" name="producto" id="producto" >
+                              <?php foreach ($receta as $res) {
+                               echo "<option value='".$res['idReceta']."'>".$res['nombreReceta']."</option>";
+                              } ?>
+                                                            
+
+
+                            </select>
+                            
+                          </div>
+                        </div>
+                      </div>
+                      <hr>
+                      <center>
+                      <button class="btn btn-success" id="agregarP" name="agregarP">Agregar</button>
+                      <button type="button" class="btn btn-info reset" data-dismiss="modal">Close</button>
+                    </center>
+                    </form>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
 
 <?php
 echo $cli;
-
-
         if(isset($pedido)){
-          echo "<button class='btn btn-success'>Agregar producto</button>
-                <button class='btn btn-secondary'>Agregar Receta</button>
-                <hr>
+          echo "
+              <a href='controllerIndividualC.php'><button class='btn btn-success'>Regresar</button></a><br><br>
                 <div class='row'>
-                  <div class='col-md-6'>
-                  <h4>Productos</h4>
+                  <div class='col-md-6 card'><hr>
+                <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal'>Agregar producto</button><br>";
+                if(isset($detalleRes)){
+                      echo "<table class='table table-hover table-bordered'>
+                            <tr><th>Id Detalle</th><th>Unidades</th><th>Nombre Producto</th></tr>";
+                      foreach ($detalleRes as $Res) {
+                        $idDetalle=$Res['idDetallePedido'];
+                        $cantidad=$Res['cantidad'];
+                        $idRes=$Res['idReceta'];
+                        $NReceta=$Res['nombreReceta'];
+                        echo "<tr><td>$idDetalle</td><td>$cantidad</td><td>$NReceta</td></tr>"; 
 
-                  </div>
-                  <div class='col-md-6'>
-                  <h4>Ingredientes</h4>
-                  </div>
-                </div>
-                ";
+                      }
+                      echo "</table>";
+
+                    }else{echo "<h1>No hay Productos</h1> ";}
+                
+
+                      
+            echo "</div>
+                    <div class='col-md-6 card'><hr>
+                    <button class='btn btn-secondary' data-toggle='modal' data-target='#exampleModals'>Agregar Receta</button>";
+
+                    echo "</div>
+                  </div>";
+                         
 
           
 
@@ -91,16 +198,16 @@ echo $cli;
                         <td><form method='post'><button class='btn btn-info' name='detalle'>Detalle Pedido</button></form></td>
                          </tr>";
                   }
+                  echo '</tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>';
                 }
 
                    ?>
                   
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-        </div>
+                
       </div>
       <!-- /.container-fluid -->
 

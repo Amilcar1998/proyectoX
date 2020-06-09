@@ -14,23 +14,23 @@ $fechaActual = date('d/m/Y');
 
 if (isset($_REQUEST['pedidos'])) {
 	$pedido=$cli->getIdProd($idCliente);
-	foreach($pedido as $key){
-		$idPedid=$key['idPedido'];
-	}
-	$detalleRes=$cli->getResProducto($idPedid);
-	var_dump($detalleRes);
-	
 
+	
 }
 if (isset($_REQUEST["agregarP"])) {
 	$p=new Pedidos('',$fechaActual,$idCliente,'1');
+	$pedido=$cli->getIdProd($idCliente);
 	$cli->insertarPedido($p);
-
+foreach($pedido as $key){
+		$idPedid=$key['idPedido'];
+	}
+	$detalleRes=$cli->getResProducto();
+	var_dump($idPedid);
 
 }
 
 
-
+$receta=$cli->getReceta();
 $dataPedido=$cli->getAll($idCliente);
 //$receta=$cli->getReceta();
 $nombres=$nombre." ".$apellido;

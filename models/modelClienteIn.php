@@ -36,15 +36,16 @@ class ModelClienteIn extends Conexion
     $para->execute();  
       }
      function getReceta(){
-    $res=$this->con->query("select  idDetalleReceta,NombreMP,cantidaSa,fechaSa,receta.nombreReceta,detallePedido.idPedido from detalleReceta inner join materiaPrima on detalleReceta.idMateriaPrima=materiaPrima.idMateriaPrima inner join receta on detalleReceta.idReceta =receta.idReceta inner join detallePedido on detallePedido.idReceta=receta.idReceta where detallePedido.idPedido=1 order by receta.idReceta asc;");
+    $res=$this->con->query("select * from Receta;");
     $r=array();
     while($row=$res->fetch_assoc()) {
         $r[]=$row;
     }
     return $r;
 }
-function getResProducto($idPedid){
-    $res=$this->con->query("select idDetallePedido,cantidad,receta.idReceta,nombreReceta from detallePedido inner join receta on detallePedido.idReceta = receta.idReceta where idPedido='$idPedid' ");
+function getResProducto(){
+	
+    $res=$this->con->query("select idDetallePedido,cantidad,receta.idReceta,nombreReceta from detallePedido inner join receta on detallePedido.idReceta = receta.idReceta where idPedido='4' ");
     $r=array();
     while($row=$res->fetch_assoc()) {
         $r[]=$row;

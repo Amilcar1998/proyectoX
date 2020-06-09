@@ -5,8 +5,7 @@ if(isset($_REQUEST["c"])) {
 	header("Location:controlUser.php");
 }
 elseif(isset($_SESSION["s1"])){
-	$correo=$_SESSION["s1"];
-
+	
 
 
 }elseif(isset($_SESSION["s2"])){
