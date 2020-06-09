@@ -1,6 +1,8 @@
 <?php 
 include '../db/conexion.php';
 include 'Pedidos.php';
+include 'DetallePedido.php';
+include 'DetalleProducto.php';
 include 'Cliente.php';
 
 class ModelClienteIn extends Conexion
@@ -44,7 +46,6 @@ class ModelClienteIn extends Conexion
     return $r;
 }
 function getResProducto(){
-	
     $res=$this->con->query("select idDetallePedido,cantidad,receta.idReceta,nombreReceta from detallePedido inner join receta on detallePedido.idReceta = receta.idReceta where idPedido='4' ");
     $r=array();
     while($row=$res->fetch_assoc()) {
@@ -60,7 +61,27 @@ function getIdProd($idCliente){
     }
     return $r;
 }
-  
+    function insertarDetalle($Detalle){
+        $para=$this->con->prepare("insert into detalleReceta(idDetalleReceta,idMateriaPrima,cantidadSa,fechaSa,idInventario,idReceta) values(?,?,?,?,?,?)");
+        $para->bind_param('ssssss',$a,$b,$c,$d,$e,$f);
+        $a='';
+        $b=$Detalle->getIdMateriaPrima();
+        $c=$Detalle->getCantidadSa();
+        $d=$Detalle->getFechaSa();
+        $e=$Detalle->getInventario();
+        $f=$Detalle->getIdReceta();
+        $para->execute();
+    }
+    function AddDetalle($pedid){
+        $para=$this->con->prepare("insert into detallePedido(idDetallePedido,cantidad,idReceta,idPedido) values(?,?,?,?)");
+        $para->bind_param('ssss',$a,$b,$c,$d);
+        $a='';
+        $b=$pedid->getCantidad();
+        $c=$pedid->getIdReceta();
+        $d=$pedid->getIdPedido();
+        $para->execute();
+    }
+
 
 
 

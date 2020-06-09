@@ -18,7 +18,7 @@ include 'configuracion/configuracionCliente.php';
                           </div>
                           <div class="col-md-6">
                             <label>Cantidad Unidades</label>
-                            <input type="text" class="form-control" name="txtUser" id="txtUser">
+                            <input type="text" class="form-control" name="txtcantidad" id="txtcantidad">
                           </div>
                         </div>
                         <div class="row">
@@ -67,7 +67,7 @@ include 'configuracion/configuracionCliente.php';
                           </div>
                           <div class="col-md-6">
                             <label>Cantidad Unidades</label>
-                            <input type="text" class="form-control" name="txtUser" id="txtUser">
+                            <input type="text" class="form-control" name="txtcantidad" id="txtcantidad">
                           </div>
                         </div>
                         <div class="row">
@@ -107,7 +107,7 @@ echo $cli;
                 <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal'>Agregar producto</button><br>";
                 if(isset($detalleRes)){
                       echo "<table class='table table-hover table-bordered'>
-                            <tr><th>Id Detalle</th><th>Unidades</th><th>Nombre Producto</th></tr>";
+                            <tr style='background-color:#1e7e34'><th>Id Detalle</th><th>Unidades</th><th>Nombre Producto</th></tr>";
                       foreach ($detalleRes as $Res) {
                         $idDetalle=$Res['idDetallePedido'];
                         $cantidad=$Res['cantidad'];
