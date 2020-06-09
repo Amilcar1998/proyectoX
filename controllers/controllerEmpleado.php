@@ -2,6 +2,8 @@
 include "../models/empleadoModel.php";
 include "sesiones.php";
 $obEmp=new EmpleadoModel();
+$correo=$_SESSION["s1"];
+
 
 if(isset($_REQUEST["insertar"])){
 	$u = new Usuario("",$_REQUEST["txtUser"],sha1('123456'),$_REQUEST['txtCargo']);
@@ -36,7 +38,7 @@ if(isset($_REQUEST["eliminar"])){
 		}
  }
 
-  $session = $obEmp->getSessionEmp();
+  $session = $obEmp->getSessionEmp($correo);
   $datos=$obEmp->getEmpleado();
   $puesto=$obEmp->getCargo();
   foreach ($session as $key) {

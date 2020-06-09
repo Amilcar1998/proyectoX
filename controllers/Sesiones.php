@@ -9,11 +9,14 @@ elseif(isset($_SESSION["s1"])){
 
 
 
+}elseif(isset($_SESSION["s2"])){
+   $cliente = $_SESSION["s2"];
+   
+
 }elseif(isset($_SESSION["c1"])){
    $cliente = $_SESSION["c1"];
-   header("Location:controllerIndividualC.php");
-
 }
+
 else{
 	header("Location:controlUser.php");
 }

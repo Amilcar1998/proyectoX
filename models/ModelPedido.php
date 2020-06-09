@@ -15,8 +15,7 @@ function getPedido(){
     }
     return $r;
 }
-    function getSessionEmp(){
-        $correo=$_SESSION["s1"];
+    function getSessionEmp($correo){
         $res=$this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
         $r=array();
         while($row=$res->fetch_assoc()) {
@@ -33,13 +32,13 @@ function getPedido(){
     return $r;
 }
 function getReceta($id){
-    $res=$this->con->query("select  idDetalleReceta,NombreMP,cantidaSa,fechaSa,receta.nombreReceta,detallePedido.idPedido from detalleReceta inner join materiaPrima on detalleReceta.idMateriaPrima=materiaPrima.idMateriaPrima inner join receta on detalleReceta.idReceta =receta.idReceta inner join detallePedido on detallePedido.idReceta=receta.idReceta where detallePedido.idPedido=1 order by receta.idReceta asc;");
+    $res=$this->con->query("select  idDetalleReceta,NombreMP,cantidaSa,fechaSa,receta.nombreReceta,detallePedido.idPedido from detalleReceta inner join materiaPrima on detalleReceta.idMateriaPrima=materiaPrima.idMateriaPrima inner join receta on detalleReceta.idReceta =receta.idReceta inner join detallePedido on detallePedido.idReceta=receta.idReceta where detallePedido.idPedido=$id order by receta.idReceta asc;");
     $r=array();
     while($row=$res->fetch_assoc()) {
         $r[]=$row;
     }
     return $r;
 }
-
+  
 
 }

@@ -14,8 +14,9 @@ if(isset($_REQUEST["validar"])){
         header("Location:controllerEmpleado.php");
     }elseif($r==2){
         session_start();
-        $_SESSION["s1"]=$_REQUEST["login"];
-       header("Location:controllerIndividualC.php");
+        $_SESSION["s2"]=$_REQUEST["login"];
+       header("Location:controllerPedidosIn.php");
+       
     }
     elseif ($r==3) {
         session_start();

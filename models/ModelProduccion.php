@@ -19,8 +19,7 @@ class ModelProduccion extends Conexion
         return $r;
 
   }
-    function getSessionEmp(){
-        $correo=$_SESSION["s1"];
+    function getSessionEmp($correo){
         $res=$this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
         $r=array();
         while($row=$res->fetch_assoc()) {

@@ -3,7 +3,7 @@ include '../models/ModelProduccion.php';
 include 'Sesiones.php';
 $prod=new ModelProduccion();
 $data=$prod->getProduccion();
-$correo=$_SESSION['s2'];
+$correo=$_SESSION['s1'];
 $session = $prod->getSessionEmp($correo);
 foreach ($session as $key) {
  $idEmp=$key['idEmpleado'];
@@ -29,6 +29,6 @@ if(isset($_REQUEST['eliminar'])){
 
 
 
-include '../views/vistaProduccionIn.php';
+include '../views/vistaProduccion.php';
  ?>
  

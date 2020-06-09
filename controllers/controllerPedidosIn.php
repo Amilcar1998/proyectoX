@@ -3,8 +3,7 @@ include '../models/ModelPedido.php';
 include 'Sesiones.php';
 $pedido = new ModelPedido();
 $datos = $pedido->getPedido();
-$correo=$_SESSION['s1'];
-
+$correo=$_SESSION['s2'];
 $session = $pedido->getSessionEmp($correo);
 if (isset($_REQUEST['detalle'])) {
 	$id=$_REQUEST['id'];
@@ -13,10 +12,12 @@ if (isset($_REQUEST['detalle'])) {
 
 	
 }
+$fechaActual = date('d/m/Y');
+
 
 foreach ($session as $key) {
     $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 
 }
 
-include '../views/vistaPedidos.php';
+include '../views/vistaPedidosI.php';
