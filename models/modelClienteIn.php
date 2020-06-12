@@ -61,6 +61,7 @@ function getIdProd($idCliente){
     }
     return $r;
 }
+
     function insertarDetalle($Detalle){
         $para=$this->con->prepare("insert into detalleReceta(idDetalleReceta,idMateriaPrima,cantidadSa,fechaSa,idInventario,idReceta) values(?,?,?,?,?,?)");
         $para->bind_param('ssssss',$a,$b,$c,$d,$e,$f);
@@ -82,6 +83,13 @@ function getIdProd($idCliente){
         $para->execute();
     }
 
+
+   function alterPedido(){
+     $para=$this->con->prepare("UPDATE `pedido` SET `idEstadoPedido` = '2' WHERE `pedido`.`idPedido` = 1");
+     $para->execute();
+
+        
+   }
 
 
 

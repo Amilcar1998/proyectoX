@@ -20,3 +20,6 @@ foreach ($session as $key) {
 }
 
 include '../views/vistaPedidos.php';
+
+
+

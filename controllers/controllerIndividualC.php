@@ -23,17 +23,16 @@ if (isset($_REQUEST["agregarP"])) {
     foreach($pedido as $key){
         $idPedid=$key['idPedido'];
     }
-    //optenemos el id del pedido
-    //luego insertamos el detallePedido
+    
     $detalleRes=$cli->getResProducto();
     $pedid= new DetallePedido('',$_REQUEST['txtcantidad'],$_REQUEST['producto'],$idPedid);
      $cli->AddDetalle($pedid);
-
+     $msj="producto agregado Correctamente";
+     $icon='success';
+     $cli->alterPedido();
 }
 
-
 $receta=$cli->getReceta();
-
 $dataPedido=$cli->getAll($idCliente);
 //$receta=$cli->getReceta();
 $nombres=$nombre." ".$apellido;

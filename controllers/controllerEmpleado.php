@@ -1,6 +1,6 @@
 <?php
 include "../models/empleadoModel.php";
-include "sesiones.php";
+include "Sesiones.php";
 $obEmp=new EmpleadoModel();
 $correo=$_SESSION["s1"];
 
@@ -16,11 +16,15 @@ if(isset($_REQUEST["insertar"])){
             }
  $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$id);
  $obEmp->insertarEmpleado($e);
+ $msj="se ha Agregado el registro exitosamente";
+ $icon="success";
 
 }
 if(isset($_REQUEST["modificar"])){
 $e= new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
       $obEmp->modificarEmpleado($e);
+      $msj="se ha Modificado el registro exitosamente";
+      $icon="success";
 }
 if(isset($_REQUEST["eliminar"])){
  $e=new Empleado($_REQUEST['txtIdEmpleado'],$_REQUEST['txtNombres'],$_REQUEST['txtApellidos'],$_REQUEST['txtGenero'],$_REQUEST['txtCargo'],$_REQUEST["txtUser"]);
@@ -37,6 +41,8 @@ if(isset($_REQUEST["eliminar"])){
 	  $obEmp->eliminarUsuario($usuario);
 
 		}
+    $msj="se ha Eliminado el registro exitosamente";
+    $icon="success";
  }
 
   $session = $obEmp->getSessionEmp($correo);

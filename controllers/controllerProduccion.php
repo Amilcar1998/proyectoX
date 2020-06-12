@@ -15,6 +15,8 @@ foreach ($session as $key) {
 if(isset($_REQUEST['agregar'])){
 $p=new Produccion('',$fechaActual,'activo',$_REQUEST['id'],$idEmp);
  $prod->insertar($p);
+ $msj="se ha Agregado el registro exitosamente";
+ $icon="success";
 }
 if(isset($_REQUEST['eliminar'])){
  $p=new Produccion($_REQUEST['produccionID'],'','activo',"",$idEmp);

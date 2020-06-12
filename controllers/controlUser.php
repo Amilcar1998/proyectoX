@@ -7,7 +7,6 @@ if(isset($_REQUEST["validar"])){
 	$login = $_REQUEST["login"];
 	$pass=$_REQUEST["pass"];
     $r=$obUser->validarUsuario($login,$pass);
-    
     if($r==1){
         session_start();
         $_SESSION["s1"]=$_REQUEST["login"];

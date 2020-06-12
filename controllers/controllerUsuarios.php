@@ -1,6 +1,6 @@
 <?php 
 include "../models/ModelUser.php";
-include "sesiones.php";
+include "Sesiones.php";
 $objU= new ModelUser();
 
 if (isset($_REQUEST["empleado"])) {
@@ -23,7 +23,8 @@ if (isset($userEmp) !=true && isset($userCli)!=true) {
 if(isset($_REQUEST["modificar"])){
 	$u=new Usuario($_REQUEST["txtUsuario"],$_REQUEST["txtUser"],sha1($_REQUEST["txtPass"]),$_REQUEST["txtRol"],);
 	$objU->modificarUsuario($u);
-
+	 $msj="se ha Modificado el registro exitosamente";
+	 $icon="success";
 
 
 	

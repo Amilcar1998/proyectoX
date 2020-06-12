@@ -251,3 +251,9 @@ include 'configuracion.php';
 </body>
 
 </html>
+<?php 
+if(isset($msj,$icon)){
+  echo "<script>Swal.fire('$msj','','$icon');</script>";
+}
+
+ ?>

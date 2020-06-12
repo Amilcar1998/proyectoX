@@ -17,4 +17,5 @@ $(document).ready(function() {
 		$('.reset').show();
 		$('.agregar').hide();
 	});
+	
 });

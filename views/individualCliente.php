@@ -1,6 +1,55 @@
 <?php 
 include 'configuracion/configuracionCliente.php';
 ?>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header btn-info">
+                      <h5 class="modal-title" id="exampleModalLabel">Detalle Pedido</h5>
+                       
+                    </div>
+                    <div class="modal-body">
+                    <form method="GET" action="#">
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <label>Id </label>
+                            <input type="text" class="form-control" name="txtUsuario" id="txtUsuario" readonly>
+                          </div>
+                          <div class="col-md-6">
+                            <label>Cantidad Unidades</label>
+                            <input type="text" class="form-control" name="txtcantidad" id="txtcantidad">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Rol</label>
+                            <select class="form-control" name="producto" id="producto" >
+                              <?php foreach ($receta as $res) {
+                               echo "<option value='".$res['idReceta']."'>".$res['nombreReceta']."</option>";
+                              } ?>
+                                                            
+
+
+                            </select>
+                            
+                          </div>
+                        </div>
+                      </div>
+                      <hr>
+                      <center>
+                      <button class="btn btn-success agregarP" id="agregarP" name="agregarP">Agregar</button>
+                      <button type="button" class="btn btn-info reset" data-dismiss="modal">Close</button>
+                    </center>
+                    </form>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+
+<button class="btn btn-warning prueba" >nombre</button>
 <div class="modal fade" id="exampleModals" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
@@ -50,53 +99,6 @@ include 'configuracion/configuracionCliente.php';
 
               <!--Modal Receta-->
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header btn-info">
-                      <h5 class="modal-title" id="exampleModalLabel">Detalle Pedido</h5>
-                       
-                    </div>
-                    <div class="modal-body">
-                    <form method="GET" action="#">
-                      <div class="container">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <label>Id </label>
-                            <input type="text" class="form-control" name="txtUsuario" id="txtUsuario" readonly>
-                          </div>
-                          <div class="col-md-6">
-                            <label>Cantidad Unidades</label>
-                            <input type="text" class="form-control" name="txtcantidad" id="txtcantidad">
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-12">
-                            <label>Rol</label>
-                            <select class="form-control" name="producto" id="producto" >
-                              <?php foreach ($receta as $res) {
-                               echo "<option value='".$res['idReceta']."'>".$res['nombreReceta']."</option>";
-                              } ?>
-                                                            
-
-
-                            </select>
-                            
-                          </div>
-                        </div>
-                      </div>
-                      <hr>
-                      <center>
-                      <button class="btn btn-success" id="agregarP" name="agregarP">Agregar</button>
-                      <button type="button" class="btn btn-info reset" data-dismiss="modal">Close</button>
-                    </center>
-                    </form>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-
 <?php
 echo $cli;
         if(isset($pedido)){
@@ -125,10 +127,15 @@ echo $cli;
             echo "</div>
                     <div class='col-md-6 card'><hr>
                     <button class='btn btn-secondary' data-toggle='modal' data-target='#exampleModals'>Agregar Receta</button>";
+                      if(isset($d)) {
+                        
+                      }else{echo "<h1>No hay datos</h1>";}
 
-                    echo "</div>
-                  </div>";
+                      echo "</div>
+                          </div>";
                          
+
+                   
 
           
 
@@ -138,12 +145,12 @@ echo $cli;
 
             <div class="col-md-2">
             <form metod="post">
-                <button class="btn btn-secondary" name="pedidos" id="pedidos">Agregar Pedido</button>
-            </form>
+               <button class="btn btn-secondary" name="pedidos" id="pedidos">Agregar Pedido</button></form>
             </div>
             <div class="col-md-2">
-                <form method="post">
-                    <button class="btn btn-danger">Pedido Terminado</button> </form>
+                <form method="post">;
+                    <button class="btn btn-danger">Pedido Terminado</button> 
+                    </form>
             </div>
             <div class="col-md-3">
                 <button class="btn btn-primary">Imprimir</button>
@@ -242,7 +249,14 @@ echo $cli;
   <!-- Demo scripts for this page-->
   <script src="../controllers/js/demo/datatables-demo.js"></script>
   <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+  <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
 
 </body>
 
 </html>
+<?php 
+if(isset($msj,$icon)){
+  echo "<script>Swal.fire('$msj','','$icon');</script>";
+}
+
+ ?>

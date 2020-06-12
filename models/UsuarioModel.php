@@ -13,7 +13,7 @@ class UsuarioModel extends conexion
             $a=$login;
             $b=sha1($pass);
             $para->execute();
-
+            
             while($para->fetch()) {
                 return 1;
             }
