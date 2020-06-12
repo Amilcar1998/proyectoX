@@ -39,55 +39,12 @@ include 'configuracion/configuracionCliente.php';
                       </div>
                       <hr>
                       <center>
-                      <button class="btn btn-success agregarP" id="agregarP" name="agregarP">Agregar</button>
-                      <button type="button" class="btn btn-info reset" data-dismiss="modal">Close</button>
-                    </center>
-                    </form>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-
-<button class="btn btn-warning prueba" >nombre</button>
-<div class="modal fade" id="exampleModals" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header btn-info">
-                      <h5 class="modal-title" id="exampleModalLabel">Detalle Pedido</h5>
-                       
-                    </div>
-                    <div class="modal-body">
-                    <form method="GET" action="#">
-                      <div class="container">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <label>Id </label>
-                            <input type="text" class="form-control" name="txtUsuario" id="txtUsuario" readonly>
-                          </div>
-                          <div class="col-md-6">
-                            <label>Cantidad Unidades</label>
-                            <input type="text" class="form-control" name="txtcantidad" id="txtcantidad">
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-12">
-                            <label>Rol</label>
-                            <select class="form-control" name="producto" id="producto" >
-                              <?php foreach ($receta as $res) {
-                               echo "<option value='".$res['idReceta']."'>".$res['nombreReceta']."</option>";
-                              } ?>
-                                                            
-
-
-                            </select>
-                            
-                          </div>
-                        </div>
-                      </div>
-                      <hr>
-                      <center>
-                      <button class="btn btn-success" id="agregarP" name="agregarP">Agregar</button>
+                      <?php 
+                        if(isset($detalleRes)){
+                          echo '<button class="btn btn-warning" id="agregar" name="agregar">Agregar Nuevo</button>';
+                        }else{ echo '<button class="btn btn-success" id="agregarP" name="agregarP">Agregar</button>';}
+                         ?>
+                      
                       <button type="button" class="btn btn-info reset" data-dismiss="modal">Close</button>
                     </center>
                     </form>
@@ -100,22 +57,28 @@ include 'configuracion/configuracionCliente.php';
               <!--Modal Receta-->
 
 <?php
+
 echo $cli;
         if(isset($pedido)){
           echo "
-              <a href='controllerIndividualC.php'><button class='btn btn-success'>Regresar</button></a><br><br>
+              <a href='controllerIndividualC.php'><button class='btn btn-success'>Regresar</button></a>
+              <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal'>Agregar producto</button><br><br>
+              
                 <div class='row'>
-                  <div class='col-md-6 card'><hr>
-                <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal'>Agregar producto</button><br>";
+                  <div class='col-md-12 card'><hr>
+                
+              ";
                 if(isset($detalleRes)){
                       echo "<table class='table table-hover table-bordered'>
-                            <tr style='background-color:#1e7e34'><th>Id Detalle</th><th>Unidades</th><th>Nombre Producto</th></tr>";
+                            <tr style='background-color:#1e7e34'><th>Id Detalle</th><th>Unidades</th><th>Nombre Producto</th><th>total</th><th>agregar Receta</th></tr>";
+                          
                       foreach ($detalleRes as $Res) {
                         $idDetalle=$Res['idDetallePedido'];
                         $cantidad=$Res['cantidad'];
                         $idRes=$Res['idReceta'];
                         $NReceta=$Res['nombreReceta'];
-                        echo "<tr><td>$idDetalle</td><td>$cantidad</td><td>$NReceta</td></tr>"; 
+                        $precio=$Res['total_producto'];
+                        echo "<tr><td>$idDetalle</td><td>$cantidad</td><td>$NReceta</td><td>$precio</td><td><button class='btn btn-warning'>Agregar Receta</button></td></tr>"; 
 
                       }
                       echo "</table>";
@@ -123,16 +86,7 @@ echo $cli;
                     }else{echo "<h1>No hay Productos</h1> ";}
                 
 
-                      
-            echo "</div>
-                    <div class='col-md-6 card'><hr>
-                    <button class='btn btn-secondary' data-toggle='modal' data-target='#exampleModals'>Agregar Receta</button>";
-                      if(isset($d)) {
-                        
-                      }else{echo "<h1>No hay datos</h1>";}
-
-                      echo "</div>
-                          </div>";
+      
                          
 
                    
@@ -148,7 +102,7 @@ echo $cli;
                <button class="btn btn-secondary" name="pedidos" id="pedidos">Agregar Pedido</button></form>
             </div>
             <div class="col-md-2">
-                <form method="post">;
+                <form method="post">
                     <button class="btn btn-danger">Pedido Terminado</button> 
                     </form>
             </div>
