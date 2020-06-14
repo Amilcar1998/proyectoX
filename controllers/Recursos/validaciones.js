@@ -17,5 +17,10 @@ $(document).ready(function() {
 		$('.reset').show();
 		$('.agregar').hide();
 	});
+	$(document).on('click', '#det', function() {
+		
+		document.getElementById('miForm').reset();
+	});
+
 	
 });

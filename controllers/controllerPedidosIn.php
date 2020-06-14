@@ -9,8 +9,6 @@ if (isset($_REQUEST['detalle'])) {
 	$id=$_REQUEST['id'];
 	$detalle=$pedido->getDetalle($id);
 	$receta=$pedido->getReceta($id);
-
-	
 }
 $fechaActual = date('d/m/Y');
 

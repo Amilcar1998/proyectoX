@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/Recursos/validaciones.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/Recursos/validaciones.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/controllerIndividualC.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerIndividualC.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controllerPedidosIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerPedidosIn.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ClienteModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ClienteModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/modelClienteIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/modelClienteIn.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/individualCliente.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/individualCliente.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -88,6 +93,9 @@
       <workItem from="1591490827567" duration="2600000" />
       <workItem from="1591713585460" duration="7627000" />
       <workItem from="1591721986329" duration="9779000" />
+      <workItem from="1592005489400" duration="1317000" />
+      <workItem from="1592007056591" duration="10098000" />
+      <workItem from="1592088775266" duration="3483000" />
     </task>
     <task id="LOCAL-00001" summary="hfhfh">
       <created>1589956058198</created>
@@ -118,5 +126,16 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="hfhfh" />
     <option name="LAST_COMMIT_MESSAGE" value="hfhfh" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/models/ModelPedido.php</url>
+          <line>36</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

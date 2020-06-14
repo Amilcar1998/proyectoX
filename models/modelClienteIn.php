@@ -61,6 +61,15 @@ function getIdProd($idCliente){
     }
     return $r;
 }
+    function getDetalle($det){
+        $res=$this->con->query("select idDetalleReceta,cantidaSa,NombreMP from detalleReceta inner join materiaPrima on detalleReceta.idMateriaPrima=materiaPrima.idMateriaPrima where idReceta='$det'");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+    }
+
 
     function insertarDetalle($Detalle){
         $para=$this->con->prepare("insert into detalleReceta(idDetalleReceta,idMateriaPrima,cantidadSa,fechaSa,idInventario,idReceta) values(?,?,?,?,?,?)");
@@ -90,6 +99,12 @@ function getIdProd($idCliente){
 
         
    }
+function eliminarDetalle($id){
+        $res=$this->con->prepare("delete from detallePedido where idDetallePedido=?");
+        $res->bind_param('s',$a);
+        $a=$id->getIdDetallePedido();
+        $res->execute();
+      }
 
 
 

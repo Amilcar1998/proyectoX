@@ -33,16 +33,38 @@ if (isset($_REQUEST["agregarP"])) {
 }
 
 if (isset($_REQUEST["agregar"])) {
+    var_dump($_REQUEST);
     $pedido=$cli->getIdProd($idCliente);
     foreach($pedido as $key){
         $idPedid=$key['idPedido'];
     }
+
+
     $pedid= new DetallePedido('',$_REQUEST['txtcantidad'],$_REQUEST['producto'],$idPedid);
      $cli->AddDetalle($pedid);
      $detalleRes=$cli->getResProducto($idPedid);
      $msj="producto agregado Correctamente";
      $icon='success';
-     var_dump($detalleRes);
+
+}
+
+if(isset($_REQUEST['det'])){
+    $pedido=$cli->getIdProd($idCliente);
+    foreach($pedido as $key){
+        $idPedid=$key['idPedido'];
+    }
+    $detalleRes=$cli->getResProducto($idPedid);
+    $det=$_REQUEST['idRes'];
+    $data=$cli->getDetalle($det);
+}
+if(isset($_REQUEST['eliminar'])){
+    $pedido=$cli->getIdProd($idCliente);
+    foreach($pedido as $key){
+        $idPedid=$key['idPedido'];
+    }
+   $detalleRes=$cli->getResProducto($idPedid);
+   $id=new DetallePedido($_REQUEST['id'],'','','');
+   $cli->eliminarDetalle($id);
 }
 
 

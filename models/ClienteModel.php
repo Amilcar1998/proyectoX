@@ -1,6 +1,5 @@
 <?php 
 include "../db/conexion.php";
-
 include "Cliente.php";
 include 'Usuario.php';
 

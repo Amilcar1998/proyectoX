@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title></title>
+	<title>Concentrados El Gordito</title>
     <meta charset="utf-8">
 
     <link rel="stylesheet" href="controllers/Recursos/bootstrap/css/bootstrap.min.css">
@@ -80,7 +80,7 @@
   <td class="bg-info"></td>
   <td class="bg-info">CONCENTRADO PARA AVES</td>
   <td class="bg-info"></td>
-  <td class="bg-info"><img src="recursos/pollo.jpg"><img src="controllers/Recursos/ecursos/pollos.jpg"></td>
+  <td class="bg-info"><img src="controllers/Recursos/pollo.jpg"><img src="controllers/Recursos/ecursos/pollos.jpg"></td>
 </tr>
     
 <table class="table table-hover table-dark">
@@ -89,7 +89,7 @@
   <td class="bg-warning"></td>
   <td class="bg-warning">CONCENTRADO PARA CERDOS</td>
   <td class="bg-warning"></td>
-  <td class="bg-warning"><img src="recursos/cerdos.jpg"><img src="controllers/Recursos/cerdo.jpg"></td>
+  <td class="bg-warning"><img src="controllers/Recursos/cerdos.jpg"><img src="controllers/Recursos/cerdo.jpg"></td>
 </tr>
 
 <table class="table table-hover table-dark">
@@ -98,7 +98,7 @@
   <td class="bg-danger"></td>
   <td class="bg-danger">CONCENTRADO PARA VACAS</td>
   <td class="bg-danger"></td>
-  <td class="bg-danger"><img src="recursos/vacas.jpg"><img src="controllers/Recursos/vaca.jpg"></td>
+  <td class="bg-danger"><img src="controllers/Recursos/vacas.jpg"><img src="controllers/Recursos/vaca.jpg"></td>
 </tr>
 
 <table class="table table-hover table-dark">
@@ -107,7 +107,7 @@
   <td class="bg-success"></td>
   <td class="bg-success">CONCENTRADO PARA CONEJOS</td>
   <td class="bg-success"></td>
-  <td class="bg-success"><img src="recursos/conejo.jpg"><img src="controllers/Recursos/conejos.png"></td>
+  <td class="bg-success"><img src="controllers/Recursos/conejo.jpg"><img src="controllers/Recursos/conejos.png"></td>
 </tr>
 
 <table class="table table-hover table-dark">
@@ -115,7 +115,7 @@
   <td class="bg-info"></td>
   <td class="bg-info"></td>
   <td class="bg-info">CONCENTRADO PARA CABALLOS</td>
-  <td class="bg-info"><img src="recursos/caballo.gif"><img src="controllers/Recursos/caballos.jpeg"></td>
+  <td class="bg-info"><img src="controllers/Recursos/caballo.gif"><img src="controllers/Recursos/caballos.jpeg"></td>
   <td class="bg-info"></td>
 </tr>
 
