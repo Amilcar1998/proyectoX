@@ -56,24 +56,24 @@ include 'configuracion.php';
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>ID Produccion</th>
-                    <th>Fecha Produccion</th>
-                    <th>estado Pedido</th>
+                    <th>ID</th>
+                    <th>Produccion</th>
+                    <th>estado</th>
                     <th>Id Pedido</th>
-                    <th>FechaPedido</th>
-                    <th>Nombre Cliente</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
                     <th>Empleado</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
-                    <th>ID Produccion</th>
-                    <th>Fecha Produccion</th>
-                    <th>estado Pedido</th>
+                    <th>ID</th>
+                    <th>finalizado</th>
+                    <th>estado</th>
                     <th>Id Pedido</th>
-                    <th>FechaPedido</th>
-                    <th>Nombre Cliente</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
                     <th>Empleado</th>
                     <th>Acciones</th>
                   </tr>
@@ -97,7 +97,10 @@ include 'configuracion.php';
                             <td>$fechaPedido</td>
                             <td>$nombreCliente</td>
                             <td>$emp</td>
-                            <td><form method='POST'><input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'><button class='btn btn-info' id='eliminar' name='eliminar'>Cargar</button></form></td>
+                            <td><form method='POST'><input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'>
+                            <button class='btn btn-info' id='eliminar' name='eliminar'>Eliminar</button>
+                            <button class='btn btn-warning' id='Pterminar' name='Pterminar'>Terminar</button>
+                            </form></td>
                         </tr>";
                    }
 

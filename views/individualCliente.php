@@ -87,7 +87,7 @@ if(isset($pedido)){
                       <td>$precio</td>
                       <td><form method='post'>
                       <input type='hidden' name='idRes' id='idRes' value='$idRes'>
-                      <button class='btn btn-warning' name='det' id='det' >Ver Receta</button>
+                      <button class='btn btn-success' name='det' id='det' >Ver Receta</button>
                       <input type='hidden' name='id' id='id' value='$idDetalle'>
                       <button class='btn btn-danger' name='eliminar' id='eliminar'>Eliminar</button>
                       </form></td></tr>";
@@ -124,31 +124,17 @@ if(isset($pedido)){
 
 
 }else{
-    echo '<div class="row">
-            <div class="col-md-2">
-            <form metod="post">
-               <button class="btn btn-secondary" name="pedidos" id="pedidos">Agregar Pedido</button></form>
-            </div>
-            <div class="col-md-2">
-                <form method="post">
-                    <button class="btn btn-danger">Pedido Terminado</button> 
-                    </form>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary">Imprimir</button>
-            </div>
-            <div class="col-md-3">
-            </div>
-        </div>
-        </div>
-        <hr>
+    echo '
       <div class="container-fluid">
         
         <!-- DataTables Example -->
         <div class="card mb-3">
           <div class="card-header">
-            <i class="fas fa-table"></i>
-            Mis Pedidos</div>
+          <div class="row">
+             <form metod="post">
+               <button class="btn btn-success" name="pedidos" id="pedidos">Agregar Pedido</button></form>
+          </div>
+        </div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -181,7 +167,9 @@ if(isset($pedido)){
                         <td>$fecha</td>
                         <td>$estado</td>
                         <td>$clienteID</td>
-                        <td><form method='post'><button class='btn btn-info' name='detalle'>Detalle Pedido</button></form></td>
+                        <td><form method='post'><input type='hidden' id='data' name='data' value='$idPedido'>
+                        <button class='btn btn-danger' name='EliminarP' id='EliminarP'>Eliminar</button> 
+                        <button class='btn btn-success' name='detalle' id='detalle'>Detalle Pedido</button></form></td>
                          </tr>";
     }
     echo '</tbody>

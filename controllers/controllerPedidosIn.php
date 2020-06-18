@@ -11,8 +11,6 @@ if (isset($_REQUEST['detalle'])) {
 	$receta=$pedido->getReceta($id);
 }
 $fechaActual = date('d/m/Y');
-
-
 foreach ($session as $key) {
     $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 

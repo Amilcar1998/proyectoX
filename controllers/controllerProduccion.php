@@ -13,10 +13,16 @@ foreach ($session as $key) {
 
 
 if(isset($_REQUEST['agregar'])){
+	var_dump($_REQUEST);
+$id=$_REQUEST['id'];
+
+
+
 $p=new Produccion('',$fechaActual,'activo',$_REQUEST['id'],$idEmp);
  $prod->insertar($p);
- $msj="se ha Agregado el registro exitosamente";
+ $msj="se ha pasado a produccion exitosamente";
  $icon="success";
+ $prod->alterPedido($id);
 }
 if(isset($_REQUEST['eliminar'])){
  $p=new Produccion($_REQUEST['produccionID'],'','activo',"",$idEmp);

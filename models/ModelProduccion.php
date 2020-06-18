@@ -10,6 +10,12 @@ class ModelProduccion extends Conexion
 	{
 	 parent::__construct();
 	}
+    function alterPedido($id){
+     $para=$this->con->prepare("UPDATE `pedido` SET `idEstadoPedido` = '2' WHERE `pedido`.`idPedido` = '$id' ");
+     $para->execute();
+
+        
+   }
   function getProduccion(){
   	$res=$this->con->query("select  idProduccion,fechaP,estadoP,produccion.idPedido,fechaPedido,NombreCliente,empleado.nombreEmp from produccion inner join empleado on produccion.idEmpleado=empleado.idEmpleado inner join pedido on produccion.idPedido=pedido.idPedido inner join cliente on pedido.idCliente=cliente.idCliente");
       $r=array();
