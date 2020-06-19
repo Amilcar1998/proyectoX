@@ -66,6 +66,12 @@ $menu="<ul class='sidebar navbar-nav'>
           <span>Produccion</span>
         </a>
       </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerInventario.php'>
+        <i class='fas fa-fw fa-table'></i>
+          <span>Inventario</span>
+        </a>
+      </li>
     </ul>
 ";
 
