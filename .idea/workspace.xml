@@ -3,13 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="32a3b4d9-62f6-447e-af97-850fa9977302" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/Recursos/validaciones.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/Recursos/validaciones.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/controllerIndividualC.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerIndividualC.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controllerPedidos.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerPedidos.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/controllerPedidosIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerPedidosIn.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/ClienteModel.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ClienteModel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controllerProduccion.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerProduccion.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/controllerProduccionIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/controllerProduccionIn.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ModelPedido.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelPedido.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ModelProduccion.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelProduccion.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/modelClienteIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/models/modelClienteIn.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/configuracion/configuracionCliente.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/configuracion/configuracionCliente.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/individualCliente.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/individualCliente.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/vistaPedidos.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaPedidos.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/vistaProduccion.php" beforeDir="false" afterPath="$PROJECT_DIR$/views/vistaProduccion.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -96,6 +101,8 @@
       <workItem from="1592005489400" duration="1317000" />
       <workItem from="1592007056591" duration="10098000" />
       <workItem from="1592088775266" duration="3483000" />
+      <workItem from="1592185658620" duration="3130000" />
+      <workItem from="1592405606113" duration="6219000" />
     </task>
     <task id="LOCAL-00001" summary="hfhfh">
       <created>1589956058198</created>
@@ -132,8 +139,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/models/ModelPedido.php</url>
-          <line>36</line>
+          <line>37</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/views/vistaPedidos.php</url>
+          <line>107</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -105,6 +105,22 @@ function eliminarDetalle($id){
         $a=$id->getIdDetallePedido();
         $res->execute();
       }
+function eliminarPedido($id){
+   $res=$this->con->prepare("delete from pedido where idPedido=?");
+   $res->bind_param('s',$a);
+   $a=$id->getIdPedido();
+   $res->execute();
+   
+ }
+function getObtener($cantidad){
+    $res=$this->con->query("select detalleReceta.idMateriaPrima,cantidaSa,existencias,inventario.idInventario,detalleReceta.idReceta from detalleReceta inner join inventario on detalleReceta.idinventario=inventario.idinventario where idReceta='$cantidad';");
+    $r=array();
+    while($row=$res->fetch_assoc()) {
+        $r[]=$row;
+    }
+    return $r;
+}
+
 
 
 

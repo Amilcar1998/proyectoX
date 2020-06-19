@@ -70,7 +70,6 @@ $cli="<!DOCTYPE html>
     </ul>
 
     <div id='content-wrapper'>
-        <hr>
         <div class='container-fluid'> ";
 
 

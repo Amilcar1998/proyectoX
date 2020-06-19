@@ -60,53 +60,64 @@ include 'configuracion.php';
                                         <div class='col-md-3'><a href='controllerPedidos.php' <button class='btn btn-primary' >Regresar</button></a></div>
                         
                                     </div>";
-                                echo "<hr>";
-
-                                echo "<table class='table table-striped table-dark table-hover' id='dataTable' width='100%' cellspacing='0'>
+                                echo "<hr>
+                                       <div class='row'>
+                                       <div class='col-md-6'>
+                                       <table class='table table-striped table-dark table-hover' id='dataTable' width='100%' cellspacing='0'>
                                         <tr>'
-                                        <th>ID Detalle</th>
+                                        <th>ID</th>
                                         <th>Unidades</th>
-                                        <th>Nombre Producto</th>
-                                        </tr>";
+                                        <th>Producto</th>
+                                        <th>Accion</th>
+                                        </tr>
+                                        </div>
+                                       </div> 
+                                       ";
                                 foreach ($detalle as $key) {
                                     $ped=$key['idDetallePedido'];
                                     $cantidad=$key['cantidad'];
-                                    $nRes=$key['nombreReceta'];
 
+                                    $nRes=$key['nombreReceta'];
+                                    $idPedido=$key['IdPedido'];
+                                    $idReceta=$key['idReceta'];
                                     echo "<tr>
                                           <td>$ped</td>
                                           <td>$cantidad</td>
-                                          <td>$nRes</td>      
+                                          <td>$nRes</td>  
+                                          <td><form method='POST'>
+                                          <input type='hidden' name='idDetalle' id='idDetalle' value='$idPedido' >
+                                          <input type='hidden' name='id' id='id' value='$idReceta'> 
+                                          <button class='btn btn-primary' name='receta' id='receta'>Ver</button>
+                                           </form></td>    
                                           </tr>";
                                 }
-                                echo "</table>";
+                                echo "</table>
+                                    </div>";
                                 echo "<hr>";
-                                echo "<hr>";
-                                echo "<table class='table table-bordered table-dark table-hover' id='dataTable' width='100%' cellspacing='0'>
+                                if (isset($receta)){
+                                echo "<div class='col-md-6'>
+                                        <table class='table table-bordered table-dark table-hover' id='dataTable' width='100%' cellspacing='0'>
                                         <tr>
                                         <th>ID Receta</th>
                                         <th>Materia Prima</th>
                                         <th>cantidad</th>
-                                        <th>Fecha</th>
                                         <th>Producto</th>
                                         </tr>
                                         ";
-                                        
+
                                 foreach ($receta as $res) {
+
                                     $idR=$res['idDetalleReceta'];
                                     $Mp=$res['NombreMP'];
                                     $cantida=$res['cantidaSa'];
-                                    $fecha=$res['fechaSa'];
-                                    $producto=$res['nombreReceta'];
-                                    $id=$res['idPedido'];
+                                    $producto=$res['NombreMP'];
                                     echo "<tr>
                                           <td>$idR</td>  
                                           <td>$Mp</td>
                                           <td>$cantida</td>
-                                          <td>$fecha</td>
                                           <td>$producto</td>
                                           </tr>";
-                                }echo "</table>";
+                                }echo "</table></div>";}
                             
                         }else{
                         $tabla="<div class='card mb-3'>
@@ -139,6 +150,7 @@ include 'configuracion.php';
                                                 <tbody>";
                                                 echo $tabla;
                             foreach ($datos as $key){
+
                                 $id=$key['idPedido'];
                                 $fecha=$key['fechaPedido'];
                                 $nombre=$key['NombreCliente'];
@@ -150,7 +162,8 @@ include 'configuracion.php';
                                       <td>$nombre</td>
                                       <td>$apellidos</td>
                                       <td>$estado</td>
-                                      <td><form method='POST'><input type='hidden' id='id' name='id' value='$id'><button class='btn btn-primary' name='detalle'id='detalle'>Detalle Pedido</button></form></td>
+                                      <td><form method='POST'><input type='hidden' id='id' name='id' value='$id'>
+                                      <button class='btn btn-primary' name='detalle'id='detalle'>Detalle Pedido</button></form></td>
                                       </tr>";
                                       
                             }

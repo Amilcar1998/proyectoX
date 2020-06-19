@@ -8,10 +8,16 @@ $correo=$_SESSION['s1'];
 $session = $pedido->getSessionEmp($correo);
 if (isset($_REQUEST['detalle'])) {
 	$id=$_REQUEST['id'];
-	$detalle=$pedido->getDetalle($id);
-	$receta=$pedido->getReceta($id);
+	$detalle=$pedido->getDetalle($id);	
+}
+if(isset($_REQUEST['receta'])){
 
-	
+	$id=$_REQUEST['idDetalle'];
+	$idReceta=$_REQUEST['id'];
+    $detalle=$pedido->getDetalle($id);
+	$receta=$pedido->getReceta($idReceta);
+
+
 }
 
 foreach ($session as $key) {
