@@ -69,14 +69,20 @@ include 'configuracion.php';
               <hr>
             <div class="row">
                 <div class="col-md-6">
-                    <label>ID Inventario</label>
-                    <input type="text" name="txtId" id="txtId" value="" size="30" placeholder="Id Inventario" class="form-control" readonly>
+                  <label>ID Inventario</label>
+                  <input type="text" name="txtId" id="txtId" value="" size="30" placeholder="Id Inventario" class="form-control" readonly>
                 </div>
                 <div class="col-md-6">
-                <label>ID Materia Prima</label> 
-                <input type="text" name="txtIdMateriaPrima" id="txtIdMateriaPrima" value="" size="30" placeholder="ID Materia Prima" class="form-control">
+                  <label>Materia Prima</label> 
+                  <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control">
+                    <option 1 value="1">Maiz Amarillo</option>
+                    <option 2 value="2">Maiz Blanco</option>
+                    <option 3 value="1">Maicillo</option>
+                    <option 4 value="1">Arroz</option>
+                  <!--<input type="text" name="txtIdMateriaPrima" id="txtIdMateriaPrima" value="" size="30" placeholder="ID Materia Prima" class="form-control">-->
+                  </select>
+                </div>
             </div>
-        </div>
             <div class="row">
                 <div class="col-md-6">  
                     <label>Existencias</label>
@@ -150,7 +156,7 @@ include 'configuracion.php';
                   <td>$Existencias</td>
                   <td>$idDetalleCompra</td>
                   <td>
-                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');$('#txtIdDetallePedido').val('$idDetalleCompra');>Cargar</button>
+                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');$('#txtDetalleCompra').val('$idDetalleCompra');>Cargar</button>
                   </td>
                   
                   </tr>
