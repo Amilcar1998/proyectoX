@@ -17,18 +17,18 @@ class ModelInventario extends Conexion{
     public function InsertarInventario($inv){
         $res=$this->con->prepare("INSERT INTO inventario (idInventario, idMateriaPrima, Existencias, idDetalleCompra) VALUES (?,?,?,?)");
         $res->bind_param('ssss',$a,$b,$c,$d);
-        $a='';
+        $a="";
         $b=$inv->getIdMateriaPrima();
         $c=$inv->getExistencias();
         $d=$inv->getIdDetalleCompra();
         $res->execute();
     }
     public function setInventario($inv){
-        $res=$this->con->prepare("UPDATE inventario SET idMateriaPrima=?, Existencias, idDetalleCompra WHERE idInventario=?");
-        $res->bind_prepare('s,s,s,s',$a,$b,$c,$d);
+        $res=$this->con->prepare("UPDATE inventario SET idMateriaPrima=?, Existencias=?, idDetalleCompra=? WHERE idInventario=?");
+        $res->bind_param('ssss',$a,$b,$c,$d);
         $a=$inv->getIdMateriaPrima();
         $b=$inv->getExistencias();
-        $c=$inv->getIdDetallePedido();
+        $c=$inv->getIdDetalleCompra();
         $d=$inv->getIdInventario();
         $res->execute();
     }
