@@ -10,6 +10,7 @@ class ModelProveedor extends Conexion {
 
     }
 
+    
     public function getTabla(){
         $res=$this->con->query("select * from proveedor");
         $r=array();

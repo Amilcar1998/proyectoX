@@ -13,9 +13,10 @@ foreach ($session as $key) {
 
 
 if(isset($_REQUEST['agregar'])){
-	var_dump($_REQUEST);
+var_dump($_REQUEST);
+die();
 $id=$_REQUEST['id'];
-
+$pedido=$prod->getPedido($id);
 
 
 $p=new Produccion('',$fechaActual,'activo',$_REQUEST['id'],$idEmp);
