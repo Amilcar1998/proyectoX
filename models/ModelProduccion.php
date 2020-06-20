@@ -10,6 +10,15 @@ class ModelProduccion extends Conexion
 	{
 	 parent::__construct();
 	}
+  public function getPedido($id){
+        $res=$this->con->query("select * from detallePedido where idPedido='$id';");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+
+    }
     function alterPedido($id){
      $para=$this->con->prepare("UPDATE `pedido` SET `idEstadoPedido` = '2' WHERE `pedido`.`idPedido` = '$id' ");
      $para->execute();
