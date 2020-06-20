@@ -6,8 +6,11 @@ class Inventario{
     private $Existencias;
     private $idDetalleCompra;
 
-    public function Inventario(){
-
+    public function Inventario($idInventario,$idMateriaPrima,$Existencias,$idDetalleCompra){
+        $this->idInventario=$idInventario;
+        $this->idMateriaPrima=$idMateriaPrima;
+        $this->Existencias=$Existencias;
+        $this->idDetalleCompra=$idDetalleCompra;
     }
 
     //metodos set y get
