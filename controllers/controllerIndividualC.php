@@ -16,8 +16,6 @@ if (isset($_REQUEST['pedidos'])) {
     $pedido=$cli->getIdProd($idCliente);
 }
 if (isset($_REQUEST["agregarP"])) {
-    var_dump($_REQUEST);
-    //aqui inserto e pedido
     $p=new Pedidos('',$fechaActual,$idCliente,'1');
     $pedido=$cli->getIdProd($idCliente);
     $cli->insertarPedido($p);
@@ -31,6 +29,18 @@ if (isset($_REQUEST["agregarP"])) {
      $msj="producto agregado Correctamente";
      $icon='success';
 }
+if (isset($_REQUEST['agregarReceta'])) {
+    $pedido=$cli->getIdProd($idCliente);
+    $idPedid=$_REQUEST['pedido'];
+    $pedid= new DetallePedido('',$_REQUEST['txtcantidad'],$_REQUEST['producto'],$idPedid);
+     $cli->AddDetalle($pedid);
+     $detalleRes=$cli->getResProducto($idPedid);
+     $dataPedido=$cli->getAll($idCliente);
+
+     $msj="producto agregado Correctamente";
+     $icon='success';
+}
+    
 
 if (isset($_REQUEST["agregar"])) {
     $pedido=$cli->getIdProd($idCliente);
@@ -45,16 +55,36 @@ if (isset($_REQUEST["agregar"])) {
 }
 
 if(isset($_REQUEST['det'])){
-    $pedido=$cli->getIdProd($idCliente);
-    foreach($pedido as $key){
-        $idPedid=$key['idPedido'];
-    }
-    $detalleRes=$cli->getResProducto($idPedid);
-    $det=$_REQUEST['idRes'];
-    $data=$cli->getDetalle($det);
+     $pedido=$cli->getIdProd($idCliente);
+    if(isset($_REQUEST['algo'])){
+        $Mpedidos=$_REQUEST['algo'];
+        $idPedid=$_REQUEST['algo'];
+        $detalleRes=$cli->getResProducto($idPedid);
+        $det=$_REQUEST['idRes'];
+        $data=$cli->getDetalle($det);
+    }else{
+        $pedido=$cli->getIdProd($idCliente);
+        foreach($pedido as $key){
+            $idPedid=$key['idPedido'];
+        }
+        $detalleRes=$cli->getResProducto($idPedid);
+        $det=$_REQUEST['idRes'];
+        $data=$cli->getDetalle($det);
+      }
 }
 if(isset($_REQUEST['eliminar'])){
+    if(isset($_REQUEST['algo'])){
+        $Mpedidos=$_REQUEST['algo'];
+        $idPedid=$_REQUEST['algo'];
    $id=new DetallePedido($_REQUEST['id'],'','','');
+   $cli->eliminarDetalle($id);
+   $msj="El registro ha sido Eliminado Correctamente";
+   $icon='success';
+   $pedido=$cli->getIdProd($idPedid);
+    }
+
+  else{ 
+  $id=new DetallePedido($_REQUEST['id'],'','','');
    $cli->eliminarDetalle($id);
    $msj="El registro ha sido Eliminado Correctamente";
    $icon='success';
@@ -62,10 +92,13 @@ if(isset($_REQUEST['eliminar'])){
     foreach($pedido as $key){
         $idPedid=$key['idPedido'];
     }
-   $detalleRes=$cli->getResProducto($idPedid);
+   $detalleRes=$cli->getResProducto($idPedid);}
+
+
 
 }
 if(isset($_REQUEST['detalle'])){
+    $Mpedidos=$_REQUEST['data'];
     $pedido=$cli->getIdProd($idCliente);
     $idPedid=$_REQUEST['data'];
     $detalleRes=$cli->getResProducto($idPedid);

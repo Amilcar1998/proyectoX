@@ -80,7 +80,7 @@
                             if (isset($id)) {
                                 echo "<div class='row'>
                                         <div class='col-md-3'>
-                                        <form action='controllerProduccion.php' method='POST'>
+                                        <form action='controllerProduccionIn.php' method='POST'>
                                         <input type='hidden' name='id' id='id' value=$id>
                                         <button class='btn btn-info' name='agregar' id='agregar'>agregar a Produccion</button></form></div>
                                         <div class='col-md-3'><a href='controllerPedidos.php' <button class='btn btn-primary' >Regresar</button></a></div>
