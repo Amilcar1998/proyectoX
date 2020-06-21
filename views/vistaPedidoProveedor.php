@@ -49,7 +49,7 @@ $dao= new DAOPedidoProveedor();
 <body id="page-top">
 
 <div align="center">
-    <h4 class='table table-striped table-dark'>forulario registro de Pedidos a Proveedores</h4><hr>
+    <h4 class='table table-striped table-dark'>Formulario de registro de Pedidos a Proveedores</h4><hr>
     <div class="form-group" Style="position: relative; margin: auto; width: 500px;">
         <form method="POST" action="#" name="formulario">
 

@@ -3,8 +3,8 @@
 include '../db/conexion.php';
 include 'pedidoProveedor.php';
 include 'factura.php';
-/*include('../detalleFactura/detalleCompra.php');
-include('../materiaPrima/MateriaPrima.php');
+include'detalleCompra.php';
+/*include('../materiaPrima/MateriaPrima.php');
 include('../inventario/inventario.php');*/
 
 class DAOPedidoProveedor extends Conexion{
