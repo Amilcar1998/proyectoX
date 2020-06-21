@@ -1,7 +1,7 @@
 <?php
 class PedidoProveedor{
 
-    private $idPedido;
+    private $idPedido = 0;
     private $idProveedor;
     private $idEmpleado;
     private $idMateriaPrima;
