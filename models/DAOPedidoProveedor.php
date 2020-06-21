@@ -3,9 +3,8 @@
 include '../db/conexion.php';
 include 'pedidoProveedor.php';
 include 'factura.php';
-include'detalleCompra.php';
-/*include('../materiaPrima/MateriaPrima.php');
-include('../inventario/inventario.php');*/
+include 'detalleCompra.php';
+include '../inventario/inventario.php';
 
 class DAOPedidoProveedor extends Conexion{
 
@@ -79,33 +78,12 @@ class DAOPedidoProveedor extends Conexion{
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-    }
-
         ///////////////////////////////////////////////
-
-/*
-        $prod = new MateriaPrima();
-        $prod = $obj;        
-        $sql = "insert into materiaPrima value(".$prod->getIdMateriaPrima().",'".$prod->getNombreMP()."')";        
-        
-        $this->conectar();
-        if($this->con->query($sql)){
-            //SweetAlert
-        echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
-        }else{
-            echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
-        }
-        $this->desconectar();
-
-
-        ///////////////////////////////////////////////
-
-       /* $qq=$prod->getCantidadMP();
+        $qq=$prod->getCantidadMP();
         function calculo($qq){
         $prod = new Inventario();    
         $idMP=$prod->getIdMateriaPrima();
         $sql="select  idMateriaPrima from inventario where idMateriaPrima=$idMP";
-        $this->conectar();
         if($this->con->query($sql)){
             //SweetAlert
         //echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
@@ -120,9 +98,7 @@ class DAOPedidoProveedor extends Conexion{
             return $prod->getCantidadMP();
         } 
 
-
-        $this->desconectar();
-        }*/
+        }
 
         /*
 
