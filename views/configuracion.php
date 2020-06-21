@@ -54,6 +54,12 @@ $menu="<ul class='sidebar navbar-nav'>
           <i class='fas fa-fw fa-table'></i>
           <span>Proveedores</span></a>
       </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerPedidoProveedor.php'>
+        <i class='fas fa-fw fa-table'></i>
+          <span>Pedidos -->Proveedor</span>
+        </a>
+      </li>
       <li class='nav-item'>
         <a class='nav-link' href='controllerPedidos.php'>
           <i class='fas fa-fw fa-tachometer-alt'></i>

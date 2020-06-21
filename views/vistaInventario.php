@@ -88,10 +88,6 @@ include 'configuracion.php';
                     <label>Existencias</label>
                     <input type="text" name="txtExistencias" id="txtExistencias" value="" size="30" placeholder="Existencias" class="form-control">
                 </div>
-                <div class="col-md-6">
-                    <label>ID Detalle Compra</label>
-                    <input type="text" name="txtDetalleCompra" id="txtDetalleCompra" value="" size="30" placeholder="Detalle Compra" class="form-control">
-                </div>
             </div>
             <hr>
             <center>
@@ -126,7 +122,6 @@ include 'configuracion.php';
                   <th>ID Inventario</th>
                   <th>ID Materia Prima</th>
                   <th>Existencias</th>
-                  <th>ID Detalle Compra</th>
                   <th>Accion</th>               
                   </tr>
 
@@ -136,7 +131,6 @@ include 'configuracion.php';
                   <th>ID Inventario</th>
                   <th>ID Materia Prima</th>
                   <th>Existencias</th>
-                  <th>ID Detalle Compra</th>
                   <th>Accion</th>  
                   </tr>
 
@@ -147,16 +141,14 @@ include 'configuracion.php';
                 $idInventario=$fila["idInventario"];
                 $idMateriaPrima=$fila["idMateriaPrima"];
                 $Existencias=$fila["Existencias"];
-                $idDetalleCompra=$fila["idDetalleCompra"];
 
                echo "
                <tr>
                   <td>$idInventario</td>
                   <td>$idMateriaPrima</td>
                   <td>$Existencias</td>
-                  <td>$idDetalleCompra</td>
                   <td>
-                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');$('#txtDetalleCompra').val('$idDetalleCompra');>Cargar</button>
+                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');>Cargar</button>
                   </td>
                   
                   </tr>
