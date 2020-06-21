@@ -11,23 +11,16 @@ foreach ($session as $key) {
 
 }*/
 if(isset($_REQUEST["btnGuardar"])){
-	$pedip = new PedidoProveedor(0,$_REQUEST["txtIdPro"],$_REQUEST["txtIdEmp"],$_REQUEST["txtIdMp"],$_REQUEST["txtFec"],$_REQUEST["txtCan"],$_REQUEST["txtMon"],$_REQUEST["txtPre"]);
+	$pedip = new PedidoProveedor($_REQUEST["txtIdPe"],$_REQUEST["txtIdPro"],$_REQUEST["txtIdEmp"],$_REQUEST["txtIdMp"],$_REQUEST["txtFec"],$_REQUEST["txtCan"],$_REQUEST["txtMon"],$_REQUEST["txtPre"]);
 	$pedidoProv->Insertar($pedip);
-	$msj="se ha Agregado el registro exitosamente";
-	$icon="success";
 	$tabla=$pedidoProv->getTabla();
 }else if(isset($_REQUEST["btnModificar"])){
-	$inv = new Inventario($_REQUEST["txtId"],$_REQUEST["txtIdMateriaPrima"],$_REQUEST["txtExistencias"],$_REQUEST["txtDetalleCompra"]);
-	$inventario->setInventario($inv);
-	$msj="Se ha mofificado exitosamente";
-	$icon="success";
-	$datos=$inventario->getInventario();
+	$pedip = new PedidoProveedor($_REQUEST["txtIdPe"],$_REQUEST["txtIdPro"],$_REQUEST["txtIdEmp"],$_REQUEST["txtIdMp"],$_REQUEST["txtFec"],$_REQUEST["txtCan"],$_REQUEST["txtMon"],$_REQUEST["txtPre"]);
+	$pedidoProv->modificar($pedip);
+	$tabla=$pedidoProv->getTabla();
 }else if(isset($_REQUEST["btnEliminar"])){
-	$inv = new Inventario($_REQUEST["txtId"],$_REQUEST["txtIdMateriaPrima"],$_REQUEST["txtExistencias"],$_REQUEST["txtDetalleCompra"]);
-	$inventario->eliminarInventario($inv);
-	$msj="Se ha eliminado exitosamente";
-	$icon="success";
-	$datos=$inventario->getInventario();
+	$idPed = new PedidoProveedor($_REQUEST["txtIdPe"]);
+	$tabla=$pedidoProv->getTabla();
 }
 include '../views/vistaPedidoProveedor.php';
 ?>

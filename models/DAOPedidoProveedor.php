@@ -2,8 +2,8 @@
 
 include '../db/conexion.php';
 include 'pedidoProveedor.php';
-/*include('../factura/factura.php');
-include('../detalleFactura/detalleCompra.php');
+include'../factura/factura.php';
+/*include('../detalleFactura/detalleCompra.php');
 include('../materiaPrima/MateriaPrima.php');
 include('../inventario/inventario.php');*/
 
@@ -58,20 +58,16 @@ class DAOPedidoProveedor extends Conexion{
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-    }
-        ///////////////////////////////////////////////
-        /*
+
         $prod = new Factura();
         $prod = $obj;        
-        $sql = "insert into factura value(1,2,".$prod->getMonto().",'".$prod->getFecha()."',".$prod->getIdProveedor().",".$prod->getIdEmpleado().")";
-        $this->conectar();                              
+        $sql = "insert into factura value(1,2,".$prod->getMonto().",'".$prod->getFecha()."',".$prod->getIdProveedor().",".$prod->getIdEmpleado().")";                            
         if($this->con->query($sql)){
             //SweetAlert
         echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-        $this->desconectar();
 
         ///////////////////////////////////////////////
 
@@ -148,7 +144,7 @@ class DAOPedidoProveedor extends Conexion{
  
 
         
-    }
+    }*/
 
     
 
@@ -156,30 +152,26 @@ class DAOPedidoProveedor extends Conexion{
 
     public function eliminar($idPedido){
         $sql = "delete from pedidoproveedor where idPedido=$idPedido";
-        $this->conectar();
         if($this->con->query($sql)){
             //SweetAlert
             echo "<script>swal({title:'Exito',text:'El registro fue eliminado satisfactoriamente',type:'success'});</script>";
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue eliminado',type:'error'});</script>";
         }
-        $this->desconectar();
 
     }
-
+    
     public function modificar($obj){
         $prod = new PedidoProveedor();
         $prod = $obj;
-        $sql = "update pedidoproveedor set idProveedor=".$prod->getIdProveedor()." ,idEmpleado=".$prod->getIdEmpleado()." ,idMateriaPrima=".$prod->getIdMateriaPrima()." ,fecha='".$prod->getFecha()."',nombreMP='".$prod->getNombreMP()."',cantidadMP=".$prod->getCantidadMP().",monto=".$prod->getMonto()." ,precioMP=".$prod->getPrecioMP()." where idPedido=".$prod->getIdPedido()."";
-        $this->conectar();
+        $sql = "update pedidoproveedor set idProveedor=".$prod->getIdProveedor()." ,idEmpleado=".$prod->getIdEmpleado()." ,idMateriaPrima=".$prod->getIdMateriaPrima()." ,fecha='".$prod->getFecha()."',cantidadMP=".$prod->getCantidadMP().",monto=".$prod->getMonto()." ,precioMP=".$prod->getPrecioMP()." where idPedido=".$prod->getIdPedido();
         if($this->con->query($sql)){
             //SweetAlert
             echo "<script>swal({title:'Exito',text:'El registro fue modificado satisfactoriamente',type:'success'});</script>";
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue modificado',type:'error'});</script>";
         }
-        $this->desconectar();
-    }*/
+    }
         
 
 }

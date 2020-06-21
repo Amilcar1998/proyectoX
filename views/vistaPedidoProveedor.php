@@ -53,7 +53,7 @@ $dao= new DAOPedidoProveedor();
     <div class="form-group" Style="position: relative; margin: auto; width: 500px;">
         <form method="POST" action="#" name="formulario">
 
-            <input type="text" name="txtIdPe" value="" size="30" placeholder="Id pedido" class="form-control">
+            <input type="text" name="txtIdPe" value="" size="30" placeholder="Id pedido" class="form-control" readonly>
             <input type="text" name="txtIdPro" value="" size="30" placeholder="Id proveedor" class="form-control">
             <input type="text" name="txtIdEmp" value="" size="30" placeholder="Id empleado" class="form-control">
             <select name="txtIdMp" class="form-control">Seleccionar Materia Prima
@@ -113,7 +113,6 @@ if(isset($_REQUEST["btnGuardar"])){
   $prod->setIdEmpleado($_REQUEST["txtIdEmp"]);
   $prod->setIdMateriaPrima($_REQUEST["txtIdMp"]);
   $prod->setFecha($_REQUEST["txtFec"]);
-  $prod->setNombreMP($_REQUEST["txtNombre"]);
   $prod->setCantidadMP($_REQUEST["txtCan"]);
   $prod->setMonto($_REQUEST["txtMon"]);
   $prod->setPrecioMP($_REQUEST["txtPre"]);
