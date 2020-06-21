@@ -68,26 +68,22 @@ class DAOPedidoProveedor extends Conexion{
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-    }
         ///////////////////////////////////////////////
-/*
         $prod = new DetalleCompra();
         $prod = $obj;        
-        $sql = "insert into detalleCompra value(1,".$prod->getIdMateriaPrima().",".$prod->getCantidadMP().",".$prod->getPrecioMP().",1)";
+        $sql = "insert into detalleCompra value(0,".$prod->getIdMateriaPrima().",".$prod->getCantidadMP().",".$prod->getPrecioMP().",1)";
         
-        $this->conectar();
         if($this->con->query($sql)){
             //SweetAlert
         echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-        $this->desconectar();
-
+    }
 
         ///////////////////////////////////////////////
 
-
+/*
         $prod = new MateriaPrima();
         $prod = $obj;        
         $sql = "insert into materiaPrima value(".$prod->getIdMateriaPrima().",'".$prod->getNombreMP()."')";        
