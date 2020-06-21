@@ -11,7 +11,7 @@ foreach ($session as $key) {
 
 }*/
 if(isset($_REQUEST["btnGuardar"])){
-	$pedip = new PedidoProveedor($_REQUEST["txtIdPe"],$_REQUEST["txtIdPro"],$_REQUEST["txtIdEmp"],$_REQUEST["txtIdMp"],$_REQUEST["txtFec"],$_REQUEST["txtCan"],$_REQUEST["txtMon"],$_REQUEST["txtPre"]);
+	$pedip = new PedidoProveedor(0,$_REQUEST["txtIdPro"],$_REQUEST["txtIdEmp"],$_REQUEST["txtIdMp"],$_REQUEST["txtFec"],$_REQUEST["txtCan"],$_REQUEST["txtMon"],$_REQUEST["txtPre"]);
 	$pedidoProv->Insertar($pedip);
 	$msj="se ha Agregado el registro exitosamente";
 	$icon="success";
