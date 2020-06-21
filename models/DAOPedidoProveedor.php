@@ -2,7 +2,7 @@
 
 include '../db/conexion.php';
 include 'pedidoProveedor.php';
-include'../factura/factura.php';
+include 'factura.php';
 /*include('../detalleFactura/detalleCompra.php');
 include('../materiaPrima/MateriaPrima.php');
 include('../inventario/inventario.php');*/
@@ -58,19 +58,18 @@ class DAOPedidoProveedor extends Conexion{
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-
+        ///////////////////////////////////////////m k//
         $prod = new Factura();
         $prod = $obj;        
         $sql = "insert into factura value(1,2,".$prod->getMonto().",'".$prod->getFecha()."',".$prod->getIdProveedor().",".$prod->getIdEmpleado().")";                            
         if($this->con->query($sql)){
-            //SweetAlert
         echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-
+    }
         ///////////////////////////////////////////////
-
+/*
         $prod = new DetalleCompra();
         $prod = $obj;        
         $sql = "insert into detalleCompra value(1,".$prod->getIdMateriaPrima().",".$prod->getCantidadMP().",".$prod->getPrecioMP().",1)";
