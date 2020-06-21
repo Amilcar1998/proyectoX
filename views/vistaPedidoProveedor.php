@@ -82,7 +82,6 @@ if(isset($_REQUEST["btnGuardar"])){
     $prod->setIdEmpleado($_REQUEST["txtIdEmp"]);
     $prod->setIdMateriaPrima($_REQUEST["txtIdMp"]);
     $prod->setFecha($_REQUEST["txtFec"]);
-    $prod->setNombreMP($_REQUEST["txtNombre"]);
     $prod->setCantidadMP($_REQUEST["txtCan"]);
     $prod->setMonto($_REQUEST["txtMon"]);
     $prod->setPrecioMP($_REQUEST["txtPre"]);

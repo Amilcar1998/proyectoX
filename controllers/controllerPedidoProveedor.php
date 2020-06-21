@@ -15,7 +15,7 @@ if(isset($_REQUEST["btnGuardar"])){
 	$pedidoProv->Insertar($pedip);
 	$msj="se ha Agregado el registro exitosamente";
 	$icon="success";
-	$datos=$inventario->getInventario();
+	$tabla=$pedidoProv->getTabla();
 }else if(isset($_REQUEST["btnModificar"])){
 	$inv = new Inventario($_REQUEST["txtId"],$_REQUEST["txtIdMateriaPrima"],$_REQUEST["txtExistencias"],$_REQUEST["txtDetalleCompra"]);
 	$inventario->setInventario($inv);

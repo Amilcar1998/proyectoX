@@ -58,10 +58,9 @@ class DAOPedidoProveedor extends Conexion{
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
-        $this->close();
-
+    }
         ///////////////////////////////////////////////
-
+        /*
         $prod = new Factura();
         $prod = $obj;        
         $sql = "insert into factura value(1,2,".$prod->getMonto().",'".$prod->getFecha()."',".$prod->getIdProveedor().",".$prod->getIdEmpleado().")";
@@ -133,7 +132,7 @@ class DAOPedidoProveedor extends Conexion{
         $this->desconectar();
         }*/
 
-
+        /*
 
         $prod = new Inventario();
         $prod = $obj;        
@@ -180,11 +179,10 @@ class DAOPedidoProveedor extends Conexion{
             echo "<script>swal({title:'Error',text:'El registro no fue modificado',type:'error'});</script>";
         }
         $this->desconectar();
-    }
+    }*/
         
 
 }
     
-
 
 ?>
