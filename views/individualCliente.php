@@ -40,8 +40,14 @@ include 'configuracion/configuracionCliente.php';
                         <hr>
                         <center>
                             <?php
+
                             if(isset($detalleRes)){
-                                echo '<button class="btn btn-warning" id="agregar" name="agregar">Agregar Nuevo</button>';
+                              if(isset($Mpedidos)){
+                                var_dump($Mpedidos);
+                                  echo "<input type='hidden' id='pedido' name='pedido' value='$Mpedidos'>
+                                  <button class='btn btn-danger' id='agregarReceta' name='agregarReceta'>Agregar</button>";
+                                }else{
+                                echo '<button class="btn btn-warning" id="agregar" name="agregar">Agregar Nuevo</button>';}
                             }else{ echo '<button class="btn btn-success" id="agregarP" name="agregarP">Agregar</button>';}
                             ?>
 
@@ -74,7 +80,6 @@ if(isset($pedido)){
          <th>total</th>
          <th>Accion</th>
          </tr>";
-
         foreach ($detalleRes as $Res) {
             $idDetalle=$Res['idDetallePedido'];
             $cantidad=$Res['cantidad'];
@@ -85,12 +90,21 @@ if(isset($pedido)){
                       <td>$cantidad</td>
                       <td>$NReceta</td>
                       <td>$precio</td>
-                      <td><form method='post'>
-                      <input type='hidden' name='idRes' id='idRes' value='$idRes'>
+                      <td><form method='post'>";
+                      if(isset($Mpedidos)){
+                        echo "<input type='hidden' name='idRes' id='idRes' value='$idRes'>
+                        <input type='hidden' name='algo' id='algo' value='$Mpedidos'>
                       <button class='btn btn-success' name='det' id='det' >Ver Receta</button>
                       <input type='hidden' name='id' id='id' value='$idDetalle'>
                       <button class='btn btn-danger' name='eliminar' id='eliminar'>Eliminar</button>
                       </form></td></tr>";
+                      }else{
+                      echo "<input type='hidden' name='idRes' id='idRes' value='$idRes'>
+                      <button class='btn btn-success' name='det' id='det' >Ver Receta</button>
+                      <input type='hidden' name='id' id='id' value='$idDetalle'>
+                      <button class='btn btn-danger' name='eliminar' id='eliminar'>Eliminar</button>
+                      </form></td></tr>";
+                    }
 
         }
         echo "</table>

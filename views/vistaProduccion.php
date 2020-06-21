@@ -97,9 +97,12 @@ include 'configuracion.php';
                             <td>$fechaPedido</td>
                             <td>$nombreCliente</td>
                             <td>$emp</td>
-                            <td><form method='POST'><input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'>
+                            <td><form method='POST'>
+                            <input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'>
+                            <input type='hidden' name='idPedido' id='idPedido' value='$idPedido'>
+                            <input type='hidden' name='idPr' id='idPr' value='$idProduccion'>
                             <button class='btn btn-info' id='eliminar' name='eliminar'>Eliminar</button>
-                            <button class='btn btn-warning' id='Pterminar' name='Pterminar'>Terminar</button>
+                            <button class='btn btn-warning' id='Pterminar' name='Pterminar' '>Terminar</button>
                             </form></td>
                         </tr>";
                    }

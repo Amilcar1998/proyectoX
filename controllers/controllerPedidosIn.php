@@ -9,11 +9,14 @@ if (isset($_REQUEST['detalle'])) {
 	$id=$_REQUEST['id'];
 	$detalle=$pedido->getDetalle($id);
 	$receta=$pedido->getReceta($id);
+
 }
 $fechaActual = date('d/m/Y');
 foreach ($session as $key) {
     $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 
+
 }
+
 
 include '../views/vistaPedidosI.php';

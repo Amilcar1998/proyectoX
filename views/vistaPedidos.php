@@ -52,28 +52,12 @@ include 'configuracion.php';
             
                             <?php
                             if (isset($id)) {
-                                $RecetaPollo=0;
-                                $polloAdulto=0;
-                                foreach ($detalle as $key) {
-                                    $ped = $key['idDetallePedido'];
-                                    $cantidad = $key['cantidad'];
-                                    $nRes = $key['nombreReceta'];
-                                    $idPedido = $key['IdPedido'];
-                                    $idReceta = $key['idReceta'];
-                                    if($idReceta==1) {
-                                        $RecetaPollo++;
-                                    }
-                                    if($idReceta==2){
-                                        $polloAdulto++;
-                                    }
-                                    var_dump($RecetaPollo);
-                                    var_dump($polloAdulto);
-                                }
+
                                 echo "<div class='row'>
                                         <div class='col-md-3'>
                                         <form action='controllerProduccion.php' method='POST'>
-                                        <input type='hidden' name='cantidadPollo' id='cantidadPollo' value=$RecetaPollo>
-                                        <input type='hidden' name='polloAdulto' id='polloAdulto' value=$polloAdulto>
+                                        <input type='hidden' name='' id='cantidadPollo' value=''>
+                                        <input type='hidden' name='' id='' value=''>
                                         <input type='hidden' name='id' id='id' value=$id>
                                         <button class='btn btn-info' name='agregar' id='agregar'>agregar a Produccion</button></form></div>
                                         <div class='col-md-3'><a href='controllerPedidos.php' <button class='btn btn-primary' >Regresar</button></a></div>
@@ -105,7 +89,6 @@ include 'configuracion.php';
                                           <td>$cantidad</td>
                                           <td>$nRes</td>  
                                           <td><form method='POST'>
-                                           <input type='hidden' name='contarPedido' id='contarPedido' value='$RecetaPollo' >
                                           <input type='hidden' name='idDetalle' id='idDetalle' value='$idPedido' >
                                           <input type='hidden' name='id' id='id' value='$idReceta'> 
                                           <button class='btn btn-primary' name='receta' id='receta'>Ver</button>
