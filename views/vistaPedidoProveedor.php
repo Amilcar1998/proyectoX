@@ -32,7 +32,7 @@ $dao= new DAOPedidoProveedor();
 
 
   <script>
-    function cargar(codpe,codpro,codemp,codmp,fec,nom,can,mon,pre){
+    function cargar(codpe,codpro,codemp,codmp,fec,can,mon,pre){
         document.formulario.txtIdPe.value=codpe;
         document.formulario.txtIdPro.value=codpro;
         document.formulario.txtIdEmp.value=codemp;
@@ -56,7 +56,13 @@ $dao= new DAOPedidoProveedor();
             <input type="text" name="txtIdPe" value="" size="30" placeholder="Id pedido" class="form-control">
             <input type="text" name="txtIdPro" value="" size="30" placeholder="Id proveedor" class="form-control">
             <input type="text" name="txtIdEmp" value="" size="30" placeholder="Id empleado" class="form-control">
-            <input type="text" name="txtIdMp" value="" size="30" placeholder="Id materia prima" class="form-control">
+            <select name="txtIdMp" class="form-control">Seleccionar Materia Prima
+                <option value="">seleccione materia prima</option>
+                <option value="1">Maiz Amarillo</option>
+                <option value="2">Maiz Blanco</option>
+                <option value="3">Maicillo</option>
+                <option value="4">Arroz</option>
+            </select>
             <input type="text" name="txtFec" value="" size="30" placeholder="fecha" class="form-control">
             <input type="text" name="txtCan" value="" size="30" placeholder="catidad qq" class="form-control">
             <input type="text" name="txtMon" value="" size="30" placeholder="monto" class="form-control">
