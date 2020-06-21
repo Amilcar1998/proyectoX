@@ -52,7 +52,7 @@ class DAOPedidoProveedor extends Conexion{
     public function insertar($obj){
         $prod = new PedidoProveedor();
         $prod = $obj;        
-        $sql = "insert into pedidoproveedor value(".$prod->getIdPedido().",".$prod->getIdProveedor().",".$prod->getIdEmpleado().",".$prod->getIdMateriaPrima().",'".$prod->getFecha()."',".$prod->getCantidadMP().",".$prod->getMonto().",".$prod->getPrecioMP().")";                         //getIdPedido             //getFecha              //getNombreProducto            //getCantidad            //getPrecio            //getIdProveedor        
+        $sql = "insert into pedidoproveedor value(0,".$prod->getIdProveedor().",".$prod->getIdEmpleado().",".$prod->getIdMateriaPrima().",'".$prod->getFecha()."',".$prod->getCantidadMP().",".$prod->getMonto().",".$prod->getPrecioMP().")";                         //getIdPedido             //getFecha              //getNombreProducto            //getCantidad            //getPrecio            //getIdProveedor        
         if($this->con->query($sql)){
         echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
         }else{
