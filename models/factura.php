@@ -8,11 +8,13 @@ class Factura{
     private $idProveedor;
     private $idEmpleado;
 
+
     public function Factura(){
 
     }
 
-    //metodos set y get
+    //////
+
 
     public function getIdFacturaMP(){
         return $this->idFacturaMP;
