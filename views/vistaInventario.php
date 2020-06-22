@@ -75,11 +75,13 @@ include 'configuracion.php';
                 <div class="col-md-6">
                   <label>Materia Prima</label> 
                   <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control">
-                    <option 1 value="1">Maiz Amarillo</option>
-                    <option 2 value="2">Maiz Blanco</option>
-                    <option 3 value="1">Maicillo</option>
-                    <option 4 value="1">Arroz</option>
-                  <!--<input type="text" name="txtIdMateriaPrima" id="txtIdMateriaPrima" value="" size="30" placeholder="ID Materia Prima" class="form-control">-->
+                    <option value="">seleccione materia prima</option>
+                    <option value="1">Maiz Amarillo</option>
+                    <option value="2">Maiz Blanco</option>
+                    <option value="3">Soya</option>
+                    <option value="4">Harina</option>
+                    <option value="5">Maicillo</option>
+                    <option value="6">Trigo</option>
                   </select>
                 </div>
             </div>

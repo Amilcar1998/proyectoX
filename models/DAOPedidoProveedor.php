@@ -40,9 +40,7 @@ class DAOPedidoProveedor extends Conexion{
                         ."<td><a href=\"javascript:cargar('".$fila["idPedido"]."','".$fila["idProveedor"]."','".$fila["idEmpleado"]."','".$fila["idMateriaPrima"]."','".$fila["fecha"]."','".$fila["cantidadMP"]."','".$fila["monto"]."','".$fila["precioMP"]."')\">select</a></td>"
                     ."</tr>";
         }
-
         $tabla .="</tbody></table>";
-        $res->close();
         return $tabla;
 
     }

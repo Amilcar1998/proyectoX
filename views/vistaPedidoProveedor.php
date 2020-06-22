@@ -60,8 +60,10 @@ $dao= new DAOPedidoProveedor();
                 <option value="">seleccione materia prima</option>
                 <option value="1">Maiz Amarillo</option>
                 <option value="2">Maiz Blanco</option>
-                <option value="3">Maicillo</option>
-                <option value="4">Arroz</option>
+                <option value="3">Soya</option>
+                <option value="4">Harina</option>
+                <option value="5">Maicillo</option>
+                <option value="6">Trigo</option>
             </select>
             <input type="text" name="txtFec" value="" size="30" placeholder="fecha" class="form-control">
             <input type="text" name="txtCan" value="" size="30" placeholder="catidad qq" class="form-control">
