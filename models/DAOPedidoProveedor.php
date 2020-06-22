@@ -4,7 +4,7 @@ include '../db/conexion.php';
 include 'pedidoProveedor.php';
 include 'factura.php';
 include 'detalleCompra.php';
-include 'inventario.php';
+include 'Inventario.php';
 
 class DAOPedidoProveedor extends Conexion{
 
@@ -79,8 +79,8 @@ class DAOPedidoProveedor extends Conexion{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
         ///////////////////////////////////////////////
-        //$qq=$prod->getCantidadMP();
-        $prod = new Inventario();    
+        /*$prod = new Inventario();    
+        $prod = $obj;
         $idMP=$prod->getIdMateriaPrima();
         $sql="select  Existencias from inventario where idMateriaPrima=$idMP";
             if($this->con->query($sql)){
