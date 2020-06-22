@@ -78,6 +78,12 @@ $menu="<ul class='sidebar navbar-nav'>
           <span>Inventario</span>
         </a>
       </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerReportes.php'>
+        <i class='fas fa-fw fa-tachometer-alt'></i>
+          <span>Reportes</span>
+        </a>
+      </li>
     </ul>
 ";
 

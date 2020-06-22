@@ -8,24 +8,31 @@
     }catch(Exception $exc){
         echo $exc->getTraceAsString();
     }
-    $sql = "SELECT idInventario, inventario.idMateriaPrima, materiaprima.NombreMP AS NombreMAP, Existencias FROM inventario INNER JOIN materiaprima ON 
-            inventario.idMateriaPrima = materiaprima.idMateriaPrima";
+    $sql = "SELECT * from pedidoproveedor";
     $res = $con->query($sql);
     $tabla = "";
     $tabla .= "<table>
                 <tr>
                     <th style='padding-right:25px'>ID</th>
-                    <th>ID MP</th>
-                    <th>NOMBRE MP</th>
-                    <th>EXISTENCIA</th>
+                    <th>ID PEDIDO</th>
+                    <th>ID PROVEEDOR MP</th>
+                    <th>ID EMPLEADO</th>
+                    <th>ID MATERIA PRIMA</th>
+                    <th>FECHA</th>
+                    <th>CANTIDAD</th>
+                    <th>MONTO</th>
+                    <th>PRECIO</th>
                 </tr>
                 ";
     while($fila= $res->fetch_assoc()){
         $tabla .= "<tr>
-                    <td style='padding-right:25px'>".$fila['idInventario']."</td>
-                    <td style='padding-right:25px'>".$fila['idMateriaPrima']."</td>
-                    <td style='padding-right:25px'>".$fila['NombreMAP']."</td>
-                    <td>".$fila['Existencias']."</td>
+                    <td style='padding-right:25px'>".$fila['idPedido']."</td>
+                    <td style='padding-right:25px'>".$fila['idProveedor']."</td>
+                    <td style='padding-right:25px'>".$fila['idEmpleado']."</td>
+                    <td style='padding-right:25px'>".$fila['fecha']."</td>
+                    <td style='padding-right:25px'>".$fila['cantidadMP']."</td>
+                    <td style='padding-right:25px'>".$fila['monto']."</td>
+                    <td style='padding-right:25px'>".$fila['precioMP']."</td>
                 </tr>";
     }
     $tabla .="</table>";
