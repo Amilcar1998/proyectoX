@@ -39,7 +39,8 @@
     return $tabla;
 }
 $fecha=getdate();
-$html = "<p align='center'><img src='../controllers/recursos/logo.jpg' width='150px';></p>Fecha del reporte: ".$fecha = $fecha['mday']."-".$fecha['mon']."-".$fecha['year']."  ".$fecha['hours'].":".$fecha['minutes'].":".$fecha['seconds']."<hr><br>
+$html = "<p align='center'><h3>CONCENTRADOS EL GORDITO</h3></p><br>
+        <p align='center'><img src='../controllers/recursos/logo.jpg' width='150px';></p>Fecha del reporte: ".$fecha = $fecha['mday']."-".$fecha['mon']."-".$fecha['year']."  ".$fecha['hours'].":".$fecha['minutes'].":".$fecha['seconds']."<hr><br>
         <h3>INVENTARIO GENERAL DE MATERIA PRIMA</h3>";
 $html .= selecTabla();
 $pdf = new mPDF('c');

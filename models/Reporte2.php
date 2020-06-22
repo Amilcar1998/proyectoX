@@ -8,22 +8,22 @@
     }catch(Exception $exc){
         echo $exc->getTraceAsString();
     }
-    $sql = "SELECT idPedido,pedido.fechaPedido, nombreCliente FROM pedido 
-            INNER JOIN cliente ON pedido.idCliente=cliente.idCliente";
+    $sql = "SELECT materiaprima.nombreMP AS NombreMAP, Existencias from materiaprima 
+    inner join inventario on materiaprima.idMateriaPrima=inventario.idMateriaPrima
+    where Existencias <= 50
+    order by  Existencias asc";
     $res = $con->query($sql);
     $tabla = "";
     $tabla .= "<table>
                 <tr>
-                    <th style='padding-right:25px'>ID PED</th>
-                    <th>FECHA</th>
-                    <th>CLIENTE</th>
+                    <th>NOMBRE MP</th>
+                    <th>EXISTENCIA</th>
                 </tr>
                 ";
     while($fila= $res->fetch_assoc()){
         $tabla .= "<tr>
-                    <td style='padding-right:25px'>".$fila['idPedido']."</td>
-                    <td style='padding-right:25px'>".$fila['fechaPedido']."</td>
-                    <td style='padding-right:25px'>".$fila['nombreCliente']."</td>
+                    <td style='padding-right:25px'>".$fila['NombreMAP']."</td>
+                    <td>".$fila['Existencias']."</td>
                 </tr>";
     }
     $tabla .="</table>";
@@ -32,7 +32,7 @@
 $fecha=getdate();
 $html = "<p align='center'><h3>CONCENTRADOS EL GORDITO</h3></p><br>
         <p align='center'><img src='../controllers/recursos/logo.jpg' width='150px';></p>Fecha del reporte: ".$fecha = $fecha['mday']."-".$fecha['mon']."-".$fecha['year']."  ".$fecha['hours'].":".$fecha['minutes'].":".$fecha['seconds']."<hr><br>
-        <h3>PEDIDOS POR FECHA Y CLIENTE</h3>";
+        <h3>INVENTARIO ESCASO</h3>";
 $html .= selecTabla();
 $pdf = new mPDF('c');
 $pdf->WriteHTML($html);
