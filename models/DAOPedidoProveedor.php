@@ -4,7 +4,7 @@ include '../db/conexion.php';
 include 'pedidoProveedor.php';
 include 'factura.php';
 include 'detalleCompra.php';
-include '../inventario/inventario.php';
+include 'inventario.php';
 
 class DAOPedidoProveedor extends Conexion{
 
@@ -79,44 +79,35 @@ class DAOPedidoProveedor extends Conexion{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
         ///////////////////////////////////////////////
-        $qq=$prod->getCantidadMP();
-        function calculo($qq){
+        //$qq=$prod->getCantidadMP();
         $prod = new Inventario();    
         $idMP=$prod->getIdMateriaPrima();
-        $sql="select  idMateriaPrima from inventario where idMateriaPrima=$idMP";
-        if($this->con->query($sql)){
-            //SweetAlert
-        //echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
-        }else{
-          //  echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
-        }
+        $sql="select  Existencias from inventario where idMateriaPrima=$idMP";
+            if($this->con->query($sql)){
+                return $prod;
+            }else{
+            //  echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
+            }
 
-        if($sql==$qq){
-            $suma=$sql+$qq;
-            return $suma;
-        }else{
-            return $prod->getCantidadMP();
-        } 
-
-        }
-
+            if($sql==$qq){
+                $suma=$sql+$qq;
+                return $suma;
+            }else{
+                return $prod->getCantidadMP();
+            } 
+        
         /*
-
         $prod = new Inventario();
         $prod = $obj;        
-        $sql = "insert into inventario value(1,".$prod->getIdMateriaPrima().",555555,1)";
-        $this->conectar();
+        $sql = "insert into inventario value(1,".$prod->getIdMateriaPrima().",555555)";
         if($this->con->query($sql)){
             //SweetAlert
         echo "<script>swal({title:'Exito',text:'El registro fue insertado satisfactoriamente',type:'success'});</script>";
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
-        }
-        $this->desconectar();
- 
+        }*/
 
-        
-    }*/
+    }
 
     
 

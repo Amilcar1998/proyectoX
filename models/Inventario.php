@@ -4,13 +4,11 @@ class Inventario{
     private $idInventario;
     private $idMateriaPrima;
     private $Existencias;
-    private $idDetalleCompra;
 
-    public function Inventario($idInventario,$idMateriaPrima,$Existencias,$idDetalleCompra){
+    public function Inventario($idInventario,$idMateriaPrima,$Existencias){
         $this->idInventario=$idInventario;
         $this->idMateriaPrima=$idMateriaPrima;
         $this->Existencias=$Existencias;
-        $this->idDetalleCompra=$idDetalleCompra;
     }
 
     //metodos set y get
@@ -44,13 +42,6 @@ class Inventario{
     }
 
     /////
-    public function getIdDetalleCompra(){
-        return $this->idDetalleCompra;
-    }
-
-    public function setIdDetalleCompra($idDetalleCompra){
-        $this->idDetalleCompra=$idDetalleCompra;
-    }
 
     /////
 
