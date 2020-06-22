@@ -41,6 +41,7 @@ class DAOPedidoProveedor extends Conexion{
                     ."</tr>";
         }
         $tabla .="</tbody></table>";
+        $res->close();
         return $tabla;
 
     }
@@ -65,10 +66,11 @@ class DAOPedidoProveedor extends Conexion{
         }else{
             echo "<script>swal({title:'Error',text:'El registro no fue insertado',type:'error'});</script>";
         }
+        
         ///////////////////////////////////////////////
         $prod = new DetalleCompra();
         $prod = $obj;        
-        $sql = "insert into detalleCompra value(0,".$prod->getIdMateriaPrima().",".$prod->getCantidadMP().",".$prod->getPrecioMP().",1)";
+        $sql = "insert into detallecompra value(0,".$prod->getIdMateriaPrima().",".$prod->getCantidadMP().",".$prod->getPrecioMP().",0)";
         
         if($this->con->query($sql)){
             //SweetAlert
