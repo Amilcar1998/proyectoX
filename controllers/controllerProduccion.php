@@ -10,6 +10,9 @@ foreach ($session as $key) {
  $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 }
   $fechaActual = date('d/m/Y');
+
+
+  
 if(isset($_REQUEST['agregar'])){
 $id=$_REQUEST['id'];
 $pedido=$prod->getPedido($id);
