@@ -4,7 +4,8 @@ name: Deploy Jekyll with GitHub Pages dependencies preinstalled
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["master"]
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -27,16 +28,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
+        with:
+          ref: main # Use main branch
+          fetch-depth: 0 # Fetch all history for tags and branches
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
+        run: |
+          bundle install
+          bundle exec jekyll build
+          mv _site/index.html _site/index.php # Renaming the generated index.html to index.php
+        working-directory: ./  # Specify the working directory
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v2
+        with:
+          name: site
+          path: _site
+          exclude: |
+            README.md  # Exclude README.md from artifact
 
   # Deployment job
   deploy:
