@@ -32,6 +32,12 @@ jobs:
         with:
           ref: main # Use main branch
           fetch-depth: 0 # Fetch all history for tags and branches
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.7 # Change this to your Jekyll version if it's different
+      - name: Install Bundler
+        run: gem install bundler
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
