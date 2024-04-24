@@ -1,44 +1,51 @@
-name: Deploy Jekyll with GitHub Pages
+# Flujo de trabajo de muestra para crear e implementar un sitio Jekyll en páginas de GitHub
+nombre : Implemente Jekyll con las dependencias de GitHub Pages preinstaladas
 
-on:
-  push:
-    branches:
-      - main
+en :
+  # Se ejecuta en envíos dirigidos a la rama predeterminada
+  empujar :
+    ramas : ["maestro"]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+  # Le permite ejecutar este flujo de trabajo manualmente desde la pestaña Acciones
+  flujo de trabajo_dispatch :
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+# Establece permisos de GITHUB_TOKEN para permitir la implementación en páginas de GitHub
+permisos :
+  contenido : leer
+  páginas : escribir
+  token de identificación : escribir
 
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 2.7
+# Permitir solo una implementación simultánea, omitiendo ejecuciones en cola entre la ejecución en progreso y la última en cola.
+# Sin embargo, NO cancele las ejecuciones en curso, ya que queremos permitir que se completen estas implementaciones de producción.
+concurrencia :
+  grupo : " páginas "
+  cancelación en curso : falso
 
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
+trabajos :
+  # Construir trabajo
+  construir :
+    se ejecuta : ubuntu-latest
+    pasos :
+      - nombre : Pagar
+        usos : acciones/pago@v4
+      - nombre : páginas de configuración
+        usos : acciones/configurar-páginas@v5
+      - nombre : Construir con Jekyll
+        usos : acciones/jekyll-build-pages@v1
+        con :
+          fuente : ./
+          destino : ./_sitio
+      - nombre : cargar artefacto
+        usos : acciones/cargar-páginas-artifact@v3
 
-      - name: Build Jekyll site
-        run: bundle exec jekyll build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-
-  open-page:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Open specific page
-        uses: wei/open-specific-page@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          url: https://${{ github.repository }}/index.php
-
+  # Trabajo de implementación
+  desplegar :
+    ambiente :
+      nombre : páginas-github
+      URL : ${{ pasos.deployment.outputs.page_url }}
+    se ejecuta : ubuntu-latest
+    necesidades : construir
+    pasos :
+      - nombre : Implementar en páginas de GitHub
+        identificación : implementación
+        usos : acciones/deploy-pages@v4
