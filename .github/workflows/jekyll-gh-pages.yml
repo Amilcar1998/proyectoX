@@ -1,79 +1,44 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+name: Deploy Jekyll with GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches:
       - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  # Build job
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          ref: main # Use main branch
-          fetch-depth: 0 # Fetch all history for tags and branches
+
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.7 # Change this to your Jekyll version if it's different
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Build with Jekyll
+          ruby-version: 2.7
+
+      - name: Install dependencies
         run: |
+          gem install bundler
           bundle install
-          bundle exec jekyll build
-          mv _site/index.html _site/index.php # Renaming the generated index.html to index.php
-        working-directory: ./  # Specify the working directory
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: site
-          path: _site
-          exclude: |
-            README.md  # Exclude README.md from artifact
 
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
+      - name: Build Jekyll site
+        run: bundle exec jekyll build
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
 
-  # Open specific page after deployment
   open-page:
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: build
     steps:
       - name: Open specific page
         uses: wei/open-specific-page@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          url: ${{ steps.deployment.outputs.page_url }}/index.php
+          url: https://${{ github.repository }}/index.php
 
