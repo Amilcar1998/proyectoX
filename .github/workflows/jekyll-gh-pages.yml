@@ -49,3 +49,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Open specific page after deployment
+  open-page:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Open specific page
+        uses: wei/open-specific-page@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          url: ${{ steps.deployment.outputs.page_url }}/index.php
