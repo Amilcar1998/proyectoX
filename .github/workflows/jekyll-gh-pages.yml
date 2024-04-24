@@ -33,7 +33,7 @@ jobs:
           ref: main # Use main branch
           fetch-depth: 0 # Fetch all history for tags and branches
       - name: Setup Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7 # Change this to your Jekyll version if it's different
       - name: Install Bundler
@@ -76,3 +76,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           url: ${{ steps.deployment.outputs.page_url }}/index.php
+
