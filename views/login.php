@@ -1,3 +1,19 @@
+
+<?php 
+session_start();
+var_dump($_SESSION);
+
+$user = $_SESSION["s1"];
+
+echo $user;
+
+
+if($user !=''){
+  header("Location:controllerEmpleado.php");
+
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 

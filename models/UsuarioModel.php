@@ -22,6 +22,7 @@ class UsuarioModel extends conexion
             $para->bind_param("ss",$a,$b);
             $a=$login;
             $b=sha1($pass);
+
             $para->execute();
             while($para->fetch()) {
                 return 2;

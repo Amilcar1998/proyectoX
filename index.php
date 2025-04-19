@@ -1,126 +1,134 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-	<title>Concentrados El Gordito</title>
-    <meta charset="utf-8">
-
-    <link rel="stylesheet" href="controllers/Recursos/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="controllers/Recursos/js/sweetalert.css">
-
-    <script src="controllers/Recursos/css/bootstrap/js/bootstrarp.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>concentrados - El Gordito</title>
     
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <script src="controllers/Recursos/js/jquery-3.4.1.js"></script>
-    <script src="controllers/Recursos/js/sweetalert.min.js"></script>
+    <!-- Animate.css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome (Para íconos) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .hero-section {
+            background: url('https://noticiasrealessv.com/wp-content/uploads/2022/09/FcoIDXlWAAAIrxf-1170x779.jpg') center/cover no-repeat;
+            height: 100vh;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .hero-section h1 {
+            font-size: 4rem;
+            animation: fadeInDown 2s;
+        }
+        .hero-section p {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            animation: fadeInUp 2s;
+        }
+        .carousel img {
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">CONCENTRADOS EL GORDITO</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarText">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="https://www.facebook.com/Concentrados-el-Gordito-106721037742036/">Facebook<span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.instagram.com/concentradosel/">Instagran</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="controllers/controlUser.php">iniciar sesion</a>
-      </li>
-    </ul>
-    <span class="navbar-text">
-     NO TE COMPLIQUES, CONFIA EN EL GORDITO
-    </span>
-  </div>
-</nav>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div>
+        <h1 class="animate__animated animate__fadeInDown">¡Bienvenido a El Gordito!</h1>
+        <p class="animate__animated animate__fadeInUp">Soluciones de alta calidad para tus necesidades</p>
+        <a href="#productos" class="btn btn-warning btn-lg mt-4 animate__animated animate__pulse animate__infinite">Descubre más</a> &nbsp;&nbsp;
+        <a href="controllers/controlUser.php" class="btn btn-warning btn-lg mt-4 animate__animated animate__pulse animate__infinite">Iniciar - Session</a>
+    </div>
+</section>
 
+<!-- Carrusel de Imágenes -->
+<div id="productos" class="container my-5">
+    <h2 class="text-center mb-4">Nuestros Productos Destacados</h2>
+    <div id="productosCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Producto 1">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Concentrados para Aves</h5>
+                    <p>La mejor calidad para el crecimiento y desarrollo.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Producto 2">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Concentrados para Ganado</h5>
+                    <p>Rendimiento óptimo y resultados garantizados.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Producto 3">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Concentrados para Mascotas</h5>
+                    <p>Nutrición completa y equilibrada.</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#productosCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productosCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+</div>
 
-<table class="table table-dark">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col"></th>
-      <th scope="row">Contamos con una AMPLIA LÍNEA DE PRODUCTOS en los que
-       se encuentran alimentos para aves de engorde, aves de postura, cerdos,
-        ganado lechero, ganado de engorde, conejos, tilapia, caballos, mascotas.</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row"></th>
-      <td></td>
-      <td>Tenemos mayoristas en los cuatro puntos cardinales, lo que nos brinda una 
-      MAYOR COBERTURA GEOGRÁFICA con el objetivo de estar más cerca de los centros de 
-      producción de nuestros clientes. Todos los alimentos son comercializados bajo la marca 
-      EL GORDITO, sinónimo de solidez, experiencia, capacidad, respaldo, alta calidad, confianza, 
-      precio razonable, tecnología de punta, amplia cobertura geográfica, asesoría técnica profesional 
-      y elevado nivel de servicio.</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th scope="row"></th>
-      <td></td>
-      <td>Nuestro compromiso es ofrecer la mejor calidad en productos y servicios. 
-      Para preguntas o comentarios por favor enviar sus dudas a nuestras redes sociales
-      ubicadas en la parte superior de esta pagina y uno de nuestros asesores le responderá.</td>
-      <td></td>
-    </tr>
-   
-  </tbody>
-</table>
+<!-- Información Adicional -->
+<section class="container my-5">
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <i class="fas fa-seedling fa-3x text-success"></i>
+            <h3 class="my-3">Productos Naturales</h3>
+            <p>Comprometidos con el medio ambiente y la calidad.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-truck fa-3x text-primary"></i>
+            <h3 class="my-3">Cobertura Nacional</h3>
+            <p>Distribuimos a lo largo y ancho del país.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-award fa-3x text-warning"></i>
+            <h3 class="my-3">Calidad Garantizada</h3>
+            <p>Productos con altos estándares y tecnología de punta.</p>
+        </div>
+    </div>
+</section>
 
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+    <div class="container text-center">
+        <p>&copy; 2025 Concentrados El Gordito. Todos los derechos reservados.</p>
+        <p>
+            <a href="https://www.facebook.com/Concentrados-el-Gordito-106721037742036/" class="text-white me-2"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.instagram.com/concentradosel/" class="text-white"><i class="fab fa-instagram"></i></a>
+        </p>
+    </div>
+</footer>
 
-<table class="table table-hover table-dark">
-<tr>
-  <td class="bg-info"></td>
-  <td class="bg-info"></td>
-  <td class="bg-info">CONCENTRADO PARA AVES</td>
-  <td class="bg-info"></td>
-  <td class="bg-info"><img src="controllers/Recursos/pollo.jpg"><img src="controllers/Recursos/ecursos/pollos.jpg"></td>
-</tr>
-    
-<table class="table table-hover table-dark">
-<tr>
-  <td class="bg-warning"></td>
-  <td class="bg-warning"></td>
-  <td class="bg-warning">CONCENTRADO PARA CERDOS</td>
-  <td class="bg-warning"></td>
-  <td class="bg-warning"><img src="controllers/Recursos/cerdos.jpg"><img src="controllers/Recursos/cerdo.jpg"></td>
-</tr>
-
-<table class="table table-hover table-dark">
-<tr>
-  <td class="bg-danger"></td>
-  <td class="bg-danger"></td>
-  <td class="bg-danger">CONCENTRADO PARA VACAS</td>
-  <td class="bg-danger"></td>
-  <td class="bg-danger"><img src="controllers/Recursos/vacas.jpg"><img src="controllers/Recursos/vaca.jpg"></td>
-</tr>
-
-<table class="table table-hover table-dark">
-<tr>
-  <td class="bg-success"></td>
-  <td class="bg-success"></td>
-  <td class="bg-success">CONCENTRADO PARA CONEJOS</td>
-  <td class="bg-success"></td>
-  <td class="bg-success"><img src="controllers/Recursos/conejo.jpg"><img src="controllers/Recursos/conejos.png"></td>
-</tr>
-
-<table class="table table-hover table-dark">
-<tr>
-  <td class="bg-info"></td>
-  <td class="bg-info"></td>
-  <td class="bg-info">CONCENTRADO PARA CABALLOS</td>
-  <td class="bg-info"><img src="controllers/Recursos/caballo.gif"><img src="controllers/Recursos/caballos.jpeg"></td>
-  <td class="bg-info"></td>
-</tr>
-
-  </tbody>
-</table>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,15 @@
+{
+    "name": "amilc/proyecto-x",
+    "description": "n/a",
+    "autoload": {
+        "psr-4": {
+            "Amilc\\ProyectoX\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "amilcar"
+        }
+    ],
+    "require": {}
+}
