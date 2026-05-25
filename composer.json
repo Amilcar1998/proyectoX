@@ -11,5 +11,12 @@
             "name": "amilcar"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "^7.4"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        }
+    }
 }
