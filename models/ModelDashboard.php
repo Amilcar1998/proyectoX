@@ -17,12 +17,12 @@ class ModelDashboard extends Conexion {
             'totalEmpleados' => 0,
         ];
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM pedidoproveedor");
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM pedido");
         if ($res) {
             $data['totalPedidos'] = $res->fetch_assoc()['total'] ?? 0;
         }
 
-        $res = $this->con->query("SELECT COALESCE(SUM(monto),0) AS total FROM pedidoproveedor");
+        $res = $this->con->query("SELECT COALESCE(SUM(Monto),0) AS total FROM factura");
         if ($res) {
             $data['montoTotal'] = $res->fetch_assoc()['total'] ?? 0;
         }
@@ -32,12 +32,12 @@ class ModelDashboard extends Conexion {
             $data['totalFacturas'] = $res->fetch_assoc()['total'] ?? 0;
         }
 
-        $res = $this->con->query("SELECT COALESCE(SUM(monto),0) AS total FROM factura");
+        $res = $this->con->query("SELECT COALESCE(SUM(Monto),0) AS total FROM factura");
         if ($res) {
             $data['montoFacturado'] = $res->fetch_assoc()['total'] ?? 0;
         }
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 10");
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 500");
         if ($res) {
             $data['stockCritico'] = $res->fetch_assoc()['total'] ?? 0;
         }
@@ -51,8 +51,27 @@ class ModelDashboard extends Conexion {
     }
 
     public function getPedidosMensuales(): array {
-        $sql = "SELECT DATE_FORMAT(fecha, '%Y-%m') AS mes, COUNT(*) AS cantidad, COALESCE(SUM(monto),0) AS monto
-                FROM pedidoproveedor
+        $sql = "SELECT DATE_FORMAT(STR_TO_DATE(fechaPedido, '%d/%m/%Y'), '%Y-%m') AS mes, COUNT(*) AS cantidad
+                FROM pedido
+                WHERE fechaPedido REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'
+                GROUP BY mes
+                ORDER BY mes DESC
+                LIMIT 12";
+        $res = $this->con->query($sql);
+        if (!$res) {
+            return [];
+        }
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getMontoMensual(): array {
+        $sql = "SELECT DATE_FORMAT(STR_TO_DATE(Fecha, '%d/%m/%Y'), '%Y-%m') AS mes, COALESCE(SUM(Monto),0) AS monto
+                FROM factura
+                WHERE Fecha REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'
                 GROUP BY mes
                 ORDER BY mes DESC
                 LIMIT 12";
@@ -71,7 +90,8 @@ class ModelDashboard extends Conexion {
         $sql = "SELECT mp.NombreMP, i.Existencias
                 FROM inventario i
                 INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
-                ORDER BY i.Existencias ASC";
+                ORDER BY i.Existencias ASC
+                LIMIT 15";
         $res = $this->con->query($sql);
         if (!$res) {
             return [];
@@ -84,14 +104,18 @@ class ModelDashboard extends Conexion {
     }
 
     public function getPedidosRecientes(): array {
-        $sql = "SELECT pp.idPedido, p.nombreProveedor,
+        $sql = "SELECT p.idPedido, c.NombreCliente,
                        CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado,
-                       mp.NombreMP, pp.fecha, pp.cantidadMP, pp.monto
-                FROM pedidoproveedor pp
-                INNER JOIN proveedor p ON pp.idProveedor = p.idProveedor
-                INNER JOIN empleado e ON pp.idEmpleado = e.idEmpleado
-                INNER JOIN materiaprima mp ON pp.idMateriaPrima = mp.idMateriaPrima
-                ORDER BY pp.fecha DESC
+                       GROUP_CONCAT(DISTINCT r.nombreReceta SEPARATOR ', ') AS recetas,
+                       p.fechaPedido, SUM(dp.cantidad) AS cantidad
+                FROM pedido p
+                INNER JOIN cliente c ON p.idCliente = c.idCliente
+                INNER JOIN detallepedido dp ON p.idPedido = dp.IdPedido
+                INNER JOIN receta r ON dp.idReceta = r.idReceta
+                INNER JOIN produccion pr ON p.idPedido = pr.idPedido
+                INNER JOIN empleado e ON pr.idEmpleado = e.idEmpleado
+                GROUP BY p.idPedido, c.NombreCliente, e.nombreEmp, e.apellido, p.fechaPedido
+                ORDER BY p.fechaPedido DESC
                 LIMIT 10";
         $res = $this->con->query($sql);
         if (!$res) {

@@ -7,6 +7,7 @@ $dao = new ModelDashboard();
 
 $resumen = $dao->getResumen();
 $pedidosMensuales = $dao->getPedidosMensuales();
+$montoMensual = $dao->getMontoMensual();
 $stockMaterias = $dao->getStockMateriasPrimas();
 $pedidosRecientes = $dao->getPedidosRecientes();
 $produccionEmpleado = $dao->getProduccionPorEmpleado();

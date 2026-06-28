@@ -140,23 +140,23 @@
                     <table class="table table-bordered" width="100%" cellspacing="0">
                       <thead>
                         <tr>
-                          <th>Proveedor</th>
+                          <th>Pedido</th>
+                          <th>Cliente</th>
                           <th>Empleado</th>
-                          <th>Materia Prima</th>
+                          <th>Receta</th>
                           <th>Fecha</th>
                           <th>Cantidad</th>
-                          <th>Monto</th>
                         </tr>
                       </thead>
                       <tbody>
                         <?php foreach ($pedidosRecientes as $fila): ?>
                         <tr>
-                          <td><?php echo htmlspecialchars($fila['nombreProveedor'] ?? ''); ?></td>
+                          <td><?php echo htmlspecialchars($fila['idPedido'] ?? ''); ?></td>
+                          <td><?php echo htmlspecialchars($fila['NombreCliente'] ?? ''); ?></td>
                           <td><?php echo htmlspecialchars($fila['empleado'] ?? ''); ?></td>
-                          <td><?php echo htmlspecialchars($fila['NombreMP'] ?? ''); ?></td>
-                          <td><?php echo htmlspecialchars($fila['fecha'] ?? ''); ?></td>
-                          <td><?php echo htmlspecialchars($fila['cantidadMP'] ?? ''); ?></td>
-                          <td>$<?php echo number_format($fila['monto'] ?? 0, 2); ?></td>
+                          <td><?php echo htmlspecialchars($fila['nombreReceta'] ?? ''); ?></td>
+                          <td><?php echo htmlspecialchars($fila['fechaPedido'] ?? ''); ?></td>
+                          <td><?php echo htmlspecialchars($fila['cantidad'] ?? 0); ?></td>
                         </tr>
                         <?php endforeach; ?>
                       </tbody>
@@ -188,7 +188,6 @@
     <script>
       const meses = <?php echo json_encode(array_column($pedidosMensuales, 'mes')); ?>;
       const cantidades = <?php echo json_encode(array_column($pedidosMensuales, 'cantidad')); ?>;
-      const montos = <?php echo json_encode(array_column($pedidosMensuales, 'monto')); ?>;
 
       new Chart(document.getElementById('chartPedidosMensuales'), {
         type: 'bar',
@@ -234,13 +233,16 @@
         options: { responsive: true }
       });
 
+      const mesesFact = <?php echo json_encode(array_column($montoMensual, 'mes')); ?>;
+      const montosFact = <?php echo json_encode(array_column($montoMensual, 'monto')); ?>;
+
       new Chart(document.getElementById('chartFacturacion'), {
         type: 'line',
         data: {
-          labels: meses,
+          labels: mesesFact,
           datasets: [{
             label: 'Monto Facturado',
-            data: montos,
+            data: montosFact,
             borderColor: '#36b9cc',
             fill: true,
             tension: 0.3
