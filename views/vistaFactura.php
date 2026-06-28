@@ -1,6 +1,6 @@
 <?php include '../views/configuracion.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
@@ -49,10 +49,10 @@
      <div id="content-wrapper">
        <div class="container-fluid">
          
-         <h2 class="text-center mb-4">Factura</h2>
-         
-         <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
-           <i class="fas fa-plus"></i> Agregar Factura
+          <h2 class="text-center mb-4">Factura</h2>
+
+          <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
+            <i class="fas fa-plus"></i> Nueva Factura
          </button>
          
          <!-- Modal -->
@@ -83,14 +83,24 @@
                      <label>Fecha</label>
                      <input type="text" name="txtFecha" value="" class="form-control" placeholder="Fecha">
                    </div>
-                   <div class="form-group">
-                     <label>ID Proveedor</label>
-                     <input type="text" name="txtIdProveedor" value="" class="form-control" placeholder="ID Proveedor">
-                   </div>
-                   <div class="form-group">
-                     <label>ID Empleado</label>
-                     <input type="text" name="txtIdEmpleado" value="" class="form-control" placeholder="ID Empleado">
-                   </div>
+                    <div class="form-group">
+                      <label>Proveedor</label>
+                      <select name="txtIdProveedor" class="form-control">
+                        <option value="">Seleccione proveedor</option>
+                        <?php foreach ($proveedores as $p) {
+                          echo "<option value='".$p["idProveedor"]."'>".$p["nombreProveedor"]."</option>";
+                        } ?>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Empleado</label>
+                      <select name="txtIdEmpleado" class="form-control">
+                        <option value="">Seleccione empleado</option>
+                        <?php foreach ($empleados as $e) {
+                          echo "<option value='".$e["idEmpleado"]."'>".$e["nombreEmp"]." ".$e["apellido"]."</option>";
+                        } ?>
+                      </select>
+                    </div>
                    
                    <div class="modal-footer">
                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -98,59 +108,42 @@
                      <button type="submit" value="modificar" name="btnModificar" class="btn btn-warning">Modificar</button>
                      <button type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">Eliminar</button>
                    </form>
-                   </div>
-               </div>
-             </div>
-           </div>
-         </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
 
-         <!-- DataTables Example -->
-         <div class="card mb-3">
-           <div class="card-header">
-             <i class="fas fa-table"></i>
-             Lista de Facturas
-           </div>
-           <div class="card-body">
-             <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                 <thead>
-                   <tr>
-                     <th>ID FACTURA</th>
-                     <th>NÚMERO FACTURA</th>
-                     <th>MONTO</th>
-                     <th>FECHA</th>
-                     <th>ID PROVEEDOR</th>
-                     <th>ID EMPLEADO</th>
-                     <th>ACCIONES</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                 <?php 
-                 foreach ($tabla as $fila) {
-                     echo "<tr>
-                         <td>{$fila['idFacturaMP']}</td>
-                         <td>{$fila['numeroFac']}</td>
-                         <td>{$fila['Monto']}</td>
-                         <td>{$fila['Fecha']}</td>
-                         <td>{$fila['idProveedor']}</td>
-                         <td>{$fila['idEmpleado']}</td>
-                         <td>
-                         <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#formModal' onclick='cargar({$fila['idFacturaMP']},\"{$fila['numeroFac']}\",{$fila['Monto']},\"{$fila['Fecha']}\",{$fila['idProveedor']},{$fila['idEmpleado']})'><i class='fas fa-edit'></i> Editar</button>
-                         </td>
-                     </tr>";
-                 }
-                 ?>
-                 </tbody>
-               </table>
-             </div>
-           </div>
-         </div>
+    <script>
+      $(document).ready(function() {
+        $('#dataTable').DataTable({
+          language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json'
+          },
+          paging: false,
+          info: false
+        });
+      });
 
-       </div>
-       <!-- /.container-fluid -->
-     </div>
-     <!-- /.content-wrapper -->
-   </div>
-   <!-- /#wrapper -->
-</body>
+      function cargar(id, numero, monto, fecha, idProv, idEmp) {
+        document.formulario.txtIdFactura.value = id;
+        document.formulario.txtNumeroFac.value = numero;
+        document.formulario.txtMonto.value = monto;
+        document.formulario.txtFecha.value = fecha;
+        document.formulario.txtIdProveedor.value = idProv;
+        document.formulario.txtIdEmpleado.value = idEmp;
+      }
+    </script>
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-dark mt-auto">
+      <div class="container my-auto py-3">
+        <div class="copyright text-center my-auto">
+          <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+        </div>
+      </div>
+    </footer>
+
+  </body>
 </html>

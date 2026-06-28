@@ -48,10 +48,11 @@ if(isset($_REQUEST["eliminar"])){
   $session = $obEmp->getSessionEmp($correo);
   $datos=$obEmp->getEmpleado();
   $puesto=$obEmp->getCargo();
+  $usuarios=$obEmp->getUsuarios();
   foreach ($session as $key) {
- $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
-      
-   }
+  $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+     
+  }
   
   
 

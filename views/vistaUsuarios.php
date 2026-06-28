@@ -111,11 +111,6 @@ include 'configuracion.php';
                   <?php echo "$thead"; ?>               
                   </tr>
                 </thead>
-                <tfoot>
-                 <tr>
-                  <?php echo "$thead"; ?>
-                  </tr>
-                </tfoot>
                 <tbody>
                   <?php
                   if(isset($userEmp)) {
@@ -201,7 +196,7 @@ include 'configuracion.php';
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
         </div>
 
       </div>
@@ -255,6 +250,15 @@ include 'configuracion.php';
 
   <!-- Demo scripts for this page-->
   <script src="js/demo/datatables-demo.js"></script>
+
+  <!-- Footer -->
+  <footer class="sticky-footer bg-dark mt-auto">
+    <div class="container my-auto py-3">
+      <div class="copyright text-center my-auto">
+        <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+      </div>
+    </div>
+  </footer>
 
 </body>
 

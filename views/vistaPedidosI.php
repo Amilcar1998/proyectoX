@@ -19,6 +19,30 @@
 
   <!-- Custom styles for this template-->
   <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+  <style>
+    html, body { height: 100%; }
+    #wrapper { min-height: 100vh; }
+    #content-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    footer.sticky-footer {
+      position: relative !important;
+      margin-top: auto;
+      width: 100% !important;
+      height: auto !important;
+      padding: 1rem 0;
+    }
+    .table-responsive {
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+    .sidebar {
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
 
 </head>
 
@@ -152,16 +176,6 @@
                                                     <th>Acciones</th>
                                                 </tr>
                                                 </thead>
-                                                <tfoot>
-                                                <tr>
-                                                    <th>id Pedido</th>
-                                                    <th>fecha Pedido</th>
-                                                    <th>Cliente</th>
-                                                    <th>Apellidos</th>
-                                                    <th>Estado</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                                </tfoot>
                                                 <tbody>";
                                                 echo $tabla;
                             foreach ($datos as $key){
@@ -219,6 +233,15 @@
 
 <!-- Demo scripts for this page-->
 <script src="js/demo/datatables-demo.js"></script>
+
+<!-- Footer -->
+<footer class="sticky-footer bg-dark mt-auto">
+  <div class="container my-auto py-3">
+    <div class="copyright text-center my-auto">
+      <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+    </div>
+  </div>
+</footer>
 
 </body>
 

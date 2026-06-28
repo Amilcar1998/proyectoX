@@ -3,8 +3,6 @@ require dirname(__DIR__) . '/controllers/vendor/autoload.php';
 include '../models/ModelInventario.php';
 include 'sesiones.php';
 
-use Inventario;
-
 $dao = new ModelInventario();
 
 $tabla = $dao->getTabla();
@@ -18,6 +16,8 @@ if ($correo) {
         $nombres = $session[0]['nombreEmp'] . ' ' . $session[0]['apellido'];
     }
 }
+
+$materiasPrimas = $dao->getMateriasPrimas();
 
 if (isset($_REQUEST["btnGuardar"])) {
     $obj = new Inventario();

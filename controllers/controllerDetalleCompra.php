@@ -3,8 +3,6 @@ require dirname(__DIR__) . '/controllers/vendor/autoload.php';
 include '../models/ModelDetalleCompra.php';
 include 'sesiones.php';
 
-use DetalleCompra;
-
 $dao = new ModelDetalleCompra();
 
 $tabla = $dao->getTabla();
@@ -18,6 +16,9 @@ if ($correo) {
         $nombres = $session[0]['nombreEmp'] . ' ' . $session[0]['apellido'];
     }
 }
+
+$materiasPrimas = $dao->getMateriasPrimas();
+$facturas = $dao->getFacturas();
 
 if (isset($_REQUEST["btnGuardar"])) {
     $obj = new DetalleCompra();

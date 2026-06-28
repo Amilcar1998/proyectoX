@@ -124,70 +124,55 @@ include 'configuracion.php';
           Datos Proveedores</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered  table-triped" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                  <th>Id Proveedor</th>
-                  <th>Nombre </th>
-                  <th>contacto</th>
-                  <th>Nit</th>
-                  <th>correo</th> 
-                  <th>telefono</th>
-                  <th>Accion</th>               
-                  </tr>
+               <table class="table table-bordered  table-triped" id="dataTable" width="100%" cellspacing="0">
+                 <thead>
+                   <tr>
+                   <th>Nombre </th>
+                   <th>contacto</th>
+                   <th>Nit</th>
+                   <th>correo</th> 
+                   <th>telefono</th>
+                   <th>Accion</th>               
+                   </tr>
 
-                </thead>
-                <tfoot>
-                 <tr>
-                  <th>ID Empleado</th>
-                  <th>Nombre</th>
-                  <th>Apellidos</th>
-                  <th>Genero</th>
-                  <th>ID Cargo</th>
-                  <th>Usuario</th>
-                  <th>Accion</th>
-                  
-                  </tr>
+                 </thead>
+                 <tbody>
+               <?php 
+               foreach ($tab as $fila) {
+                 $idProv =$fila["idProveedor"];
+                 $nombres=$fila["nombreProveedor"];
+                 $nombre=str_replace(' ', '&nbsp;', $nombres);
+                 $contacto=$fila["contacto"];
+                 $nit=$fila["NIT"];
+                 $correoP=$fila["correoP"];
+                 $telefono=$fila["telefono"];
+  
+                echo "
+                <tr>
+                   <td>$nombres</td>
+                   <td>$contacto</td>
+                   <td>$nit</td>
+                   <td>$correoP</td>
+                   <td>$telefono</td>
+                   <td>
+                   <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');>Cargar</button>
+                   </td>
+                   
+                   </tr>
 
-                </tfoot>
-                <tbody>
-              <?php 
-              foreach ($tab as $fila) {
-                $idProv =$fila["idProveedor"];
-                $nombres=$fila["nombreProveedor"];
-                $nombre=str_replace(' ', '&nbsp;', $nombres);
-                $contacto=$fila["contacto"];
-                $nit=$fila["NIT"];
-                $correoP=$fila["correoP"];
-                $telefono=$fila["telefono"];
- 
-               echo "
-               <tr>
-                  <td>$idProv</td>
-                  <td>$nombres</td>
-                  <td>$contacto</td>
-                  <td>$nit</td>
-                  <td>$correoP</td>
-                  <td>$telefono</td>
-                  <td>
-                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');>Cargar</button>
-                  </td>
-                  
-                  </tr>
+                ";
 
-               ";
-
-               
-              }
-               
-                  
                 
-               ?>
+              }
+                
+                   
+                 
+                ?>
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
         </div>
 
         
@@ -240,17 +225,22 @@ include 'configuracion.php';
   <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
 
-  <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin.min.js"></script>
-  <script type="text/javascript" src="Recursos/validaciones.js"></script>
-  <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+   <!-- Custom scripts for all pages-->
+   <script src="js/sb-admin.min.js"></script>
+   <script type="text/javascript" src="Recursos/validaciones.js"></script>
 
-  <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
+   <!-- Footer -->
+   <footer class="sticky-footer bg-dark mt-auto">
+     <div class="container my-auto py-3">
+       <div class="copyright text-center my-auto">
+         <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+       </div>
+     </div>
+   </footer>
 
-</body>
+ </body>
 
-</html>
+ </html>
 <?php 
 if(isset($msj,$icon)){
   echo "<script>Swal.fire('$msj','','$icon');</script>";

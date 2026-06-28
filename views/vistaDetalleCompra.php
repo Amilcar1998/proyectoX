@@ -1,6 +1,6 @@
 <?php include '../views/configuracion.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
@@ -29,9 +29,9 @@
      <?php echo "$menu"; ?>
      <div id="content-wrapper">
        <div class="container-fluid">
-         <h2 class="text-center mb-4">Detalle Compra</h2>
-         <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
-           <i class="fas fa-plus"></i> Agregar Detalle Compra
+         <h2 class="text-center mb-4">Detalle de Compra</h2>
+          <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
+            <i class="fas fa-plus"></i> Agregar Detalle
          </button>
          
          <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
@@ -42,77 +42,118 @@
                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                </div>
                <div class="modal-body">
-                 <form method="POST" name="formulario">
-                   <div class="form-group">
-                     <label>ID Detalle</label>
-                     <input type="text" name="txtIdDetalle" value="" class="form-control" readonly>
-                   </div>
-                   <div class="form-group">
-                     <label>ID Materia Prima</label>
-                     <input type="text" name="txtIdMP" value="" class="form-control" placeholder="ID Materia Prima">
-                   </div>
-                   <div class="form-group">
-                     <label>Cantidad</label>
-                     <input type="text" name="txtCantidad" value="" class="form-control" placeholder="Cantidad">
-                   </div>
-                   <div class="form-group">
-                     <label>Precio</label>
-                     <input type="text" name="txtPrecio" value="" class="form-control" placeholder="Precio">
-                   </div>
-                   <div class="form-group">
-                     <label>ID Factura</label>
-                     <input type="text" name="txtIdFMP" value="" class="form-control" placeholder="ID Factura">
-                   </div>
-                   
-                   <div class="modal-footer">
-                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                     <button type="submit" value="guardar" name="btnGuardar" class="btn btn-primary">Guardar</button>
-                     <button type="submit" value="modificar" name="btnModificar" class="btn btn-warning">Modificar</button>
-                     <button type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">Eliminar</button>
-                   </form>
-                   </div>
-               </div>
-             </div>
-           </div>
-         </div>
+                  <form method="POST" name="formulario">
+                    <div class="form-group">
+                      <label>ID Detalle</label>
+                      <input type="text" name="txtIdDetalle" value="" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Materia Prima</label>
+                      <select name="txtIdMP" class="form-control">
+                        <option value="">Seleccione materia prima</option>
+                        <?php foreach ($materiasPrimas as $mp) {
+                          echo "<option value='".$mp["idMateriaPrima"]."'>".$mp["NombreMP"]."</option>";
+                        } ?>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Cantidad</label>
+                      <input type="text" name="txtCantidad" value="" class="form-control" placeholder="Cantidad">
+                    </div>
+                    <div class="form-group">
+                      <label>Precio</label>
+                      <input type="text" name="txtPrecio" value="" class="form-control" placeholder="Precio">
+                    </div>
+                    <div class="form-group">
+                      <label>Factura</label>
+                      <select name="txtIdFMP" class="form-control">
+                        <option value="">Seleccione factura</option>
+                        <?php foreach ($facturas as $f) {
+                          echo "<option value='".$f["idFacturaMP"]."'>".$f["numeroFac"]."</option>";
+                        } ?>
+                      </select>
+                    </div>
+                    
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                      <button type="submit" value="guardar" name="btnGuardar" class="btn btn-primary">Guardar</button>
+                      <button type="submit" value="modificar" name="btnModificar" class="btn btn-warning">Modificar</button>
+                      <button type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">Eliminar</button>
+                    </form>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-         <div class="card mb-3">
-           <div class="card-header"><i class="fas fa-table"></i> Lista de Detalle Compra</div>
-           <div class="card-body">
-             <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                 <thead>
-                   <tr>
-                     <th>ID DETALLE</th>
-                     <th>ID MATERIA PRIMA</th>
-                     <th>CANTIDAD</th>
-                     <th>PRECIO</th>
-                     <th>ID FACTURA</th>
-                     <th>ACCIONES</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                 <?php 
-                 foreach ($tabla as $fila) {
-                     echo "<tr>
-                         <td>{$fila['idDetalleCompra']}</td>
-                         <td>{$fila['idMateriaPrima']}</td>
-                         <td>{$fila['cantidadMP']}</td>
-                         <td>{$fila['precioMP']}</td>
-                         <td>{$fila['idFacturaMP']}</td>
-                         <td>
-                         <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#formModal' onclick='cargar({$fila['idDetalleCompra']},{$fila['idMateriaPrima']},\"{$fila['cantidadMP']}\",\"{$fila['precioMP']}\",{$fila['idFacturaMP']})'><i class='fas fa-edit'></i> Editar</button>
-                         </td>
-                     </tr>";
-                 }
-                 ?>
-                 </tbody>
-               </table>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
-</body>
+          <div class="card mb-3">
+            <div class="card-header"><i class="fas fa-table"></i> Lista de Detalle Compra</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Materia Prima</th>
+                      <th>CANTIDAD</th>
+                      <th>PRECIO</th>
+                      <th>FACTURA</th>
+                      <th>ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <?php 
+                  foreach ($tabla as $fila) {
+                      echo "<tr>
+                          <td>".($fila['NombreMP'] ?? '')."</td>
+                          <td>".($fila['cantidadMP'] ?? '')."</td>
+                          <td>".($fila['precioMP'] ?? '')."</td>
+                          <td>".($fila['numeroFac'] ?? '')."</td>
+                          <td>
+                          <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#formModal' onclick='cargar({$fila['idDetalleCompra']},{$fila['idMateriaPrima']},\"{$fila['cantidadMP']}\",\"{$fila['precioMP']}\",{$fila['idFacturaMP']})'><i class='fas fa-edit'></i> Editar</button>
+                          </td>
+                      </tr>";
+                  }
+                  ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <script>
+      $(document).ready(function() {
+        $('#dataTable').DataTable({
+          language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json'
+          },
+          paging: false,
+          info: false
+        });
+      });
+
+      function cargar(id, idMP, cantidad, precio, idFactura) {
+        document.formulario.txtIdDetalle.value = id;
+        document.formulario.txtIdMP.value = idMP;
+        document.formulario.txtCantidad.value = cantidad;
+        document.formulario.txtPrecio.value = precio;
+        document.formulario.txtIdFMP.value = idFactura;
+      }
+    </script>
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-dark mt-auto">
+      <div class="container my-auto py-3">
+        <div class="copyright text-center my-auto">
+          <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+        </div>
+      </div>
+    </footer>
+
+  </body>
 </html>

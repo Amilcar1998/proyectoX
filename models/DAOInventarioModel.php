@@ -8,7 +8,10 @@ class DAOInventarioModel extends Conexion {
     }
 
     public function getTabla(): array {
-        $res = $this->con->query("select * from inventario");
+        $res = $this->con->query("SELECT i.idInventario, mp.NombreMP, i.Existencias
+                                  FROM inventario i
+                                  INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
+                                  ORDER BY i.idInventario ASC");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;

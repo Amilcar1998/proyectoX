@@ -8,7 +8,7 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function getTabla(): array {
-        $res = $this->con->query("select * from detalleCompra");
+        $res = $this->con->query("SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac FROM detalleCompra dc INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -45,7 +45,11 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function getFiltro(string $buscar, string $criterio): array {
-        $sql = "select * from detalleCompra where $criterio like ?";
+        $sql = "SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac
+                FROM detalleCompra dc
+                INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima
+                INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP
+                WHERE $criterio LIKE ?";
         $stmt = $this->con->prepare($sql);
         $valor = "%$buscar%";
         $stmt->bind_param("s", $valor);
@@ -60,6 +64,24 @@ class ModelDetalleCompra extends Conexion {
 
     public function getSessionEmp(string $correo): array {
         $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getMateriasPrimas(): array {
+        $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getFacturas(): array {
+        $res = $this->con->query("select idFacturaMP, numeroFac from factura");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;

@@ -25,7 +25,11 @@ class DAOInventario{
     }
 
     public function getTabla(){
-        $sql="select * from inventario";
+        $sql="SELECT i.idInventario, mp.NombreMP, i.Existencias, dc.cantidadMP, dc.precioMP
+              FROM inventario i
+              INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
+              LEFT JOIN detallecompra dc ON i.idDetalleCompra = dc.idDetalleCompra
+              ORDER BY i.idInventario ASC";
         $this->conectar();
         $res = $this->con->query($sql);
         $this->desconectar();
@@ -33,19 +37,21 @@ class DAOInventario{
         $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>ID INVENTARIO</th>"
-                    ."<th>ID MATERIA PRIMA</th>"
+                    ."<th>MATERIA PRIMA</th>"
                     ."<th>EXISTENCIAS</th>"
-                    ."<th>ID DETALLE COMPRA</th>"                    
+                    ."<th>CANT. COMPRA</th>"
+                    ."<th>PRECIO COMPRA</th>"                    
                     ."<th>ACCION</th>"
                ."</tr></thead><tbody>"; 
-               
+                
         while($fila = mysqli_fetch_assoc($res)){
             $tabla .= "<tr>"
                         ."<td>".$fila["idInventario"]."</td>"
-                        ."<td>".$fila["idMateriaPrima"]."</td>"
+                        ."<td>".$fila["NombreMP"]."</td>"
                         ."<td>".$fila["Existencias"]."</td>"                        
-                        ."<td>".$fila["idDetalleCompra"]."</td>"
-                        ."<td><a href=\"javascript:cargar('".$fila["idInventario"]."','".$fila["idMateriaPrima"]."','".$fila["Existencias"]."','".$fila["idDetalleCompra"]."')\">select</a></td>"
+                        ."<td>".($fila["cantidadMP"] ?? '-')."</td>"
+                        ."<td>".($fila["precioMP"] ?? '-')."</td>"
+                        ."<td><a href=\"javascript:cargar('".$fila["idInventario"]."','".$fila["NombreMP"]."','".$fila["Existencias"]."')\">select</a></td>"
                     ."</tr>";
         }
 
@@ -101,28 +107,39 @@ class DAOInventario{
     }
     
     public function getFiltro($buscar, $criterio){
-        $sql="select * from inventario where $criterio like '%$buscar%'";
+        $sql="SELECT i.idInventario, mp.NombreMP, i.Existencias, dc.cantidadMP, dc.precioMP
+              FROM inventario i
+              INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
+              LEFT JOIN detallecompra dc ON i.idDetalleCompra = dc.idDetalleCompra
+              WHERE $criterio LIKE ?
+              ORDER BY i.idInventario ASC";
 
         $this->conectar();
-        $res = $this->con->query($sql);
+        $stmt = $this->con->prepare($sql);
+        $valor = "%".$buscar."%";
+        $stmt->bind_param("s", $valor);
+        $stmt->execute();
+        $res = $stmt->get_result();
         $this->desconectar();
         //tabala con bootstrap
         $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>ID INVENTARIO</th>"
-                    ."<th>ID MATERIA PRIMA</th>"
+                    ."<th>MATERIA PRIMA</th>"
                     ."<th>EXISTENCIAS</th>"
-                    ."<th>ID DETALLE COMPRA</th>"                    
+                    ."<th>CANT. COMPRA</th>"
+                    ."<th>PRECIO COMPRA</th>"                    
                     ."<th>ACCION</th>"
                ."</tr></thead><tbody>"; 
-               
+                
         while($fila = mysqli_fetch_assoc($res)){
             $tabla .= "<tr>"
                         ."<td>".$fila["idInventario"]."</td>"
-                        ."<td>".$fila["idMateriaPrima"]."</td>"
+                        ."<td>".$fila["NombreMP"]."</td>"
                         ."<td>".$fila["Existencias"]."</td>"                        
-                        ."<td>".$fila["idDetalleCompra"]."</td>"
-                        ."<td><a href=\"javascript:cargar('".$fila["idInventario"]."','".$fila["idMateriaPrima"]."','".$fila["Existencias"]."','".$fila["idDetalleCompra"]."')\">select</a></td>"
+                        ."<td>".($fila["cantidadMP"] ?? '-')."</td>"
+                        ."<td>".($fila["precioMP"] ?? '-')."</td>"
+                        ."<td><a href=\"javascript:cargar('".$fila["idInventario"]."','".$fila["NombreMP"]."','".$fila["Existencias"]."')\">select</a></td>"
                     ."</tr>";
         }
 
@@ -130,7 +147,7 @@ class DAOInventario{
         $res->close();
         return $tabla;
 
-    }  
+    }
     
 
 }

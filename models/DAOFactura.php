@@ -25,31 +25,35 @@ class DAOFactura{
     }
 
     public function getTabla(){
-        $sql="select * from factura";
+        $sql="SELECT f.idFacturaMP, f.numeroFac, f.monto, f.fecha,
+                     p.nombreProveedor,
+                     CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado
+              FROM factura f
+              INNER JOIN proveedor p ON f.idProveedor = p.idProveedor
+              INNER JOIN empleado e ON f.idEmpleado = e.idEmpleado
+              ORDER BY f.fecha DESC";
         $this->conectar();
         $res = $this->con->query($sql);
         $this->desconectar();
         //tabala con bootstrap
         $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
-                    ."<th>ID FACTURA</th>"
                     ."<th>NUMERO DE FACTURA</th>"
                     ."<th>MONTO</th>"
-                    ."<th>FECHA</th>"                    
-                    ."<th>ID PROVEEDOR</th>"
-                    ."<th>ID EMPLEADO</th>"                    
+                    ."<th>FECHA</th>" 
+                    ."<th>PROVEEDOR</th>"                   
+                    ."<th>EMPLEADO</th>"                    
                     ."<th>ACCION</th>"
                ."</tr></thead><tbody>"; 
-               
+                
         while($fila = mysqli_fetch_assoc($res)){
             $tabla .= "<tr>"
-                        ."<td>".$fila["idFacturaMP"]."</td>"
                         ."<td>".$fila["numeroFac"]."</td>"
                         ."<td>".$fila["monto"]."</td>"
                         ."<td>".$fila["fecha"]."</td>"
-                        ."<td>".$fila["idProveedor"]."</td>"
-                        ."<td>".$fila["idEmpleado"]."</td>"
-                        ."<td><a href=\"javascript:cargar('".$fila["idFacturaMP"]."','".$fila["numeroFac"]."','".$fila["monto"]."','".$fila["fecha"]."','".$fila["idProveedor"]."','".$fila["idEmpleado"]."')\">select</a></td>"
+                        ."<td>".$fila["nombreProveedor"]."</td>"
+                        ."<td>".$fila["empleado"]."</td>"
+                        ."<td><a href=\"javascript:cargar('".$fila["idFacturaMP"]."','".$fila["numeroFac"]."','".$fila["monto"]."','".$fila["fecha"]."')\">select</a></td>"
                     ."</tr>";
         }
 
@@ -77,7 +81,7 @@ class DAOFactura{
 
 
     public function eliminar($codigo){
-        $sql = "delete from factura where idFacturaMP=$idFacturaMP";
+        $sql = "delete from factura where idFacturaMP=$codigo";
         $this->conectar();
         if($this->con->query($sql)){
             //SweetAlert
@@ -105,32 +109,41 @@ class DAOFactura{
 
     
     public function getFiltro($buscar, $criterio){
-        $sql="select * from factura where $criterio like '%$buscar%'";
+        $sql="SELECT f.idFacturaMP, f.numeroFac, f.monto, f.fecha,
+                     p.nombreProveedor,
+                     CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado
+              FROM factura f
+              INNER JOIN proveedor p ON f.idProveedor = p.idProveedor
+              INNER JOIN empleado e ON f.idEmpleado = e.idEmpleado
+              WHERE $criterio LIKE ?
+              ORDER BY f.fecha DESC";
 
         $this->conectar();
-        $res = $this->con->query($sql);
+        $stmt = $this->con->prepare($sql);
+        $valor = "%".$buscar."%";
+        $stmt->bind_param("s", $valor);
+        $stmt->execute();
+        $res = $stmt->get_result();
         $this->desconectar();
         //tabala con bootstrap
         $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
-                    ."<th>ID FACTURA</th>"
                     ."<th>NUMERO DE FACTURA</th>"
                     ."<th>MONTO</th>"
-                    ."<th>FECHA</th>"                    
-                    ."<th>ID PROVEEDOR</th>"
-                    ."<th>ID EMPLEADO</th>"                    
+                    ."<th>FECHA</th>" 
+                    ."<th>PROVEEDOR</th>"                    
+                    ."<th>EMPLEADO</th>"                    
                     ."<th>ACCION</th>"
                ."</tr></thead><tbody>"; 
-               
+                
         while($fila = mysqli_fetch_assoc($res)){
             $tabla .= "<tr>"
-                        ."<td>".$fila["idFacturaMP"]."</td>"
                         ."<td>".$fila["numeroFac"]."</td>"
                         ."<td>".$fila["monto"]."</td>"
                         ."<td>".$fila["fecha"]."</td>"
-                        ."<td>".$fila["idProveedor"]."</td>"
-                        ."<td>".$fila["idEmpleado"]."</td>"
-                        ."<td><a href=\"javascript:cargar('".$fila["idFacturaMP"]."','".$fila["numeroFac"]."','".$fila["monto"]."','".$fila["fecha"]."','".$fila["idProveedor"]."','".$fila["idEmpleado"]."')\">select</a></td>"
+                        ."<td>".$fila["nombreProveedor"]."</td>"
+                        ."<td>".$fila["empleado"]."</td>"
+                        ."<td><a href=\"javascript:cargar('".$fila["idFacturaMP"]."','".$fila["numeroFac"]."','".$fila["monto"]."','".$fila["fecha"]."')\">select</a></td>"
                     ."</tr>";
         }
 
@@ -138,7 +151,7 @@ class DAOFactura{
         $res->close();
         return $tabla;
 
-    }  
+    }
     
 
 }

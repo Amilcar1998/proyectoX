@@ -212,6 +212,15 @@ include 'configuracion.php';
 <!-- Demo scripts for this page-->
 <script src="js/demo/datatables-demo.js"></script>
 
+<!-- Footer -->
+<footer class="sticky-footer bg-dark mt-auto">
+  <div class="container my-auto py-3">
+    <div class="copyright text-center my-auto">
+      <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+    </div>
+  </div>
+</footer>
+
 </body>
 
 </html>

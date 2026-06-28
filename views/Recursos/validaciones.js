@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 	
-		$('.table-responsive').DataTable({
+		$('#dataTable').DataTable({
 			"language": {
 				"decimal": "",
 				"emptyTable": "No hay datos disponibles en la tabla",
@@ -23,7 +23,10 @@ $(document).ready(function() {
 					"sortAscending": ": activar para ordenar la columna de manera ascendente",
 					"sortDescending": ": activar para ordenar la columna de manera descendente"
 				}
-			}
+			},
+			"paging": false,
+			"info": false,
+			"searching": true
 		});
 
 

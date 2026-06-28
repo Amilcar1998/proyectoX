@@ -121,18 +121,19 @@ class Cliente
     private $edad;
     private $genero;
     private $usuarioC;
+    private $username;
 
-    /**
-     * Cliente constructor.
-     * @param $idCliente
-     * @param $nombreCi
-     * @param $apellidos
-     * @param $telefono
-     * @param $edad
-     * @param $genero
-     * @param $usuarioC
-     */
-    public function __construct($idCliente, $nombreCi, $apellidos, $telefono, $edad, $genero, $usuarioC)
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    public function __construct($idCliente, $nombreCi, $apellidos, $telefono, $edad, $genero, $usuarioC, $username = null)
     {
         $this->idCliente = $idCliente;
         $this->nombreCi = $nombreCi;
@@ -141,6 +142,7 @@ class Cliente
         $this->edad = $edad;
         $this->genero = $genero;
         $this->usuarioC = $usuarioC;
+        $this->username = $username;
     }
 
 

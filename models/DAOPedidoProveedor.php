@@ -13,31 +13,36 @@ class DAOPedidoProveedor extends Conexion{
     }
 
     public function getTabla(){
-        $res = $this->con->query("select * from pedidoproveedor");
+        $res = $this->con->query("SELECT pp.idPedido, p.nombreProveedor,
+                                         CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado,
+                                         mp.NombreMP, pp.fecha, pp.cantidadMP, pp.monto, pp.precioMP
+                                  FROM pedidoproveedor pp
+                                  INNER JOIN proveedor p ON pp.idProveedor = p.idProveedor
+                                  INNER JOIN empleado e ON pp.idEmpleado = e.idEmpleado
+                                  INNER JOIN materiaprima mp ON pp.idMateriaPrima = mp.idMateriaPrima
+                                  ORDER BY pp.idPedido DESC");
         $tabla = "<table class='table'>"."<thead class='thead-dark'>";
         $tabla .="<tr>"
-                    ."<th>CODIGO PEDIDO</th>"
-                    ."<th>CODIGO PROVEEDOR</th>"
-                    ."<th>CODIGO EMPLEADO</th>"
-                    ."<th>CODIGO MATERIA PRIMA</th>"
+                    ."<th>PROVEEDOR</th>"
+                    ."<th>EMPLEADO</th>"
+                    ."<th>MATERIA PRIMA</th>"
                     ."<th>FECHA</th>"
                     ."<th>CANTIDAD</th>"
                     ."<th>MONTO</th>"
                     ."<th>PRECIO</th>"
                     ."<th>ACCION</th>"
                ."</tr></thead><tbody>"; 
-               
+                
         while($fila = mysqli_fetch_assoc($res)){
             $tabla .= "<tr>"
-                        ."<td>".$fila["idPedido"]."</td>"
-                        ."<td>".$fila["idProveedor"]."</td>"
-                        ."<td>".$fila["idEmpleado"]."</td>"
-                        ."<td>".$fila["idMateriaPrima"]."</td>"
+                        ."<td>".$fila["nombreProveedor"]."</td>"
+                        ."<td>".$fila["empleado"]."</td>"
+                        ."<td>".$fila["NombreMP"]."</td>"
                         ."<td>".$fila["fecha"]."</td>"
                         ."<td>".$fila["cantidadMP"]."</td>"
                         ."<td>".$fila["monto"]."</td>"
                         ."<td>".$fila["precioMP"]."</td>"
-                        ."<td><a href=\"javascript:cargar('".$fila["idPedido"]."','".$fila["idProveedor"]."','".$fila["idEmpleado"]."','".$fila["idMateriaPrima"]."','".$fila["fecha"]."','".$fila["cantidadMP"]."','".$fila["monto"]."','".$fila["precioMP"]."')\">select</a></td>"
+                        ."<td><a href=\"javascript:cargar('".$fila["idPedido"]."','".$fila["nombreProveedor"]."','".$fila["empleado"]."','".$fila["NombreMP"]."','".$fila["fecha"]."','".$fila["cantidadMP"]."','".$fila["monto"]."','".$fila["precioMP"]."')\">select</a></td>"
                     ."</tr>";
         }
         $tabla .="</tbody></table>";

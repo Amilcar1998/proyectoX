@@ -7,7 +7,7 @@ class ModelInventario extends Conexion{
         parent::__construct();
     }
     public function getTabla(): array {
-        $res = $this->con->query("SELECT * FROM inventario");
+        $res = $this->con->query("SELECT i.idInventario, i.idMateriaPrima, mp.NombreMP, i.Existencias FROM inventario i INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima");
         if (!$res) {
             return [];
         }
@@ -57,14 +57,22 @@ class ModelInventario extends Conexion{
          $res->bind_param('iisi', $a, $b, $c, $d);
          return $res->execute();
      }
-     public function getSessionEmp(string $correo): array {
-         $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
-         $r = [];
-         while ($row = $res->fetch_assoc()) {
-             $r[] = $row;
-         }
-         return $r;
-     }
+      public function getSessionEmp(string $correo): array {
+          $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+          $r = [];
+          while ($row = $res->fetch_assoc()) {
+              $r[] = $row;
+          }
+          return $r;
+      }
 
+      public function getMateriasPrimas(): array {
+          $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima");
+          $r = [];
+          while ($row = $res->fetch_assoc()) {
+              $r[] = $row;
+          }
+          return $r;
+      }
 }
 ?>

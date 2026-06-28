@@ -1,6 +1,6 @@
 <?php include '../views/configuracion.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
@@ -49,10 +49,10 @@
      <div id="content-wrapper">
        <div class="container-fluid">
          
-         <h2 class="text-center mb-4">Materia Prima</h2>
-         
-         <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
-           <i class="fas fa-plus"></i> Agregar Materia Prima
+          <h2 class="text-center mb-4">Materia Prima</h2>
+          
+          <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
+            <i class="fas fa-plus"></i> Nueva Materia Prima
          </button>
          
          <!-- Modal -->
@@ -82,51 +82,38 @@
                      <button type="submit" value="modificar" name="btnModificar" class="btn btn-warning">Modificar</button>
                      <button type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">Eliminar</button>
                    </form>
-                   </div>
-               </div>
-             </div>
-           </div>
-         </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
 
-         <!-- DataTables Example -->
-         <div class="card mb-3">
-           <div class="card-header">
-             <i class="fas fa-table"></i>
-             Lista de Materia Prima
-           </div>
-           <div class="card-body">
-             <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                 <thead>
-                   <tr>
-                     <th>ID MATERIA PRIMA</th>
-                     <th>NOMBRE MATERIA PRIMA</th>
-                     <th>ACCIONES</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                 <?php 
-                 foreach ($tabla as $fila) {
-                     echo "<tr>
-                         <td>{$fila['idMateriaPrima']}</td>
-                         <td>{$fila['NombreMP']}</td>
-                         <td>
-                         <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#formModal' onclick='cargar({$fila['idMateriaPrima']},\"{$fila['NombreMP']}\")'><i class='fas fa-edit'></i> Editar</button>
-                         </td>
-                     </tr>";
-                 }
-                 ?>
-                 </tbody>
-               </table>
-             </div>
-           </div>
-         </div>
+    <script>
+      $(document).ready(function() {
+        $('#dataTable').DataTable({
+          language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json'
+          },
+          paging: false,
+          info: false
+        });
+      });
 
-       </div>
-       <!-- /.container-fluid -->
-     </div>
-     <!-- /.content-wrapper -->
-   </div>
-   <!-- /#wrapper -->
-</body>
+      function cargar(id, nombre) {
+        document.formulario.txtIdMP.value = id;
+        document.formulario.txtNombreMP.value = nombre;
+      }
+    </script>
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-dark mt-auto">
+      <div class="container my-auto py-3">
+        <div class="copyright text-center my-auto">
+          <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+        </div>
+      </div>
+    </footer>
+
+  </body>
 </html>

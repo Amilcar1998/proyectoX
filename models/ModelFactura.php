@@ -8,7 +8,7 @@ class ModelFactura extends Conexion {
     }
 
     public function getTabla(): array {
-        $res = $this->con->query("select * from factura");
+        $res = $this->con->query("SELECT f.idFacturaMP, f.numeroFac, f.Monto, f.Fecha, f.idProveedor, p.nombreProveedor, f.idEmpleado, CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado FROM factura f INNER JOIN proveedor p ON f.idProveedor=p.idProveedor INNER JOIN empleado e ON f.idEmpleado=e.idEmpleado");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -62,6 +62,24 @@ class ModelFactura extends Conexion {
 
     public function getSessionEmp(string $correo): array {
         $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getProveedores(): array {
+        $res = $this->con->query("select idProveedor, nombreProveedor from proveedor");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getEmpleados(): array {
+        $res = $this->con->query("select idEmpleado, nombreEmp, apellido from empleado");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;

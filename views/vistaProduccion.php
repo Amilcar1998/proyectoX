@@ -53,59 +53,43 @@ include 'configuracion.php';
             Produccion</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Produccion</th>
-                    <th>estado</th>
-                    <th>Id Pedido</th>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
-                    <th>Empleado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tfoot>
-                  <tr>
-                    <th>ID</th>
-                    <th>finalizado</th>
-                    <th>estado</th>
-                    <th>Id Pedido</th>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
-                    <th>Empleado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </tfoot>
-                <tbody>
-                  <?php
+               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                 <thead>
+                   <tr>
+                     <th>Producción</th>
+                     <th>Estado</th>
+                     <th>Fecha Pedido</th>
+                     <th>Cliente</th>
+                     <th>Empleado</th>
+                     <th>Acciones</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   <?php
 
-                   foreach ($data as $key) {
-                    $idProduccion =$key['idProduccion'];
-                    $fechaProduccion=$key['fechaP'];
-                    $estadoProduccion=$key['estadoP'];
-                    $idPedido=$key['idPedido'];
-                    $fechaPedido=$key['fechaPedido'];
-                    $nombreCliente=$key['NombreCliente'];
-                    $emp=$key['nombreEmp'];
-                    echo "<tr>
-                            <td>$idProduccion</td>
-                            <td>$fechaProduccion</td>
-                            <td>$estadoProduccion</td>
-                            <td>$idPedido</td>
-                            <td>$fechaPedido</td>
-                            <td>$nombreCliente</td>
-                            <td>$emp</td>
-                            <td><form method='POST'>
-                            <input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'>
-                            <input type='hidden' name='idPedido' id='idPedido' value='$idPedido'>
-                            <input type='hidden' name='idPr' id='idPr' value='$idProduccion'>
-                            <button class='btn btn-info' id='eliminar' name='eliminar'>Eliminar</button>
-                            <button class='btn btn-warning' id='Pterminar' name='Pterminar' '>Terminar</button>
-                            </form></td>
-                        </tr>";
-                   }
+                    foreach ($data as $key) {
+                     $idProduccion =$key['idProduccion'];
+                     $fechaProduccion=$key['fechaP'];
+                     $estadoProduccion=$key['estadoP'];
+                     $idPedido=$key['idPedido'];
+                     $fechaPedido=$key['fechaPedido'];
+                     $nombreCliente=$key['NombreCliente'];
+                     $emp=$key['nombreEmp'];
+                     echo "<tr>
+                             <td>$fechaProduccion</td>
+                             <td>$estadoProduccion</td>
+                             <td>$fechaPedido</td>
+                             <td>$nombreCliente</td>
+                             <td>$emp</td>
+                             <td><form method='POST'>
+                             <input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'>
+                             <input type='hidden' name='idPedido' id='idPedido' value='$idPedido'>
+                             <input type='hidden' name='idPr' id='idPr' value='$idProduccion'>
+                             <button class='btn btn-info' id='eliminar' name='eliminar'>Eliminar</button>
+                             <button class='btn btn-warning' id='Pterminar' name='Pterminar' '>Terminar</button>
+                             </form></td>
+                         </tr>";
+                    }
 
 
 
@@ -115,7 +99,7 @@ include 'configuracion.php';
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
         </div>
       </div>
 
@@ -149,6 +133,15 @@ include 'configuracion.php';
   <!-- Demo scripts for this page-->
   <script src="js/demo/datatables-demo.js"></script>
   <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+
+  <!-- Footer -->
+  <footer class="sticky-footer bg-dark mt-auto">
+    <div class="container my-auto py-3">
+      <div class="copyright text-center my-auto">
+        <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+      </div>
+    </div>
+  </footer>
 
 </body>
 

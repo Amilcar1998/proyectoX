@@ -23,16 +23,16 @@ function getAddUs($u){
 
 
 
-	function getCliente(){
-        $res=$this->con->query("select * from cliente");
+ 	function getCliente(){
+        $res=$this->con->query("SELECT c.idCliente, c.NombreCliente, c.apellidosCliente, c.telefono, c.edad, c.genero, c.idUsuario, u.username FROM cliente c INNER JOIN usuarios u ON c.idUsuario=u.idUsuario");
         $r=array();
         while($row=$res->fetch_assoc()) {
-            $e=new Cliente($row["idCliente"],$row["NombreCliente"],$row["apellidosCliente"],$row["telefono"],$row["edad"],$row["genero"],$row["idUsuario"]);
+            $e=new Cliente($row["idCliente"],$row["NombreCliente"],$row["apellidosCliente"],$row["telefono"],$row["edad"],$row["genero"],$row["idUsuario"],$row["username"]);
             $r[]=$e;
         }
         return $r;
     
-	}
+ 	}
   function getSessionEmp(){
          $correo=$_SESSION["s1"];
         $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");

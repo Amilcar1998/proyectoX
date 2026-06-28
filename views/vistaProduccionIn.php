@@ -19,6 +19,30 @@
 
   <!-- Custom styles for this template-->
   <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+  <style>
+    html, body { height: 100%; }
+    #wrapper { min-height: 100vh; }
+    #content-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    footer.sticky-footer {
+      position: relative !important;
+      margin-top: auto;
+      width: 100% !important;
+      height: auto !important;
+      padding: 1rem 0;
+    }
+    .table-responsive {
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+    .sidebar {
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
 
 </head>
 
@@ -94,18 +118,6 @@
                     <th>Acciones</th>
                   </tr>
                 </thead>
-                <tfoot>
-                  <tr>
-                    <th>ID Produccion</th>
-                    <th>Fecha Produccion</th>
-                    <th>estado Pedido</th>
-                    <th>Id Pedido</th>
-                    <th>FechaPedido</th>
-                    <th>Nombre Cliente</th>
-                    <th>Empleado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </tfoot>
                 <tbody>
                   <?php
 
@@ -137,7 +149,7 @@
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
         </div>
       </div>
 
@@ -202,6 +214,15 @@
 
   <!-- Demo scripts for this page-->
   <script src="js/demo/datatables-demo.js"></script>
+
+  <!-- Footer -->
+  <footer class="sticky-footer bg-dark mt-auto">
+    <div class="container my-auto py-3">
+      <div class="copyright text-center my-auto">
+        <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+      </div>
+    </div>
+  </footer>
 
 </body>
 

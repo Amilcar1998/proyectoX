@@ -161,15 +161,6 @@ if(isset($pedido)){
                     <th>Acciones</th>
                   </tr>
                 </thead>
-                <tfoot>
-                  <tr>
-                    <th>ID Pedido</th>
-                    <th>Fecha Pedido</th>
-                    <th>Estado</th>
-                    <th>ID Cliente</th>
-                    <th>Acciones</th>
-                  </tr>
-                </tfoot>
                 <tbody>';
     foreach ($dataPedido as $ask) {
         $idPedido=$ask['idPedido'];
@@ -227,14 +218,22 @@ if(isset($pedido)){
     <!-- Custom scripts for all pages-->
     <script src="../controllers/js/sb-admin.min.js"></script>
 
-    <!-- Demo scripts for this page-->
-    <script src="../controllers/js/demo/datatables-demo.js"></script>
-    <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
-    <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+     <!-- Demo scripts for this page-->
+     <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+     <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
 
-    </body>
+     <!-- Footer -->
+     <footer class="sticky-footer bg-dark mt-auto">
+       <div class="container my-auto py-3">
+         <div class="copyright text-center my-auto">
+           <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+         </div>
+       </div>
+     </footer>
 
-    </html>
+     </body>
+
+     </html>
 <?php
 if(isset($msj,$icon)){
     echo "<script>Swal.fire('$msj','','$icon');</script>";

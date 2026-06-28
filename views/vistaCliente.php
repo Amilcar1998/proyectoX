@@ -1,6 +1,6 @@
 <?php include 'configuracion.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   
@@ -36,11 +36,8 @@
    <script src="../controllers/js/sb-admin.min.js"></script>
    <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
 
-   <!-- Demo scripts for this page-->
-   <script src="../controllers/js/demo/datatables-demo.js"></script>
 
-
-</head>
+ </head>
 
 <body id="page-top">
   <?php echo "$nav"; ?>
@@ -111,10 +108,18 @@
                           
                         </div>
                         
-                        <div class="col-md-4">
-                          <label>Usuario</label>
-                          <input name="usuarioC" id="usuarioC" class="form-control idU">
-                        </div>
+                         <div class="col-md-4">
+                           <label>Usuario</label>
+                           <select name="usuarioC" id="usuarioC" class="form-control idU">
+                             <option value="">seleccione....</option>
+                             <?php 
+                             $usuariosObj = $cliente->getUser();
+                             foreach ($usuariosObj as $u) {
+                               echo "<option value='".$u["idUsuario"]."'>".$u["username"]."</option>";
+                             } 
+                             ?>
+                           </select>
+                         </div>
                       </div>
                       <hr><center>
                       <button class="btn btn-primary agregar" id="insertar" name="insertar">Agregar</button>
@@ -133,117 +138,70 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            Data Table Example</div>
+            Lista de Clientes</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                  <th>ID CLIENTE</th>
-                  <th>NOMBRE</th>
-                  <th>APELLIDOS</th>
-                  <th>TELEFONO</th>
-                  <th>EDAD</th> 
-                  <th>GENERO</th>
-                  <th>ID USUARIO</th> 
-                  <th>ACCIONES</th> 
-                  </tr>
-                </thead>
-                <tfoot>
-                  <tr>
-                  <th>ID CLIENTE</th>
-                  <th>NOMBRE</th>
-                  <th>APELLIDOS</th>
-                  <th>TELEFONO</th>
-                  <th>EDAD</th> 
-                  <th>GENERO</th>
-                  <th>ID USUARIO</th> 
-                  <th>ACCIONES</th> 
-                  </tr>
-                </tfoot>
-                <tbody>
-                  <?php 
-               foreach ($Rcliente as $e) {
-                $id=$e->getIdCliente();
-                $nombre = str_replace(' ', '&nbsp;', $e->getNombreCi());
-                $apellidos=str_replace(' ', '&nbsp;', $e->getApellidos());
-                $telefono =$e->getTelefono();
-                $edad = $e->getEdad();
-                $generoC=str_replace(' ', '&nbsp;', $e->getGenero());
-                $idUsuario = $e->getUsuarioC();
+               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                 <thead>
+                   <tr>
+                   <th>NOMBRE</th>
+                   <th>APELLIDOS</th>
+                   <th>TELEFONO</th>
+                   <th>EDAD</th> 
+                   <th>GENERO</th>
+                   <th>USUARIO</th> 
+                   <th>ACCIONES</th> 
+                   </tr>
+                 </thead>
+                 <tbody>
+                   <?php 
+                foreach ($Rcliente as $e) {
+                 $id=$e->getIdCliente();
+                 $nombre = str_replace(' ', '&nbsp;', $e->getNombreCi());
+                 $apellidos=str_replace(' ', '&nbsp;', $e->getApellidos());
+                 $telefono =$e->getTelefono();
+                 $edad = $e->getEdad();
+                 $generoC=str_replace(' ', '&nbsp;', $e->getGenero());
+                 $username = $e->getUsername();
 
-             
-                  echo "<tr>
-                  <td>$id</td>
-                  <td>$nombre</td>
-                  <td>$apellidos</td>
-                  <td>$telefono</td>
-                  <td>$edad</td>
-                  <td>$generoC</td>
-                  <td>$idUsuario</td>
-                  <td>
-                  <button class='btn btn-warning cargar' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=$('#idCliente').val('$id');$('#nombreC').val('$nombre');$('#apellidoC').val('$apellidos');$('#telefonoC').val('$telefono');$('#edadC').val('$edad');$('#generoC').val('$generoC');$('.idU').val('$idUsuario'); >ver</button>
-                  </td>
-                  </tr>";
-               }
-                  
-                
+              
+                   echo "<tr>
+                   <td>$nombre</td>
+                   <td>$apellidos</td>
+                   <td>$telefono</td>
+                   <td>$edad</td>
+                   <td>$generoC</td>
+                   <td>$username</td>
+                   <td>
+                   <button class='btn btn-warning cargar' data-toggle='modal' data-target='.bd-example-modal-lg' onClick=\"$('#idCliente').val('$id');$('#nombreC').val('$nombre');$('#apellidoC').val('$apellidos');$('#telefonoC').val('$telefono');$('#edadC').val('$edad');$('#generoC').val('$generoC');$('#usuarioC').val('".$e->getUsuarioC()."');\">Editar</button>
+                   </td>
+                   </tr>";
+                }
+                   
+                 
       ?>
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
-
-        <p class="small text-center text-muted my-5">
-          <em>More table examples coming soon...</em>
-        </p>
-
       </div>
       <!-- /.container-fluid -->
-
-      <!-- Sticky Footer -->
-      <footer class="sticky-footer">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright © Your Website 2019</span>
-          </div>
-        </div>
-      </footer>
-
     </div>
     <!-- /.content-wrapper -->
-
   </div>
   <!-- /#wrapper -->
 
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
-        </div>
+  <!-- Footer -->
+  <footer class="sticky-footer bg-dark mt-auto">
+    <div class="container my-auto py-3">
+      <div class="copyright text-center my-auto">
+        <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
       </div>
     </div>
-  </div>
+  </footer>
 
 </body>
-
 </html>
 <?php 
 if(isset($msj,$icon)){

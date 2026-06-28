@@ -3,8 +3,6 @@ require dirname(__DIR__) . '/controllers/vendor/autoload.php';
 include '../models/ModelFactura.php';
 include 'sesiones.php';
 
-use Factura;
-
 $dao = new ModelFactura();
 
 $tabla = $dao->getTabla();
@@ -18,6 +16,9 @@ if ($correo) {
         $nombres = $session[0]['nombreEmp'] . ' ' . $session[0]['apellido'];
     }
 }
+
+$proveedores = $dao->getProveedores();
+$empleados = $dao->getEmpleados();
 
 if (isset($_REQUEST["btnGuardar"])) {
     $obj = new Factura();

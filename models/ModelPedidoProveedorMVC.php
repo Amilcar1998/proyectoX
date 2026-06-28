@@ -10,7 +10,7 @@ class ModelPedidoProveedor extends Conexion {
     }
 
     public function getTabla(): array {
-        $res = $this->con->query("select * from pedidoproveedor");
+        $res = $this->con->query("SELECT pp.idPedido, pp.idProveedor, p.nombreProveedor, pp.idEmpleado, CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado, pp.idMateriaPrima, mp.NombreMP, pp.fecha, pp.cantidadMP, pp.monto, pp.precioMP FROM pedidoproveedor pp INNER JOIN proveedor p ON pp.idProveedor=p.idProveedor INNER JOIN empleado e ON pp.idEmpleado=e.idEmpleado INNER JOIN materiaprima mp ON pp.idMateriaPrima=mp.idMateriaPrima");
         if (!$res) {
             return [];
         }
@@ -56,6 +56,33 @@ class ModelPedidoProveedor extends Conexion {
 
     public function getSessionEmp($correo): array {
         $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getProveedores(): array {
+        $res = $this->con->query("select idProveedor, nombreProveedor from proveedor");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getEmpleados(): array {
+        $res = $this->con->query("select idEmpleado, nombreEmp, apellido from empleado");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getMateriasPrimas(): array {
+        $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;

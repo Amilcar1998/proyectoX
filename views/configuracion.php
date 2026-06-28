@@ -2,6 +2,8 @@
 $nombres = $nombres ?? '';
 $nombres = is_array($nombres) ? '' : $nombres;
 
+$currentPage = basename($_SERVER['PHP_SELF']);
+
 $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 
    <a class='navbar-brand mr-1' href='index.html'>Concentrados El gordito</a>
@@ -29,90 +31,61 @@ $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
     </ul>
 
   </nav>
+  <style>
+    html, body { height: 100%; }
+    #wrapper { min-height: 100vh; }
+    #content-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    footer.sticky-footer {
+      position: relative !important;
+      margin-top: auto;
+      width: 100% !important;
+      height: auto !important;
+      padding: 1rem 0;
+    }
+    .table-responsive {
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+    .sidebar {
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
 ";
 
-$menu="<ul class='sidebar navbar-nav'>
-      <li class='nav-item'>
-        <a class='nav-link' href='controllerEmpleado.php'>
-          <i class='fas fa-fw fa-tachometer-alt'></i>
-          <span>Empleados</span>
-        </a>
-      </li>
-     
-      <li class='nav-item'>
-        <a class='nav-link' href='controllerCliente.php'>
-          <i class='fas fa-fw fa-chart-area'></i>
-          <span>Clientes</span></a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerUsuarios.php'>
-          <i class='fas fa-fw fa-table'></i>
-          <span>Usuarios</span></a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerProveedor.php'>
-          <i class='fas fa-fw fa-table'></i>
-          <span>Proveedores</span></a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerPedidoProveedor.php'>
-        <i class='fas fa-fw fa-table'></i>
-          <span>Pedidos -->Proveedor</span>
-        </a>
-      </li>
-      <li class='nav-item'>
-        <a class='nav-link' href='controllerPedidos.php'>
-          <i class='fas fa-fw fa-tachometer-alt'></i>
-          <span>Pedidos</span>
-        </a>
-      </li>
-      <li class='nav-item'>
-        <a class='nav-link' href='controllerProduccion.php'>
-          <i class='fas fa-fw fa-tachometer-alt'></i>
-          <span>Produccion</span>
-        </a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerInventario.php'>
-        <i class='fas fa-fw fa-table'></i>
-          <span>Inventario</span>
-        </a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerMateriaPrima.php'>
-        <i class='fas fa-fw fa-seedling'></i>
-          <span>Materia Prima</span>
-        </a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerPuesto.php'>
-        <i class='fas fa-fw fa-user-tag'></i>
-          <span>Puesto</span>
-        </a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerFactura.php'>
-        <i class='fas fa-fw fa-file-invoice'></i>
-          <span>Factura</span>
-        </a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerDetalleCompra.php'>
-        <i class='fas fa-fw fa-receipt'></i>
-          <span>Detalle Compra</span>
-        </a>
-      </li>
-      <li class='nav-item active'>
-        <a class='nav-link' href='controllerReportes.php'>
-        <i class='fas fa-fw fa-tachometer-alt'></i>
-          <span>Reportes</span>
-        </a>
-      </li>
-    </ul>
-";
+$menuItems = [
+  ['href' => 'controllerEmpleado.php', 'icon' => 'fa-user-tie', 'label' => 'Empleados'],
+  ['href' => 'controllerCliente.php', 'icon' => 'fa-address-book', 'label' => 'Clientes'],
+  ['href' => 'controllerUsuarios.php', 'icon' => 'fa-users-cog', 'label' => 'Usuarios'],
+  ['href' => 'controllerProveedor.php', 'icon' => 'fa-building', 'label' => 'Proveedores'],
+  ['href' => 'controllerPedidoProveedor.php', 'icon' => 'fa-shopping-cart', 'label' => 'Pedidos a Proveedor'],
+  ['href' => 'controllerPedidos.php', 'icon' => 'fa-box-open', 'label' => 'Pedidos'],
+  ['href' => 'controllerProduccion.php', 'icon' => 'fa-industry', 'label' => 'Produccion'],
+  ['href' => 'controllerInventario.php', 'icon' => 'fa-warehouse', 'label' => 'Inventario'],
+  ['href' => 'controllerMateriaPrima.php', 'icon' => 'fa-leaf', 'label' => 'Materia Prima'],
+  ['href' => 'controllerPuesto.php', 'icon' => 'fa-briefcase', 'label' => 'Puesto'],
+  ['href' => 'controllerFactura.php', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Factura'],
+  ['href' => 'controllerDetalleCompra.php', 'icon' => 'fa-shopping-bag', 'label' => 'Detalle Compra'],
+  ['href' => 'controllerReportes.php', 'icon' => 'fa-chart-pie', 'label' => 'Reportes'],
+];
+
+$menu = "<div style='max-height: calc(100vh - 100px); overflow-y: auto; overflow-x: hidden;'>
+       <ul class='sidebar navbar-nav'>";
+foreach ($menuItems as $item) {
+    $activeClass = ($item['href'] === $currentPage) ? 'active' : '';
+    $menu .= "<li class='nav-item $activeClass'>
+           <a class='nav-link' href='{$item['href']}'>
+             <i class='fas fa-fw {$item['icon']}'></i>
+             <span>{$item['label']}</span>
+           </a>
+         </li>";
+}
+$menu .= "      </ul>
+     </div>";
 
 
-
-
-
- ?>
+?>

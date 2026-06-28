@@ -3,8 +3,6 @@ require dirname(__DIR__) . '/controllers/vendor/autoload.php';
 include '../models/ModelMateriaPrima.php';
 include 'sesiones.php';
 
-use MateriaPrima;
-
 $dao = new ModelMateriaPrima();
 
 $tabla = $dao->getTabla();

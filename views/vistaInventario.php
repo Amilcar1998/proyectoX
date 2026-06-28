@@ -57,7 +57,7 @@ include '../views/configuracion.php';
 
       <div class="container-fluid">
       <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target=".modal">Agregar al Inventario</button>
-      &nbsp;&nbsp;<a href="repoInventario.php"><button class="btn btn-success">Imprimir Reporte</button></a>
+      &nbsp;&nbsp;<a href="../controllers/reporteInventarioGeneral.php" target="_blank"><button class="btn btn-success">Imprimir Reporte</button></a>
         <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -72,15 +72,12 @@ include '../views/configuracion.php';
                 </div>
                 <div class="col-md-6">
                   <label>Materia Prima</label> 
-                  <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control">
-                    <option value="">seleccione materia prima</option>
-                    <option value="1">Maiz Amarillo</option>
-                    <option value="2">Maiz Blanco</option>
-                    <option value="3">Soya</option>
-                    <option value="4">Harina</option>
-                    <option value="5">Maicillo</option>
-                    <option value="6">Trigo</option>
-                  </select>
+                   <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control">
+                     <option value="">seleccione materia prima</option>
+                     <?php foreach ($materiasPrimas as $mp) {
+                       echo "<option value='".$mp["idMateriaPrima"]."'>".$mp["NombreMP"]."</option>";
+                     } ?>
+                   </select>
                 </div>
             </div>
             <div class="row">
@@ -116,53 +113,52 @@ include '../views/configuracion.php';
           Datos Inventario</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered  table-triped" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                  <th>ID Inventario</th>
-                  <th>ID Materia Prima</th>
-                  <th>Existencias</th>
-                  <th>Accion</th>               
-                  </tr>
+               <table class="table table-bordered  table-triped" id="dataTable" width="100%" cellspacing="0">
+                 <thead>
+                   <tr>
+                   <th>Materia Prima</th>
+                   <th>Existencias</th>
+                   <th>Accion</th>               
+                   </tr>
 
-                </thead>
-                <tfoot>
+                 </thead>
+                 <tfoot>
                  <tr>
-                  <th>ID Inventario</th>
-                  <th>ID Materia Prima</th>
-                  <th>Existencias</th>
-                  <th>Accion</th>  
-                  </tr>
+                   <th>Materia Prima</th>
+                   <th>Existencias</th>
+                   <th>Accion</th>  
+                   </tr>
 
-                </tfoot>
-                <tbody>
-<?php 
-               foreach ($tabla as $fila) {
-                $idInventario=$fila["idInventario"];
-                $idMateriaPrima=$fila["idMateriaPrima"];
-                $Existencias=$fila["Existencias"];
+                 </tfoot>
+                 <tbody>
+               <?php 
+                 foreach ($tabla as $fila) {
+                  $idInventario=$fila["idInventario"];
+                  $idMateriaPrima=$fila["idMateriaPrima"] ?? '';
+                  $NombreMP=$fila["NombreMP"] ?? '';
+                  $Existencias=$fila["Existencias"] ?? '';
 
-               echo "
-               <tr>
-                  <td>$idInventario</td>
-                  <td>$idMateriaPrima</td>
-                  <td>$Existencias</td>
-                  <td>
-                  <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');>Cargar</button>
-                  </td>
-                  
-                  </tr>
+                echo "
+                <tr>
+                   <td>$NombreMP</td>
+                   <td>$Existencias</td>
+                   <td>
+                   <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');>Cargar</button>
+                   </td>
+                   
+                   </tr>
 
-               ";
+                ";
 
               }
                     
-               ?>
-                </tbody>
-              </table>
+                 
+                ?>
+                 </tbody>
+               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
         </div>
 
         
@@ -215,17 +211,22 @@ include '../views/configuracion.php';
   <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
 
 
-  <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin.min.js"></script>
-  <script type="text/javascript" src="Recursos/validaciones.js"></script>
-  <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+   <!-- Custom scripts for all pages-->
+   <script src="js/sb-admin.min.js"></script>
+   <script type="text/javascript" src="Recursos/validaciones.js"></script>
 
-  <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
+   <!-- Footer -->
+   <footer class="sticky-footer bg-dark mt-auto">
+     <div class="container my-auto py-3">
+       <div class="copyright text-center my-auto">
+         <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+       </div>
+     </div>
+   </footer>
 
-</body>
+ </body>
 
-</html>
+ </html>
 <?php 
 if(isset($msj,$icon)){
   echo "<script>Swal.fire('$msj','','$icon');</script>";

@@ -10,16 +10,24 @@ class empleadoModel extends conexion
        parent::__construct();
     }
     function getEmpleado(){
-        $res=$this->con->query("select * from empleado");
+        $res=$this->con->query("SELECT e.idEmpleado, e.nombreEmp, e.apellido, e.genero, p.nombrePuesto, u.username FROM empleado e INNER JOIN puesto p ON e.idPuesto=p.idPuesto INNER JOIN usuarios u ON e.idUsuario=u.idUsuario");
         $r=array();
         while($row=$res->fetch_assoc()) {
-            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["genero"],$row["idPuesto"],$row["idUsuario"]);
+            $e=new Empleado($row["idEmpleado"],$row["nombreEmp"],$row["apellido"],$row["genero"],$row["nombrePuesto"],$row["username"]);
             $r[]=$e;
         }
         return $r;
     } 
 function getCargo(){
         $res=$this->con->query("select * from puesto");
+        $r=array();
+        while($row=$res->fetch_assoc()) {
+            $r[]=$row;
+        }
+        return $r;
+}
+function getUsuarios(){
+        $res=$this->con->query("select * from usuarios");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;

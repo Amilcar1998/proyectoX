@@ -43,5 +43,10 @@ if(isset($_REQUEST["btnGuardar"])){
     $pedidoProv->eliminar($_REQUEST["txtIdPe"]);
     $tabla = $pedidoProv->getTabla();
 }
+
+$proveedores = $pedidoProv->getProveedores();
+$empleados = $pedidoProv->getEmpleados();
+$materiasPrimas = $pedidoProv->getMateriasPrimas();
+
 include '../views/vistaPedidoProveedor.php';
 ?>

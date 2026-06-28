@@ -82,51 +82,38 @@
                      <button type="submit" value="modificar" name="btnModificar" class="btn btn-warning">Modificar</button>
                      <button type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">Eliminar</button>
                    </form>
-                   </div>
-               </div>
-             </div>
-           </div>
-         </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
 
-         <!-- DataTables Example -->
-         <div class="card mb-3">
-           <div class="card-header">
-             <i class="fas fa-table"></i>
-             Lista de Puestos
-           </div>
-           <div class="card-body">
-             <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                 <thead>
-                   <tr>
-                     <th>ID PUESTO</th>
-                     <th>NOMBRE PUESTO</th>
-                     <th>ACCIONES</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                 <?php 
-                 foreach ($datos as $fila) {
-                     echo "<tr>
-                         <td>{$fila['idPuesto']}</td>
-                         <td>{$fila['nombrePuesto']}</td>
-                         <td>
-                         <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#formModal' onclick='cargar({$fila['idPuesto']},\"{$fila['nombrePuesto']}\")'><i class='fas fa-edit'></i> Editar</button>
-                         </td>
-                     </tr>";
-                 }
-                 ?>
-                 </tbody>
-               </table>
-             </div>
-           </div>
-         </div>
+    <script>
+      $(document).ready(function() {
+        $('#dataTable').DataTable({
+          language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json'
+          },
+          paging: false,
+          info: false
+        });
+      });
 
-       </div>
-       <!-- /.container-fluid -->
-     </div>
-     <!-- /.content-wrapper -->
-   </div>
-   <!-- /#wrapper -->
-</body>
+      function cargar(id, nombre) {
+        document.formulario.txtId.value = id;
+        document.formulario.txtNombre.value = nombre;
+      }
+    </script>
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-dark mt-auto">
+      <div class="container my-auto py-3">
+        <div class="copyright text-center my-auto">
+          <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+        </div>
+      </div>
+    </footer>
+
+  </body>
 </html>
