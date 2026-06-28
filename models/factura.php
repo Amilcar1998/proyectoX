@@ -1,5 +1,5 @@
 <?php
-class Factura{
+class Factura {
 
     private $idFacturaMP;
     private $numeroFac;
@@ -7,14 +7,6 @@ class Factura{
     private $fecha;
     private $idProveedor;
     private $idEmpleado;
-
-
-    public function Factura(){
-
-    }
-
-    //////
-
 
     public function getIdFacturaMP(){
         return $this->idFacturaMP;
@@ -24,8 +16,6 @@ class Factura{
         $this->idFacturaMP=$idFacturaMP;
     }
 
-    /////
-
     public function getNumeroFac(){
         return $this->numeroFac;
     }
@@ -33,8 +23,6 @@ class Factura{
     public function setNumeroFac($numeroFac){
         $this->numeroFac=$numeroFac;
     }
-
-    /////
 
     public function getMonto(){
         return $this->monto;
@@ -44,7 +32,6 @@ class Factura{
         $this->monto=$monto;
     }
 
-    /////
     public function getFecha(){
         return $this->fecha;
     }
@@ -53,7 +40,6 @@ class Factura{
         $this->fecha=$fecha;
     }
 
-    /////
     public function getIdProveedor(){
         return $this->idProveedor;
     }
@@ -62,8 +48,6 @@ class Factura{
         $this->idProveedor=$idProveedor;
     }
 
-    ////
-    
     public function getIdEmpleado(){
         return $this->idEmpleado;
     }
@@ -71,8 +55,6 @@ class Factura{
     public function setIdEmpleado($idEmpleado){
         $this->idEmpleado=$idEmpleado;
     }
-
-    
 }
 
 ?>

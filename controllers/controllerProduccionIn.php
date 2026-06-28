@@ -1,6 +1,6 @@
 <?php 
 include '../models/ModelProduccion.php';
-include 'Sesiones.php';
+include 'sesiones.php';
 $prod=new ModelProduccion();
 $data=$prod->getProduccion();
 $correo=$_SESSION['s2'];

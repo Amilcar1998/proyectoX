@@ -1,10 +1,14 @@
 {
     "name": "amilc/proyecto-x",
-    "description": "n/a",
+    "description": "Concentrados El Gordito - Sistema de Gestión",
+    "type": "project",
     "autoload": {
         "psr-4": {
             "Amilc\\ProyectoX\\": "src/"
-        }
+        },
+        "classmap": [
+            "models/"
+        ]
     },
     "authors": [
         {
@@ -12,11 +16,12 @@
         }
     ],
     "require": {
-        "php": "^7.4"
+        "php": "^8.0",
+        "mpdf/mpdf": "^8.0"
     },
     "config": {
         "platform": {
-            "php": "7.4.33"
+            "php": "8.0"
         }
     }
 }

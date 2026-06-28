@@ -1,8 +1,6 @@
 <?php 
-
-include 'configuracion.php';
-
- ?>
+include '../views/configuracion.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,12 +16,12 @@ include 'configuracion.php';
   
 
   <!-- Custom fonts for this template-->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <!-- Page level plugin CSS-->
-  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
-  
-  <link href="vendor/sb-admin.css" rel="stylesheet">
-  <script type="text/javascript" src="vendor/sweetalert2.all.min.js"></script>
+  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
+
+  <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+  <script type="text/javascript" src="../controllers/vendor/sweetalert2.all.min.js"></script>
 
 
 
@@ -138,8 +136,8 @@ include 'configuracion.php';
 
                 </tfoot>
                 <tbody>
-              <?php 
-              foreach ($datos as $fila) {
+<?php 
+               foreach ($tabla as $fila) {
                 $idInventario=$fila["idInventario"];
                 $idMateriaPrima=$fila["idMateriaPrima"];
                 $Existencias=$fila["Existencias"];
@@ -206,15 +204,15 @@ include 'configuracion.php';
   </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../controllers/vendor/jquery/jquery.min.js"></script>
+  <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="vendor/datatables/jquery.dataTables.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
+  <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
 
 
   <!-- Custom scripts for all pages-->

@@ -1,6 +1,6 @@
 <?php
 include '../models/ModelPedido.php';
-include 'Sesiones.php';
+include 'sesiones.php';
 $pedido = new ModelPedido();
 $datos = $pedido->getPedido();
 $correo=$_SESSION['s2'];

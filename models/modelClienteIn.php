@@ -1,9 +1,9 @@
 <?php 
 include '../db/conexion.php';
-include 'Pedidos.php';
-include 'DetallePedido.php';
-include 'DetalleProducto.php';
-include 'Cliente.php';
+include '../models/Pedidos.php';
+include '../models/DetallePedido.php';
+include '../models/DetalleProducto.php';
+include '../models/Cliente.php';
 
 class ModelClienteIn extends Conexion
 {
@@ -28,15 +28,15 @@ class ModelClienteIn extends Conexion
         }
         return $r;
 	}
-  function insertarPedido($p){
-    $para=$this->con->prepare("insert into pedido(idPedido,fechaPedido,idCliente,idEstadoPedido) values(?,?,?,?)");
-    $para->bind_param('ssss',$a,$b,$c,$d);
-    $a='';
-    $b=$p->getFechaPedido();
-    $c=$p->getIdCliente();
-    $d=$p->getIdEstado();
-    $para->execute();  
-      }
+function insertarPedido($p){
+     $a='';
+     $b=$p->getFechaPedido();
+     $c=$p->getIdCliente();
+     $d=$p->getIdEstado();
+     $para=$this->con->prepare("insert into pedido(idPedido,fechaPedido,idCliente,idEstadoPedido) values(?,?,?,?)");
+     $para->bind_param('ssss',$a,$b,$c,$d);
+     $para->execute();  
+       }
      function getReceta(){
     $res=$this->con->query("select * from Receta;");
     $r=array();
@@ -71,26 +71,26 @@ function getIdProd($idCliente){
     }
 
 
-    function insertarDetalle($Detalle){
-        $para=$this->con->prepare("insert into detalleReceta(idDetalleReceta,idMateriaPrima,cantidadSa,fechaSa,idInventario,idReceta) values(?,?,?,?,?,?)");
-        $para->bind_param('ssssss',$a,$b,$c,$d,$e,$f);
-        $a='';
-        $b=$Detalle->getIdMateriaPrima();
-        $c=$Detalle->getCantidadSa();
-        $d=$Detalle->getFechaSa();
-        $e=$Detalle->getInventario();
-        $f=$Detalle->getIdReceta();
-        $para->execute();
-    }
-    function AddDetalle($pedid){
-        $para=$this->con->prepare("insert into detallePedido(idDetallePedido,cantidad,idReceta,idPedido) values(?,?,?,?)");
-        $para->bind_param('ssss',$a,$b,$c,$d);
-        $a='';
-        $b=$pedid->getCantidad();
-        $c=$pedid->getIdReceta();
-        $d=$pedid->getIdPedido();
-        $para->execute();
-    }
+function insertarDetalle($Detalle){
+         $a='';
+         $b=$Detalle->getIdMateriaPrima();
+         $c=$Detalle->getCantidadSa();
+         $d=$Detalle->getFechaSa();
+         $e=$Detalle->getInventario();
+         $f=$Detalle->getIdReceta();
+         $para=$this->con->prepare("insert into detalleReceta(idDetalleReceta,idMateriaPrima,cantidadSa,fechaSa,idInventario,idReceta) values(?,?,?,?,?,?)");
+         $para->bind_param('ssssss',$a,$b,$c,$d,$e,$f);
+         $para->execute();
+     }
+function AddDetalle($pedid){
+         $a='';
+         $b=$pedid->getCantidad();
+         $c=$pedid->getIdReceta();
+         $d=$pedid->getIdPedido();
+         $para=$this->con->prepare("insert into detallePedido(idDetallePedido,cantidad,idReceta,idPedido) values(?,?,?,?)");
+         $para->bind_param('ssss',$a,$b,$c,$d);
+         $para->execute();
+     }
 
 
    function alterPedido(){
@@ -100,17 +100,17 @@ function getIdProd($idCliente){
         
    }
 function eliminarDetalle($id){
-        $res=$this->con->prepare("delete from detallePedido where idDetallePedido=?");
-        $res->bind_param('s',$a);
-        $a=$id->getIdDetallePedido();
-        $res->execute();
-      }
+         $a=$id->getIdDetallePedido();
+         $res=$this->con->prepare("delete from detallePedido where idDetallePedido=?");
+         $res->bind_param('s',$a);
+         $res->execute();
+       }
 function eliminarPedido($id){
-   $res=$this->con->prepare("delete from pedido where idPedido=?");
-   $res->bind_param('s',$a);
-   $a=$id->getIdPedido();
-   $res->execute();
-   
+     $a=$id->getIdPedido();
+     $res=$this->con->prepare("delete from pedido where idPedido=?");
+     $res->bind_param('s',$a);
+     $res->execute();
+ 
  }
 function getObtener($cantidad){
     $res=$this->con->query("select detalleReceta.idMateriaPrima,cantidaSa,existencias,inventario.idInventario,detalleReceta.idReceta from detalleReceta inner join inventario on detalleReceta.idinventario=inventario.idinventario where idReceta='$cantidad';");

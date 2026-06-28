@@ -1,6 +1,6 @@
 <?php
 include '../models/ClienteModel.php';
-include "Sesiones.php";
+include "sesiones.php";
 
 $cliente = new ClienteModel();
 

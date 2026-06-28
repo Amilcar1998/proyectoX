@@ -1,6 +1,6 @@
 <?php
 include "../models/modelClienteIn.php";
-include 'Sesiones.php';
+include 'sesiones.php';
 $cli= new ModelClienteIn();
 
 $correo=$_SESSION['c1'];

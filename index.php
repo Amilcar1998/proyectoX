@@ -1,3 +1,4 @@
+<?php require __DIR__ . '/controllers/vendor/autoload.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

@@ -1,6 +1,6 @@
 <?php 
 include '../db/conexion.php';
-include 'produccion.php';
+include '../models/produccion.php';
 
 
 class ModelProduccion extends Conexion
@@ -44,20 +44,20 @@ group by detallePedido.idReceta; ");
 
 
 function validarProduccion($inventario,$total){
-            $para =$this->con->prepare("select * from inventario where idInventario=? and Existencias > ?");
-            $para->bind_param("ss",$a,$b);
-            $a=$inventario;
-            $b=$total;
-            $para->execute();
-            while($para->fetch()) {
-                return 1;
-            }
-            return 0;
+             $a=$inventario;
+             $b=$total;
+             $para =$this->con->prepare("select * from inventario where idInventario=? and Existencias > ?");
+             $para->bind_param("ii",$a,$b);
+             $para->execute();
+             while($para->fetch()) {
+                 return 1;
+             }
+             return 0;
 
-        }
+         }
 
 
-  function getProduccion(){
+   function getProduccion(){
   	$res=$this->con->query("select  idProduccion,fechaP,estadoP,produccion.idPedido,fechaPedido,NombreCliente,empleado.nombreEmp from produccion inner join empleado on produccion.idEmpleado=empleado.idEmpleado inner join pedido on produccion.idPedido=pedido.idPedido inner join cliente on pedido.idCliente=cliente.idCliente where estadoP='activo'");
       $r=array();
       while($row=$res->fetch_assoc()) {
@@ -85,26 +85,26 @@ function validarProduccion($inventario,$total){
         }
         return $r;
     }
-    function insertar($p){
-        $para=$this->con->prepare("insert into produccion(idProduccion,fechaP,estadoP,idPedido,idEmpleado) values(?,?,?,?,?)");
-        $para->bind_param('sssss',$a,$b,$c,$d,$e);
-        $a='';
-        $b=$p->getFechaProduccion();
-        $c=$p->getEstadoProduccion();
-        $d=$p->getIdPedido();
-        $e=$p->getIdEmpleado();
-        $para->execute();
-    }
-    function actualizarInventario($Inv,$inventario){
-        $para=$this->con->prepare("UPDATE `inventario` SET `Existencias` = '$Inv' WHERE `inventario`.`idInventario` = '$inventario';");
-        $para->execute();
-    }
-    public function eliminar($p){
-       $res=$this->con->prepare("DELETE FROM `produccion` WHERE `produccion`.`idProduccion`=?");
-        $res->bind_param('s',$a);
+function insertar($p){
+         $a='';
+         $b=$p->getFechaProduccion();
+         $c=$p->getEstadoProduccion();
+         $d=$p->getIdPedido();
+         $e=$p->getIdEmpleado();
+         $para=$this->con->prepare("insert into produccion(idProduccion,fechaP,estadoP,idPedido,idEmpleado) values(?,?,?,?,?)");
+         $para->bind_param('sssss',$a,$b,$c,$d,$e);
+         $para->execute();
+     }
+     function actualizarInventario($Inv,$inventario){
+         $para=$this->con->prepare("UPDATE `inventario` SET `Existencias` = '$Inv' WHERE `inventario`.`idInventario` = '$inventario';");
+         $para->execute();
+     }
+     public function eliminar($p){
         $a=$p->getIdProduccion();
-        $res->execute();
-    }
+        $res=$this->con->prepare("DELETE FROM `produccion` WHERE `produccion`.`idProduccion`=?");
+         $res->bind_param('i',$a);
+         $res->execute();
+     }
 
 
 }

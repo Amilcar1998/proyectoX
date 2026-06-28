@@ -1,6 +1,6 @@
 <?php
 include '../db/conexion.php';
-include 'Pedidos.php';
+include '../models/Pedidos.php';
 class ModelPedido extends Conexion
 {
 public function __construct()

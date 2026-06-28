@@ -1,6 +1,6 @@
 <?php 
 include "../models/ModelUser.php";
-include "Sesiones.php";
+include "sesiones.php";
 $objU= new ModelUser();
 
 if (isset($_REQUEST["empleado"])) {

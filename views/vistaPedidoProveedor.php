@@ -1,134 +1,219 @@
-<?php
-
-
-//pedido Al Proveedor
-//include '../models/DAOPedidoProveedor.php';
-
-//instancias del pedido al proveedor
-$prod=  new PedidoProveedor();
-$dao= new DAOPedidoProveedor();
-
-
-
-?>
-
+<?php include '../views/configuracion.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
-<title></title>
+<head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    <link rel="stylesheet" href="recursos/css/bootstrap/css/bootstrap.css">
-    <link rel="stylesheet" href="recursos/js/sweetalert.css">
+    <title>Pedidos a Proveedor</title>
 
-    <script src="recursos/css/bootstrap/js/bootstrarp.js"></script>
+    <!-- Custom fonts for this template-->
+    <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Page level plugin CSS-->
+    <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
     
-    
-    <script src="recursos/js/jquery-3.4.1.js"></script>
-    <script src="recursos/js/sweetalert.min.js"></script>
-    <script>
-    
-    </script>   
+    <!-- Bootstrap core JavaScript-->
+    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
+    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Core plugin JavaScript-->
+    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
 
-  <script>
-    function cargar(codpe,codpro,codemp,codmp,fec,can,mon,pre){
-        document.formulario.txtIdPe.value=codpe;
-        document.formulario.txtIdPro.value=codpro;
-        document.formulario.txtIdEmp.value=codemp;
-        document.formulario.txtIdMp.value=codmp;
-        document.formulario.txtFec.value=fec;
-        document.formulario.txtCan.value=can;
-        document.formulario.txtMon.value=mon;
-        document.formulario.txtPre.value=pre;
-    }
+    <!-- Page level plugin JavaScript-->
+    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
+    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../controllers/js/sb-admin.min.js"></script>
+
+   <script>
+     function cargar(codpe,codpro,codemp,codmp,fec,can,mon,pre){
+         document.formulario.txtIdPe.value=codpe;
+         document.formulario.txtIdPro.value=codpro;
+         document.formulario.txtIdEmp.value=codemp;
+         document.formulario.txtIdMp.value=codmp;
+         document.formulario.txtFec.value=fec;
+         document.formulario.txtCan.value=can;
+         document.formulario.txtMon.value=mon;
+         document.formulario.txtPre.value=pre;
+     }
+     function limpiar(){
+         document.formulario.txtIdPe.value='';
+         document.formulario.txtIdPro.value='';
+         document.formulario.txtIdEmp.value='';
+         document.formulario.txtIdMp.value='';
+         document.formulario.txtFec.value='';
+         document.formulario.txtCan.value='';
+         document.formulario.txtMon.value='';
+         document.formulario.txtPre.value='';
+     }
     </script>
-
 </head>
 
 <body id="page-top">
+   <?php echo "$nav"; ?>
 
-<div align="center">
-    <h4 class='table table-striped table-dark'>Formulario de registro de Pedidos a Proveedores</h4><hr>
-    <div class="form-group" Style="position: relative; margin: auto; width: 500px;">
-        <form method="POST" action="#" name="formulario">
+   <div id="wrapper">
 
-            <input type="text" name="txtIdPe" value="" size="30" placeholder="Id pedido" class="form-control" readonly>
-            <input type="text" name="txtIdPro" value="" size="30" placeholder="Id proveedor" class="form-control">
-            <input type="text" name="txtIdEmp" value="" size="30" placeholder="Id empleado" class="form-control">
-            <select name="txtIdMp" class="form-control">Seleccionar Materia Prima
-                <option value="">seleccione materia prima</option>
-                <option value="1">Maiz Amarillo</option>
-                <option value="2">Maiz Blanco</option>
-                <option value="3">Soya</option>
-                <option value="4">Harina</option>
-                <option value="5">Maicillo</option>
-                <option value="6">Trigo</option>
-            </select>
-            <input type="text" name="txtFec" value="" size="30" placeholder="fecha" class="form-control">
-            <input type="text" name="txtCan" value="" size="30" placeholder="catidad qq" class="form-control">
-            <input type="text" name="txtMon" value="" size="30" placeholder="monto" class="form-control">
-            <input type="text" name="txtPre" value="" size="30" placeholder="precio" class="form-control">
+     <!-- Sidebar -->
+     <?php 
+     include '../views/configuracion.php';
+     echo "$menu";
+     ?>
 
-            
-            <br>
-            <input type="submit" value="guardar" name="btnGuardar" class="btn btn-primary">
-            <input type="submit" value="modificar" name="btnModificar" class="btn btn-warning">
-            <input type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">
-        <br><br>
+     <div id="content-wrapper">
+       <div class="container-fluid">
+         
+         <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#formModal">
+           <i class="fas fa-plus"></i> Agregar Pedido
+         </button>
+         
+         <!-- Modal -->
+         <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+           <div class="modal-dialog modal-lg" role="document">
+             <div class="modal-content">
+               <div class="modal-header bg-info text-white">
+                 <h5 class="modal-title" id="formModalLabel">Registro de Pedidos a Proveedor</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+               </div>
+               <div class="modal-body">
+                 <form method="POST" name="formulario">
+                   <div class="row">
+                     <div class="col-md-6">
+                       <div class="form-group">
+                         <label>ID Pedido</label>
+                         <input type="text" name="txtIdPe" value="" class="form-control" readonly>
+                       </div>
+                     </div>
+                     <div class="col-md-6">
+                       <div class="form-group">
+                         <label>ID Proveedor</label>
+                         <input type="text" name="txtIdPro" value="" class="form-control" placeholder="ID Proveedor">
+                       </div>
+                     </div>
+                   </div>
+                   
+                   <div class="row">
+                     <div class="col-md-6">
+                       <div class="form-group">
+                         <label>ID Empleado</label>
+                         <input type="text" name="txtIdEmp" value="" class="form-control" placeholder="ID Empleado">
+                       </div>
+                     </div>
+                     <div class="col-md-6">
+                       <div class="form-group">
+                         <label>Materia Prima</label>
+                         <select name="txtIdMp" class="form-control">
+                           <option value="">Seleccione materia prima</option>
+                           <option value="1">Maiz Amarillo</option>
+                           <option value="2">Maiz Blanco</option>
+                           <option value="3">Soya</option>
+                           <option value="4">Harina</option>
+                           <option value="5">Maicillo</option>
+                           <option value="6">Trigo</option>
+                         </select>
+                       </div>
+                     </div>
+                   </div>
+                   
+                   <div class="row">
+                     <div class="col-md-4">
+                       <div class="form-group">
+                         <label>Fecha</label>
+                         <input type="text" name="txtFec" value="" class="form-control" placeholder="Fecha">
+                       </div>
+                     </div>
+                     <div class="col-md-4">
+                       <div class="form-group">
+                         <label>Cantidad</label>
+                         <input type="text" name="txtCan" value="" class="form-control" placeholder="Cantidad qq">
+                       </div>
+                     </div>
+                     <div class="col-md-4">
+                       <div class="form-group">
+                         <label>Monto</label>
+                         <input type="text" name="txtMon" value="" class="form-control" placeholder="Monto">
+                       </div>
+                     </div>
+                   </div>
+                   
+                   <div class="form-group">
+                     <label>Precio</label>
+                     <input type="text" name="txtPre" value="" class="form-control" placeholder="Precio">
+                   </div>
+                   
+                   <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                     <button type="submit" value="guardar" name="btnGuardar" class="btn btn-primary">Guardar</button>
+                     <button type="submit" value="modificar" name="btnModificar" class="btn btn-warning">Modificar</button>
+                     <button type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">Eliminar</button>
+                   </form>
+                   </div>
+               </div>
+             </div>
+           </div>
+         </div>
 
-        </form>
-        
-        </div>
-</div>
+         <!-- DataTables Example -->
+         <div class="card mb-3">
+           <div class="card-header">
+             <i class="fas fa-table"></i>
+             Pedidos a Proveedor
+           </div>
+           <div class="card-body">
+             <div class="table-responsive">
+               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                 <thead>
+                   <tr>
+                     <th>ID</th>
+                     <th>ID PROVEEDOR</th>
+                     <th>ID EMPLEADO</th>
+                     <th>ID MATERIA PRIMA</th>
+                     <th>FECHA</th>
+                     <th>CANTIDAD</th>
+                     <th>MONTO</th>
+                     <th>PRECIO</th>
+                     <th>ACCIONES</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                 <?php 
+                 foreach ($tabla as $fila) {
+                     echo "<tr>
+                         <td>{$fila['idPedido']}</td>
+                         <td>{$fila['idProveedor']}</td>
+                         <td>{$fila['idEmpleado']}</td>
+                         <td>{$fila['idMateriaPrima']}</td>
+                         <td>{$fila['fecha']}</td>
+                         <td>{$fila['cantidadMP']}</td>
+                         <td>{$fila['monto']}</td>
+                         <td>{$fila['precioMP']}</td>
+                         <td>
+                         <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#formModal' onclick='cargar({$fila['idPedido']},{$fila['idProveedor']},{$fila['idEmpleado']},\"{$fila['idMateriaPrima']}\",\"{$fila['fecha']}\",{$fila['cantidadMP']},{$fila['monto']},{$fila['precioMP']})'><i class='fas fa-edit'></i> Editar</button>
+                         </td>
+                     </tr>";
+                 }
+                 ?>
+                 </tbody>
+               </table>
+             </div>
+           </div>
+         </div>
 
-<div align="center" Style="position: relative; margin: 200px; width: 10px;">
-<?php
-if(isset($_REQUEST["btnGuardar"])){
-    $prod->setIdPedido($_REQUEST["txtIdPe"]);
-    $prod->setIdProveedor($_REQUEST["txtIdPro"]);
-    $prod->setIdEmpleado($_REQUEST["txtIdEmp"]);
-    $prod->setIdMateriaPrima($_REQUEST["txtIdMp"]);
-    $prod->setFecha($_REQUEST["txtFec"]);
-    $prod->setCantidadMP($_REQUEST["txtCan"]);
-    $prod->setMonto($_REQUEST["txtMon"]);
-    $prod->setPrecioMP($_REQUEST["txtPre"]);
-
-    /////
-
-    
-
-    ////
-
-    $dao->insertar($prod);
-
-    echo $dao->getTabla();
-}else if(isset($_REQUEST["btnEliminar"])){
-    $codigo=$_REQUEST["txtIdPe"];
-    $dao->eliminar($codigo);
-    echo $dao->getTabla();
-}else if(isset($_REQUEST["btnBuscar"])){
-    echo $dao->getFiltro($_REQUEST["txtBusqueda"],$_REQUEST["txtCriterio"]);
-}else if(isset($_REQUEST["btnModificar"])){
-  $prod->setIdPedido($_REQUEST["txtIdPe"]);
-  $prod->setIdProveedor($_REQUEST["txtIdPro"]);
-  $prod->setIdEmpleado($_REQUEST["txtIdEmp"]);
-  $prod->setIdMateriaPrima($_REQUEST["txtIdMp"]);
-  $prod->setFecha($_REQUEST["txtFec"]);
-  $prod->setCantidadMP($_REQUEST["txtCan"]);
-  $prod->setMonto($_REQUEST["txtMon"]);
-  $prod->setPrecioMP($_REQUEST["txtPre"]);
-
-  $dao->modificar($prod);
-    echo $dao->getTabla();
-}else{ 
-        echo $dao->getTabla();
-}
-
-?>
-
-</div>
-
+       </div>
+       <!-- /.container-fluid -->
+     </div>
+     <!-- /.content-wrapper -->
+   </div>
+   <!-- /#wrapper -->
 </body>
-
 </html>

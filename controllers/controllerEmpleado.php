@@ -1,6 +1,6 @@
 <?php
 include "../models/empleadoModel.php";
-include "Sesiones.php";
+include "sesiones.php";
 $obEmp=new EmpleadoModel();
 $correo=$_SESSION["s1"];
 

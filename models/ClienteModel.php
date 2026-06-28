@@ -1,7 +1,7 @@
 <?php 
 include "../db/conexion.php";
-include "Cliente.php";
-include 'Usuario.php';
+include "../models/Cliente.php";
+include '../models/Usuario.php';
 
 class ClienteModel extends conexion
 {
@@ -11,15 +11,15 @@ class ClienteModel extends conexion
 		parent::__construct();
 	}
 
-  function getAddUs($u){
-            $para=$this->con->prepare("insert into usuarios(idUsuario,username,pass,id_Rol) values(?,?,?,?)");
-            $para->bind_param('ssss',$a,$b,$c,$d);
-            $a="";
-            $b=$u->getUsername();
-            $c=$u->getPass();
-            $d=$u->getIdRol();
-            $para->execute();    
-      }
+function getAddUs($u){
+             $a="";
+             $b=$u->getUsername();
+             $c=$u->getPass();
+             $d=$u->getIdRol();
+             $para=$this->con->prepare("insert into usuarios(idUsuario,username,pass,id_Rol) values(?,?,?,?)");
+             $para->bind_param('ssss',$a,$b,$c,$d);
+             $para->execute();    
+       }
 
 
 
@@ -50,38 +50,38 @@ class ClienteModel extends conexion
         }
         return $r;
        }
-      function agregarCliente($e){
-      $res=$this->con->prepare("insert into cliente(idCliente,NombreCliente,apellidosCliente,telefono,edad,genero,idUsuario) values(?,?,?,?,?,?,?)");
-      $res->bind_param("sssssss",$a,$b,$c,$d,$f,$g,$h);
-      $a="";
-      $b=$e->getNombreCi();
-      $c=$e->getApellidos();
-      $d=$e->getTelefono();
-      $f=$e->getEdad();
-      $g=$e->getGenero();
-      $h=$e->getUsuarioC();
-      $res->execute();
-
-     }
-     function modificarCliente($e){
-      $res=$this->con->prepare("UPDATE `cliente` SET NombreCliente=?,apellidosCliente=?,telefono=?,edad=?,genero=?,idUsuario=? WHERE `cliente`.`idCliente` = ?");
-      $res->bind_param("sssssss",$a,$b,$c,$d,$f,$g,$h);
-      $a=$e->getNombreCi();
-      $b=$e->getApellidos();
-      $c=$e->getTelefono();
-      $d=$e->getEdad();
-      $f=$e->getGenero();
-      $g=$e->getUsuarioC();
-      $h=$e->getIdCliente();
-      $res->execute();
+function agregarCliente($e){
+       $a="";
+       $b=$e->getNombreCi();
+       $c=$e->getApellidos();
+       $d=$e->getTelefono();
+       $f=$e->getEdad();
+       $g=$e->getGenero();
+       $h=$e->getUsuarioC();
+       $res=$this->con->prepare("insert into cliente(idCliente,NombreCliente,apellidosCliente,telefono,edad,genero,idUsuario) values(?,?,?,?,?,?,?)");
+       $res->bind_param("ssssssi",$a,$b,$c,$d,$f,$g,$h);
+       $res->execute();
 
       }
-      function eliminarCliente($e){
-        $res=$this->con->prepare("DELETE FROM cliente WHERE idCliente=?");
-        $res->bind_param('s',$a);
-        $a=$e->getIdCliente();
-        $res->execute();
-      }
+function modificarCliente($e){
+       $a=$e->getNombreCi();
+       $b=$e->getApellidos();
+       $c=$e->getTelefono();
+       $d=$e->getEdad();
+       $f=$e->getGenero();
+       $g=$e->getUsuarioC();
+       $h=$e->getIdCliente();
+       $res=$this->con->prepare("UPDATE `cliente` SET NombreCliente=?,apellidosCliente=?,telefono=?,edad=?,genero=?,idUsuario=? WHERE `cliente`.`idCliente` = ?");
+       $res->bind_param("ssssssi",$a,$b,$c,$d,$f,$g,$h);
+       $res->execute();
+
+       }
+       function eliminarCliente($e){
+         $a=$e->getIdCliente();
+         $res=$this->con->prepare("DELETE FROM cliente WHERE idCliente=?");
+         $res->bind_param('i',$a);
+         $res->execute();
+       }
    
 
 

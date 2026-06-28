@@ -3,5 +3,5 @@ define("SERVER","localhost");
 define("USER","root");
 define("PASSWORD","");
 define("BASE","concentrados");
-define("CHAR","utf-8");
+define("CHAR","utf8mb4");
 ?>

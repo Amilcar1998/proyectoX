@@ -1,5 +1,6 @@
 <?php 
-
+$nombres = $nombres ?? '';
+$nombres = is_array($nombres) ? '' : $nombres;
 
 $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 
@@ -14,8 +15,7 @@ $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
       <form class='d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0'>
       <div class='input-group'>
         <div class='input-group-append'>
-          <button class='btn btn-success'> 
-          $nombres
+          <button class='btn btn-success'> $nombres
             </button>
             
           </button>
@@ -76,6 +76,30 @@ $menu="<ul class='sidebar navbar-nav'>
         <a class='nav-link' href='controllerInventario.php'>
         <i class='fas fa-fw fa-table'></i>
           <span>Inventario</span>
+        </a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerMateriaPrima.php'>
+        <i class='fas fa-fw fa-seedling'></i>
+          <span>Materia Prima</span>
+        </a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerPuesto.php'>
+        <i class='fas fa-fw fa-user-tag'></i>
+          <span>Puesto</span>
+        </a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerFactura.php'>
+        <i class='fas fa-fw fa-file-invoice'></i>
+          <span>Factura</span>
+        </a>
+      </li>
+      <li class='nav-item active'>
+        <a class='nav-link' href='controllerDetalleCompra.php'>
+        <i class='fas fa-fw fa-receipt'></i>
+          <span>Detalle Compra</span>
         </a>
       </li>
       <li class='nav-item active'>

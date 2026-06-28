@@ -1,33 +1,44 @@
 <?php
+require dirname(__DIR__) . '/controllers/vendor/autoload.php';
 include '../models/ModelInventario.php';
-include 'Sesiones.php';
-$inventario = new ModelInventario();
-$datos=$inventario->getInventario();
-$correo=$_SESSION['s1'];
-$session = $inventario->getSessionEmp($correo);
+include 'sesiones.php';
 
-foreach ($session as $key) {
-    $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+use Inventario;
 
+$dao = new ModelInventario();
+
+$tabla = $dao->getTabla();
+$correo = $_SESSION['s1'] ?? '';
+$session = [];
+$nombres = '';
+
+if ($correo) {
+    $session = $dao->getSessionEmp($correo);
+    if (!empty($session)) {
+        $nombres = $session[0]['nombreEmp'] . ' ' . $session[0]['apellido'];
+    }
 }
-if(isset($_REQUEST["btnGuardar"])){
-	$inv = new Inventario($_REQUEST["txtId"],$_REQUEST["txtIdMateriaPrima"],$_REQUEST["txtExistencias"],$_REQUEST["txtDetalleCompra"]);
-	$inventario->InsertarInventario($inv);
-	$msj="se ha Agregado el registro exitosamente";
-	$icon="success";
-	$datos=$inventario->getInventario();
-}else if(isset($_REQUEST["btnModificar"])){
-	$inv = new Inventario($_REQUEST["txtId"],$_REQUEST["txtIdMateriaPrima"],$_REQUEST["txtExistencias"],$_REQUEST["txtDetalleCompra"]);
-	$inventario->setInventario($inv);
-	$msj="Se ha mofificado exitosamente";
-	$icon="success";
-	$datos=$inventario->getInventario();
-}else if(isset($_REQUEST["btnEliminar"])){
-	$inv = new Inventario($_REQUEST["txtId"],$_REQUEST["txtIdMateriaPrima"],$_REQUEST["txtExistencias"],$_REQUEST["txtDetalleCompra"]);
-	$inventario->eliminarInventario($inv);
-	$msj="Se ha eliminado exitosamente";
-	$icon="success";
-	$datos=$inventario->getInventario();
+
+if (isset($_REQUEST["btnGuardar"])) {
+    $obj = new Inventario();
+    $obj->setIdInventario($_REQUEST["txtId"] ?? '');
+    $obj->setIdMateriaPrima($_REQUEST["txtIdMateriaPrima"] ?? '');
+    $obj->setExistencias($_REQUEST["txtExistencias"] ?? '');
+    $obj->setIdDetalleCompra($_REQUEST["txtDetalleCompra"] ?? '');
+    $dao->InsertarInventario($obj);
+    $tabla = $dao->getTabla();
+} else if (isset($_REQUEST["btnModificar"])) {
+    $obj = new Inventario();
+    $obj->setIdInventario($_REQUEST["txtId"] ?? '');
+    $obj->setIdMateriaPrima($_REQUEST["txtIdMateriaPrima"] ?? '');
+    $obj->setExistencias($_REQUEST["txtExistencias"] ?? '');
+    $obj->setIdDetalleCompra($_REQUEST["txtDetalleCompra"] ?? '');
+    $dao->setInventario($obj);
+    $tabla = $dao->getTabla();
+} else if (isset($_REQUEST["btnEliminar"])) {
+    $dao->eliminar($_REQUEST["txtId"] ?? 0);
+    $tabla = $dao->getTabla();
 }
+
 include '../views/vistaInventario.php';
 ?>

@@ -1,6 +1,6 @@
 <?php
-include '../models/modelProveedor.php';
-include "Sesiones.php";
+include '../models/ModelProveedor.php';
+include "sesiones.php";
 $prov =new 	ModelProveedor();
 
 if(isset($_REQUEST["btnGuardar"])){

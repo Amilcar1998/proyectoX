@@ -1,6 +1,6 @@
 <?php 
 include '../db/conexion.php';
-include "Usuario.php";
+include "../models/Usuario.php";
 
 class ModelUser extends conexion
 {
@@ -53,16 +53,15 @@ class ModelUser extends conexion
         return $r;
 
     }
-    function modificarUsuario($u){
-      $res=$this->con->prepare("UPDATE `usuarios` SET username=?,pass=?,id_Rol=? WHERE `usuarios`.`idUsuario` = ?");
-      $res->bind_param("ssss",$a,$b,$c,$d);
-      $a=$u->getUsername();
-      $b=$u->getPass();
-      $c=$u->getIdRol();
-      $d=$u->getIdUsuario();
-
-      $res->execute();
-    }
+function modificarUsuario($u){
+       $a=$u->getUsername();
+       $b=$u->getPass();
+       $c=$u->getIdRol();
+       $d=$u->getIdUsuario();
+       $res=$this->con->prepare("UPDATE `usuarios` SET username=?,pass=?,id_Rol=? WHERE `usuarios`.`idUsuario` = ?");
+       $res->bind_param("ssss",$a,$b,$c,$d);
+       $res->execute();
+     }
 
 }
 
