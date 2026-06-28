@@ -58,6 +58,7 @@ $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 ";
 
 $menuItems = [
+  ['href' => 'controllerDashboard.php', 'icon' => 'fa-chart-line', 'label' => 'Dashboard'],
   ['href' => 'controllerEmpleado.php', 'icon' => 'fa-user-tie', 'label' => 'Empleados'],
   ['href' => 'controllerCliente.php', 'icon' => 'fa-address-book', 'label' => 'Clientes'],
   ['href' => 'controllerUsuarios.php', 'icon' => 'fa-users-cog', 'label' => 'Usuarios'],
