@@ -14,7 +14,7 @@ include 'configuracion.php';
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Proveedores</title>
+  <title>🏭 Proveedores</title>
   
 
   <!-- Custom fonts for this template-->

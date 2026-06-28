@@ -14,7 +14,7 @@ include 'configuracion.php';
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Produccion</title>
+    <title>🏭 Producción</title>
 
   <!-- Custom fonts for this template-->
   <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

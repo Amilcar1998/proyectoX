@@ -14,7 +14,7 @@ include 'configuracion.php';
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Empleado</title>
+    <title>👷 Empleado</title>
   
 
   <!-- Custom fonts for this template-->

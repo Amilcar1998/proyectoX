@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Materia Prima</title>
+    <title>🌿 Materia Prima</title>
 
     <!-- Custom fonts for this template-->
     <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

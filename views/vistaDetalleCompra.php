@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Detalle Compra</title>
+    <title>🛍️ Detalle Compra</title>
 
     <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">

@@ -12,7 +12,7 @@ include '../views/configuracion.php';
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Inventario</title>
+    <title>📋 Inventario</title>
   
 
   <!-- Custom fonts for this template-->
