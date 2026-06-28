@@ -74,9 +74,9 @@ include '../views/configuracion.php';
                   <label>Materia Prima</label> 
                    <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control">
                      <option value="">seleccione materia prima</option>
-                     <?php foreach ($materiasPrimas as $mp) {
-                       echo "<option value='".$mp["idMateriaPrima"]."'>".$mp["NombreMP"]."</option>";
-                     } ?>
+                      <?php foreach ($materiasPrimas as $mp) {
+                        echo "<option value='".($mp["idMateriaPrima"] ?? '')."'>".($mp["NombreMP"] ?? '')."</option>";
+                      } ?>
                    </select>
                 </div>
             </div>
@@ -132,11 +132,10 @@ include '../views/configuracion.php';
                  </tfoot>
                  <tbody>
                <?php 
-                 foreach ($tabla as $fila) {
-                  $idInventario=$fila["idInventario"];
-                  $idMateriaPrima=$fila["idMateriaPrima"] ?? '';
-                  $NombreMP=$fila["NombreMP"] ?? '';
-                  $Existencias=$fila["Existencias"] ?? '';
+                  foreach ($tabla as $fila) {
+                   $idInventario=$fila["idInventario"];
+                   $NombreMP=isset($fila["NombreMP"]) ? $fila["NombreMP"] : '';
+                   $Existencias=isset($fila["Existencias"]) ? $fila["Existencias"] : '';
 
                 echo "
                 <tr>

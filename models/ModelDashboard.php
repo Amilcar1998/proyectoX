@@ -8,25 +8,44 @@ class ModelDashboard extends Conexion {
     }
 
     public function getResumen(): array {
-        $data = [];
+        $data = [
+            'totalPedidos' => 0,
+            'montoTotal' => 0,
+            'totalFacturas' => 0,
+            'montoFacturado' => 0,
+            'stockCritico' => 0,
+            'totalEmpleados' => 0,
+        ];
 
         $res = $this->con->query("SELECT COUNT(*) AS total FROM pedidoproveedor");
-        $data['totalPedidos'] = $res->fetch_assoc()['total'] ?? 0;
+        if ($res) {
+            $data['totalPedidos'] = $res->fetch_assoc()['total'] ?? 0;
+        }
 
         $res = $this->con->query("SELECT COALESCE(SUM(monto),0) AS total FROM pedidoproveedor");
-        $data['montoTotal'] = $res->fetch_assoc()['total'] ?? 0;
+        if ($res) {
+            $data['montoTotal'] = $res->fetch_assoc()['total'] ?? 0;
+        }
 
         $res = $this->con->query("SELECT COUNT(*) AS total FROM factura");
-        $data['totalFacturas'] = $res->fetch_assoc()['total'] ?? 0;
+        if ($res) {
+            $data['totalFacturas'] = $res->fetch_assoc()['total'] ?? 0;
+        }
 
         $res = $this->con->query("SELECT COALESCE(SUM(monto),0) AS total FROM factura");
-        $data['montoFacturado'] = $res->fetch_assoc()['total'] ?? 0;
+        if ($res) {
+            $data['montoFacturado'] = $res->fetch_assoc()['total'] ?? 0;
+        }
 
         $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 10");
-        $data['stockCritico'] = $res->fetch_assoc()['total'] ?? 0;
+        if ($res) {
+            $data['stockCritico'] = $res->fetch_assoc()['total'] ?? 0;
+        }
 
         $res = $this->con->query("SELECT COUNT(*) AS total FROM empleado");
-        $data['totalEmpleados'] = $res->fetch_assoc()['total'] ?? 0;
+        if ($res) {
+            $data['totalEmpleados'] = $res->fetch_assoc()['total'] ?? 0;
+        }
 
         return $data;
     }
@@ -38,6 +57,9 @@ class ModelDashboard extends Conexion {
                 ORDER BY mes DESC
                 LIMIT 12";
         $res = $this->con->query($sql);
+        if (!$res) {
+            return [];
+        }
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -51,6 +73,9 @@ class ModelDashboard extends Conexion {
                 INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
                 ORDER BY i.Existencias ASC";
         $res = $this->con->query($sql);
+        if (!$res) {
+            return [];
+        }
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -69,6 +94,9 @@ class ModelDashboard extends Conexion {
                 ORDER BY pp.fecha DESC
                 LIMIT 10";
         $res = $this->con->query($sql);
+        if (!$res) {
+            return [];
+        }
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -85,9 +113,23 @@ class ModelDashboard extends Conexion {
                 ORDER BY totalProduccion DESC
                 LIMIT 8";
         $res = $this->con->query($sql);
+        if (!$res) {
+            return [];
+        }
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
+        }
+        return $r;
+    }
+
+    public function getSessionEmp(string $correo): array {
+        $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        $r = [];
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $r[] = $row;
+            }
         }
         return $r;
     }
