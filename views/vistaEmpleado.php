@@ -49,6 +49,7 @@ include 'configuracion.php';
         <div class="input-group-append">
           <button class="btn btn-success"> 
             <?php foreach ($session as $key) {
+              
           $nombre = $key['nombreEmp']."&nbsp;&nbsp;".$key['apellido'];
           echo "$nombre";
         } ?></button>
@@ -175,7 +176,7 @@ include 'configuracion.php';
            Datos Empleados</div>
            <div class="card-body">
              <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+               <table class="table table-bordered datatable" width="100%" cellspacing="0">
                  <thead>
                    <tr>
                    <th>Nombre</th>
@@ -199,15 +200,15 @@ include 'configuracion.php';
                  
 
               
-                   echo "<tr>
-                   <td>$nombres</td>
-                   <td>$apellido</td>
-                   <td>$genero</td>
-                   <td>$cargo</td>
-                   <td>$user</td>
-                   <td>
-                   <button class='btn btn-warning cargar' data-toggle='modal' data-target='.modal' onClick=$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');>ver</button></td>
-                   </tr>";
+                    echo "<tr>
+                    <td>$nombres</td>
+                    <td>$apellido</td>
+                    <td>$genero</td>
+                    <td>$cargo</td>
+                    <td>$user</td>
+                    <td>
+                    <button class='btn btn-warning cargar' data-toggle='modal' data-target='.modal' onclick=\"$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');\">ver</button></td>
+                    </tr>";
                 }
                    
                  
@@ -272,6 +273,12 @@ include 'configuracion.php';
     <!-- Custom scripts for all pages-->
     <script src="../controllers/js/sb-admin.min.js"></script>
     <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+
+    <!-- Translations -->
+    <script src="js/translations.js"></script>
+
+    <!-- Demo scripts for this page-->
+    <script src="js/demo/datatables-demo.js"></script>
 
     <!-- Footer -->
     <footer class="sticky-footer bg-dark mt-auto">

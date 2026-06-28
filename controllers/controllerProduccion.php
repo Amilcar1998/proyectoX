@@ -3,11 +3,11 @@ include '../models/ModelProduccion.php';
 include 'sesiones.php';
 $prod=new ModelProduccion();
 $data=$prod->getProduccion();
-$correo=$_SESSION['s1'];
+$correo=$_SESSION['s1'] ?? '';
 $session = $prod->getSessionEmp($correo);
+$nombres = '';
 foreach ($session as $key) {
- $idEmp=$key['idEmpleado'];
- $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+    $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 }
   $fechaActual = date('d/m/Y');
 

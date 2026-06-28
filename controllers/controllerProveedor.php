@@ -24,7 +24,11 @@ if(isset($_REQUEST["btnModificar"])){
 }
 
 $tab = $prov->getTabla();
-$nombres = $prov->getSessionEmp();
+$session = $prov->getSessionEmp($_SESSION['s1'] ?? '');
+$nombres = '';
+foreach ($session as $key) {
+    $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+}
 
 
 include "../views/vistaProveedor.php";

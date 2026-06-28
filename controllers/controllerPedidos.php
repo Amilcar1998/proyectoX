@@ -3,15 +3,12 @@ include '../models/ModelPedido.php';
 include 'sesiones.php';
 $pedido = new ModelPedido();
 $datos = $pedido->getPedido();
-$correo=$_SESSION['s1'];
+$correo=$_SESSION['s1'] ?? '';
 
 $session = $pedido->getSessionEmp($correo);
-if (isset($_REQUEST['detalle'])) {
-	$id=$_REQUEST['id'];
-	$detalle=$pedido->getDetalle($id);
-
-
-
+$nombres = '';
+foreach ($session as $key) {
+    $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 }
 if(isset($_REQUEST['receta'])){
 	$id=$_REQUEST['idDetalle'];

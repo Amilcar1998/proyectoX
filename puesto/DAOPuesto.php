@@ -30,7 +30,7 @@ class DAOPuesto{
         $res = $this->con->query($sql);
         $this->desconectar();
         //tabala con bootstrap
-        $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table table-striped table-dark datatable'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>ID PUESTO</th>"
                     ."<th>NOMBRE PUESTO</th>"
@@ -44,9 +44,10 @@ class DAOPuesto{
                         ."<td><a href=\"javascript:cargar('".$fila["idPuesto"]."','".$fila["nombrePuesto"]."')\">select</a></td>"
                     ."</tr>";
         }
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
+
     }
 
     public function insertar($obj){
@@ -100,7 +101,7 @@ class DAOPuesto{
         $res = $this->con->query($sql);
         $this->desconectar();
         //tabala con bootstrap
-        $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table table-striped table-dark datatable'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>ID PUESTO</th>"
                     ."<th>NOMBRE PUESTO</th>"
@@ -114,7 +115,7 @@ class DAOPuesto{
                         ."<td><a href=\"javascript:cargar('".$fila["idPuesto"]."','".$fila["nombrePuesto"]."')\">select</a></td>"
                     ."</tr>";
         }
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
 

@@ -25,7 +25,7 @@ $html='<!DOCTYPE html>
     <main>';
 
 
-$html.="<table class='table table-striped'>"."<thead class='table table-striped table-dark'>";
+$html.="<div class='table-responsive'><table class='table table-striped datatable'>"."<thead class='table table-striped table-dark'>";
         $html.="<tr>"
                     ."<th>id Cliente</th>"
                     ."<th>Nombre</th>"
@@ -45,7 +45,7 @@ $html.="<table class='table table-striped'>"."<thead class='table table-striped 
                         ."<td nowrap='nowrap'>".$fila["genero"]."</td>"
                         ."<td nowrap='nowrap'>".$fila["username"]."</td>"
                     ."</tr>";
-        }$html.="</tbody></table>";
+        }$html.="</tbody></table></div>";
     
 
 $html.='</main>

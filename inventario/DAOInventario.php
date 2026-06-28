@@ -25,7 +25,7 @@ class DAOInventario{
     }
 
     public function getTabla(){
-        $sql="SELECT i.idInventario, mp.NombreMP, i.Existencias, dc.cantidadMP, dc.precioMP
+        $sql="SELECT i.idInventario, mp.idMateriaPrima, mp.NombreMP, i.Existencias, dc.cantidadMP, dc.precioMP
               FROM inventario i
               INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
               LEFT JOIN detallecompra dc ON i.idDetalleCompra = dc.idDetalleCompra
@@ -34,7 +34,7 @@ class DAOInventario{
         $res = $this->con->query($sql);
         $this->desconectar();
         //tabala con bootstrap
-        $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table table-striped table-dark datatable'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>ID INVENTARIO</th>"
                     ."<th>MATERIA PRIMA</th>"
@@ -55,7 +55,7 @@ class DAOInventario{
                     ."</tr>";
         }
 
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
 
@@ -107,7 +107,7 @@ class DAOInventario{
     }
     
     public function getFiltro($buscar, $criterio){
-        $sql="SELECT i.idInventario, mp.NombreMP, i.Existencias, dc.cantidadMP, dc.precioMP
+        $sql="SELECT i.idInventario, mp.idMateriaPrima, mp.NombreMP, i.Existencias, dc.cantidadMP, dc.precioMP
               FROM inventario i
               INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
               LEFT JOIN detallecompra dc ON i.idDetalleCompra = dc.idDetalleCompra
@@ -122,7 +122,7 @@ class DAOInventario{
         $res = $stmt->get_result();
         $this->desconectar();
         //tabala con bootstrap
-        $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table table-striped table-dark datatable'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>ID INVENTARIO</th>"
                     ."<th>MATERIA PRIMA</th>"
@@ -143,7 +143,7 @@ class DAOInventario{
                     ."</tr>";
         }
 
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
 

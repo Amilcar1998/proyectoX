@@ -2,8 +2,8 @@
 include "../models/modelClienteIn.php";
 include 'sesiones.php';
 $cli= new ModelClienteIn();
-
-$correo=$_SESSION['c1'];
+$correo = $_SESSION['c1'] ?? '';
+$nombres = $cli->getNombreUsuario();
 $dataCliente=$cli->getClienteIndividual($correo);
 foreach ($dataCliente as $fila) {
     $idCliente=$fila['idCliente'];

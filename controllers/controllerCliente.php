@@ -35,10 +35,10 @@ if(isset($_REQUEST["eliminar"])) {
 $user=$cliente->getUser();
 $Rcliente = $cliente->getCliente();
 $session = $cliente->getSessionEmp();
-
+$nombres = '';
 foreach ($session as $key) {
- $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
-      
+  $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+       
    }
 
 

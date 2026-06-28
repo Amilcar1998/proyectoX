@@ -34,9 +34,10 @@ if(isset($_REQUEST["modificar"])){
 
 $rol = $objU->getRol();
 $session = $objU->getSessionEmp();
+$nombres = '';
 foreach ($session as $key) {
- $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
- }
+  $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+  }
 
 include "../views/vistaUsuarios.php";
 

@@ -124,7 +124,7 @@ include 'configuracion.php';
           Datos Proveedores</div>
           <div class="card-body">
             <div class="table-responsive">
-               <table class="table table-bordered  table-triped" id="dataTable" width="100%" cellspacing="0">
+               <table class="table table-bordered  table-triped datatable" width="100%" cellspacing="0">
                  <thead>
                    <tr>
                    <th>Nombre </th>
@@ -147,20 +147,20 @@ include 'configuracion.php';
                  $correoP=$fila["correoP"];
                  $telefono=$fila["telefono"];
   
-                echo "
-                <tr>
-                   <td>$nombres</td>
-                   <td>$contacto</td>
-                   <td>$nit</td>
-                   <td>$correoP</td>
-                   <td>$telefono</td>
-                   <td>
-                   <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');>Cargar</button>
-                   </td>
-                   
-                   </tr>
+                 echo "
+                 <tr>
+                    <td>$nombres</td>
+                    <td>$contacto</td>
+                    <td>$nit</td>
+                    <td>$correoP</td>
+                    <td>$telefono</td>
+                    <td>
+                    <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onclick=\"$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');\">Cargar</button>
+                    </td>
+                    
+                    </tr>
 
-                ";
+                 ";
 
                 
               }
@@ -228,6 +228,10 @@ include 'configuracion.php';
    <!-- Custom scripts for all pages-->
    <script src="js/sb-admin.min.js"></script>
    <script type="text/javascript" src="Recursos/validaciones.js"></script>
+
+   <!-- Demo scripts for this page-->
+   <script src="js/translations.js"></script>
+   <script src="js/demo/datatables-demo.js"></script>
 
    <!-- Footer -->
    <footer class="sticky-footer bg-dark mt-auto">

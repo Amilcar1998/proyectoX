@@ -1,8 +1,8 @@
 <?php
-include "../models/empleadoModel.php";
 include "sesiones.php";
+include "../models/empleadoModel.php";
 $obEmp=new EmpleadoModel();
-$correo=$_SESSION["s1"];
+$correo=$_SESSION["s1"] ?? '';
 
 
 
@@ -45,14 +45,15 @@ if(isset($_REQUEST["eliminar"])){
     $icon="success";
  }
 
-  $session = $obEmp->getSessionEmp($correo);
-  $datos=$obEmp->getEmpleado();
-  $puesto=$obEmp->getCargo();
-  $usuarios=$obEmp->getUsuarios();
-  foreach ($session as $key) {
-  $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
-     
-  }
+   $session = $obEmp->getSessionEmp($correo);
+   $datos=$obEmp->getEmpleado();
+   $puesto=$obEmp->getCargo();
+   $usuarios=$obEmp->getUsuarios();
+   $nombres = '';
+   foreach ($session as $key) {
+   $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+      
+   }
   
   
 

@@ -66,7 +66,7 @@ include 'configuracion.php';
                                 echo "<hr>
                                        <div class='row'>
                                        <div class='col-md-6'>
-                                       <table class='table table-striped table-dark table-hover' id='dataTable' width='100%' cellspacing='0'>
+                                        <div class='table-responsive'><table class='table table-striped table-dark table-hover datatable' width='100%' cellspacing='0'>
                                         <tr>'
                                         <th>ID</th>
                                         <th>Unidades</th>
@@ -95,12 +95,12 @@ include 'configuracion.php';
                                            </form></td>    
                                           </tr>";
                                 }
-                                echo "</table>
+                                echo "</table></div>
                                     </div>";
                                 echo "<hr>";
                                 if (isset($receta)){
                                 echo "<div class='col-md-6'>
-                                        <table class='table table-bordered table-dark table-hover' id='dataTable' width='100%' cellspacing='0'>
+                                        <div class='table-responsive'><table class='table table-bordered table-dark table-hover datatable' width='100%' cellspacing='0'>
                                         <tr>
                                         <th>ID Receta</th>
                                         <th>Materia Prima</th>
@@ -122,7 +122,7 @@ include 'configuracion.php';
                                           <td>$cantida</td>
                                           <td>$producto</td>
                                           </tr>";
-                                }echo "</table></div>";}
+                                 }echo "</table></div></div>";}
                             
                         }else{
                         $tabla="<div class='card mb-3'>
@@ -131,7 +131,7 @@ include 'configuracion.php';
                                        Pedidos</div>
                                     <div class='card-body'>
                                         <div class='table-responsive'>
-                                            <table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>
+                                            <table class='table table-bordered datatable' width='100%' cellspacing='0'>
                                                 <thead>
                                                 <tr>
                                                     <th>id Pedido</th>
@@ -210,6 +210,8 @@ include 'configuracion.php';
 <script src="js/sb-admin.min.js"></script>
 
 <!-- Demo scripts for this page-->
+<!-- Translations -->
+<script src="js/translations.js"></script>
 <script src="js/demo/datatables-demo.js"></script>
 
 <!-- Footer -->

@@ -3,11 +3,12 @@ include "../db/conexion.php";
 include "../models/Empleado.php";
 include "../models/Usuario.php";
 
-class empleadoModel extends conexion
-{
-    public function __construct()
+if (!class_exists('empleadoModel')) {
+    class empleadoModel extends Conexion
     {
-       parent::__construct();
+        public function __construct()
+        {
+           parent::__construct();
     }
     function getEmpleado(){
         $res=$this->con->query("SELECT e.idEmpleado, e.nombreEmp, e.apellido, e.genero, p.nombrePuesto, u.username FROM empleado e INNER JOIN puesto p ON e.idPuesto=p.idPuesto INNER JOIN usuarios u ON e.idUsuario=u.idUsuario");
@@ -34,15 +35,18 @@ function getUsuarios(){
         }
         return $r;
 }
-function getSessionEmp(){
-         $correo=$_SESSION["s1"];
+    function getSessionEmp($correo = null){
+        if ($correo === null) {
+            $correo = $_SESSION["s1"] ?? '';
+        }
+        $correo = $this->con->real_escape_string($correo);
         $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
         $r=array();
         while($row=$res->fetch_assoc()) {
             $r[]=$row;
         }
         return $r;
-}
+    }
 
     function getUser($user){
         $res=$this->con->query("select idUsuario from usuarios where username='$user'");
@@ -110,8 +114,8 @@ function insertarEmpleado($e){
              $para->execute();
 
          }
+    
 
 
-
-
+    }
 }

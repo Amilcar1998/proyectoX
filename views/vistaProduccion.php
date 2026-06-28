@@ -53,7 +53,7 @@ include 'configuracion.php';
             Produccion</div>
           <div class="card-body">
             <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+               <table class="table table-bordered datatable" width="100%" cellspacing="0">
                  <thead>
                    <tr>
                      <th>Producción</th>
@@ -130,8 +130,10 @@ include 'configuracion.php';
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
 
-  <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
+   <!-- Translations -->
+   <script src="js/translations.js"></script>
+   <!-- Demo scripts for this page-->
+   <script src="js/demo/datatables-demo.js"></script>
   <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
 
   <!-- Footer -->

@@ -137,7 +137,7 @@
                 <div class="card-header py-3"><i class="fas fa-table mr-2"></i>Pedidos Recientes</div>
                 <div class="card-body">
                   <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
+                     <table class="table table-bordered datatable" width="100%" cellspacing="0">
                       <thead>
                         <tr>
                           <th>Pedido</th>
@@ -184,6 +184,12 @@
     <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
     <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="js/sb-admin.min.js"></script>
+
+    <!-- Translations -->
+    <script src="js/translations.js"></script>
+
+    <!-- Demo scripts for this page-->
+    <script src="js/demo/datatables-demo.js"></script>
 
     <script>
       const meses = <?php echo json_encode(array_column($pedidosMensuales, 'mes')); ?>;

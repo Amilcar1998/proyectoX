@@ -72,7 +72,7 @@ if(isset($pedido)){
         <div class='col-md-8 card'>";
     if(isset($detalleRes)){
 
-        echo "<table class='table table-hover table-bordered'>
+        echo "<div class='table-responsive'><table class='table table-hover table-bordered datatable'>
          <tr style='background-color:#1e7e34'>
          <th>Id Detalle</th>
          <th>Unidades</th>
@@ -107,12 +107,12 @@ if(isset($pedido)){
                     }
 
         }
-        echo "</table>
-               </div>";
+        echo "</table></div>
+                </div>";
         if(isset($data)){
 
             echo "<div class='col-md-4'>
-                <table class='table table-hover table-dark'>
+                <div class='table-responsive'><table class='table table-hover table-dark datatable'>
                 <tr><td>KiloGramos</td><td>Materia Prima</td></tr>";
                    foreach ($data as $p){
                        $can=$p['cantidaSa'];
@@ -124,7 +124,7 @@ if(isset($pedido)){
                    }
 
 
-            echo "</table>
+            echo "</table></div></div>
               </div>
               </div>";
         }
@@ -151,7 +151,7 @@ if(isset($pedido)){
         </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>ID Pedido</th>
@@ -219,10 +219,14 @@ if(isset($pedido)){
     <script src="../controllers/js/sb-admin.min.js"></script>
 
      <!-- Demo scripts for this page-->
-     <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
-     <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+      <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+      <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
 
-     <!-- Footer -->
+      <!-- Demo scripts for this page-->
+      <script src="js/translations.js"></script>
+      <script src="js/demo/datatables-demo.js"></script>
+
+      <!-- Footer -->
      <footer class="sticky-footer bg-dark mt-auto">
        <div class="container my-auto py-3">
          <div class="copyright text-center my-auto">

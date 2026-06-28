@@ -2,74 +2,72 @@
 include '../db/conexion.php';
 include "../models/Usuario.php";
 
-class ModelUser extends conexion
-{
-	
-	function __construct()
-	{
-	parent::__construct();	
-	}
-	function getUsuario(){
-		$res=$this->con->query("select usuarios.idUsuario,nombreEmp,apellido,username,pass,id_Rol from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where id_Rol=1");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
+if (!class_exists('ModelUser')) {
+    class ModelUser extends Conexion
+    {
+        public function __construct()
+        {
+            parent::__construct();
         }
-        return $r;
 
-	}
-	function getUsuarioCli(){
-		$res=$this->con->query("select usuarios.idUsuario,nombreCliente,username,pass,id_Rol from cliente inner join usuarios on cliente.idUsuario=usuarios.idUsuario where id_Rol=2");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
+        function getUsuario(){
+            $res=$this->con->query("select usuarios.idUsuario,nombreEmp,apellido,username,pass,id_Rol from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where id_Rol=1");
+            $r=array();
+            while($row=$res->fetch_assoc()) {
+                $r[]=$row;
+            }
+            return $r;
         }
-        return $r;
 
-    } 
-    function getUsuarios(){
-		$res=$this->con->query("select idUsuario,username,pass,nombreRol,usuarios.id_Rol from usuarios inner join rol where usuarios.id_Rol=rol.id_Rol");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
+        function getUsuarioCli(){
+            $res=$this->con->query("select usuarios.idUsuario,nombreCliente,username,pass,id_Rol from cliente inner join usuarios on cliente.idUsuario=usuarios.idUsuario where id_Rol=2");
+            $r=array();
+            while($row=$res->fetch_assoc()) {
+                $r[]=$row;
+            }
+            return $r;
         }
-        return $r;
-    	}
-    function getSessionEmp(){
-         $correo=$_SESSION["s1"];
-        $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
+
+        function getUsuarios(){
+            $res=$this->con->query("select idUsuario,username,pass,nombreRol,usuarios.id_Rol from usuarios inner join rol where usuarios.id_Rol=rol.id_Rol");
+            $r=array();
+            while($row=$res->fetch_assoc()) {
+                $r[]=$row;
+            }
+            return $r;
         }
-        return $r;
+
+        function getSessionEmp($correo = null){
+            if ($correo === null) {
+                $correo = $_SESSION["s1"] ?? '';
+            }
+            $correo = $this->con->real_escape_string($correo);
+            $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+            $r=array();
+            while($row=$res->fetch_assoc()) {
+                $r[]=$row;
+            }
+            return $r;
+        }
+
+        function getRol(){
+            $res=$this->con->query("select * from rol");
+            $r=array();
+            while($row=$res->fetch_assoc()) {
+                $r[]=$row;
+            }
+            return $r;
+        }
+
+        function modificarUsuario($u){
+            $a=$u->getUsername();
+            $b=$u->getPass();
+            $c=$u->getIdRol();
+            $d=$u->getIdUsuario();
+            $res=$this->con->prepare("UPDATE `usuarios` SET username=?,pass=?,id_Rol=? WHERE `usuarios`.`idUsuario` = ?");
+            $res->bind_param("ssss",$a,$b,$c,$d);
+            $res->execute();
+        }
     }
-    function getRol(){
-        $res=$this->con->query("select * from rol");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
-        }
-        return $r;
-
-    }
-function modificarUsuario($u){
-       $a=$u->getUsername();
-       $b=$u->getPass();
-       $c=$u->getIdRol();
-       $d=$u->getIdUsuario();
-       $res=$this->con->prepare("UPDATE `usuarios` SET username=?,pass=?,id_Rol=? WHERE `usuarios`.`idUsuario` = ?");
-       $res->bind_param("ssss",$a,$b,$c,$d);
-       $res->execute();
-     }
-
 }
-
-
-
-
-
-
-
-
- ?>
+?>

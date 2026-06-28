@@ -14,12 +14,10 @@ $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 
     <!-- Navbar -->
     
-      <form class='d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0'>
+       <form class='d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0'>
       <div class='input-group'>
         <div class='input-group-append'>
-          <button class='btn btn-success'> $nombres
-            </button>
-            
+           <button class='btn btn-success'> " . $nombres . "
           </button>
         </div>
       </div>
@@ -71,6 +69,8 @@ $menuItems = [
   ['href' => 'controllerPuesto.php', 'icon' => 'fa-briefcase', 'label' => 'Puesto'],
   ['href' => 'controllerFactura.php', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Factura'],
   ['href' => 'controllerDetalleCompra.php', 'icon' => 'fa-shopping-bag', 'label' => 'Detalle Compra'],
+  ['href' => 'controllerPlanPago.php', 'icon' => 'fa-credit-card', 'label' => 'Planes de Pago'],
+  ['href' => 'controllerPagos.php', 'icon' => 'fa-money-bill-wave', 'label' => 'Pagos'],
   ['href' => 'controllerReportes.php', 'icon' => 'fa-chart-pie', 'label' => 'Reportes'],
 ];
 

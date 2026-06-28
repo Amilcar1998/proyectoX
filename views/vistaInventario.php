@@ -113,7 +113,7 @@ include '../views/configuracion.php';
           Datos Inventario</div>
           <div class="card-body">
             <div class="table-responsive">
-               <table class="table table-bordered  table-triped" id="dataTable" width="100%" cellspacing="0">
+               <table class="table table-bordered  table-triped datatable" width="100%" cellspacing="0">
                  <thead>
                    <tr>
                    <th>Materia Prima</th>
@@ -131,25 +131,26 @@ include '../views/configuracion.php';
 
                  </tfoot>
                  <tbody>
-               <?php 
-                  foreach ($tabla as $fila) {
-                   $idInventario=$fila["idInventario"];
-                   $NombreMP=isset($fila["NombreMP"]) ? $fila["NombreMP"] : '';
-                   $Existencias=isset($fila["Existencias"]) ? $fila["Existencias"] : '';
+                <?php 
+                   foreach ($tabla as $fila) {
+                    $idInventario=isset($fila["idInventario"]) ? $fila["idInventario"] : '';
+                    $idMateriaPrima=isset($fila["idMateriaPrima"]) ? $fila["idMateriaPrima"] : '';
+                    $NombreMP=isset($fila["NombreMP"]) ? $fila["NombreMP"] : '';
+                    $Existencias=isset($fila["Existencias"]) ? $fila["Existencias"] : '';
 
-                echo "
-                <tr>
-                   <td>$NombreMP</td>
-                   <td>$Existencias</td>
-                   <td>
-                   <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onClick=$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');>Cargar</button>
-                   </td>
-                   
-                   </tr>
+                 echo "
+                 <tr>
+                    <td>$NombreMP</td>
+                    <td>$Existencias</td>
+                    <td>
+                    <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onclick=\"$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');\">Cargar</button>
+                    </td>
+                    
+                    </tr>
 
-                ";
+                 ";
 
-              }
+               }
                     
                  
                 ?>
@@ -213,6 +214,12 @@ include '../views/configuracion.php';
    <!-- Custom scripts for all pages-->
    <script src="js/sb-admin.min.js"></script>
    <script type="text/javascript" src="Recursos/validaciones.js"></script>
+
+    <!-- Translations -->
+    <script src="js/translations.js"></script>
+
+    <!-- Demo scripts for this page-->
+    <script src="js/demo/datatables-demo.js"></script>
 
    <!-- Footer -->
    <footer class="sticky-footer bg-dark mt-auto">

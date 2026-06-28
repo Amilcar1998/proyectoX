@@ -90,7 +90,7 @@
             <div class="card-header"><i class="fas fa-table"></i> Lista de Detalle Compra</div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered datatable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th>Materia Prima</th>
@@ -146,7 +146,11 @@
       }
     </script>
 
-    <!-- Footer -->
+     <!-- Demo scripts for this page-->
+     <script src="js/translations.js"></script>
+     <script src="js/demo/datatables-demo.js"></script>
+
+     <!-- Footer -->
     <footer class="sticky-footer bg-dark mt-auto">
       <div class="container my-auto py-3">
         <div class="copyright text-center my-auto">

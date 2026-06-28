@@ -34,10 +34,14 @@
 
    <!-- Custom scripts for all pages-->
    <script src="../controllers/js/sb-admin.min.js"></script>
-   <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+    <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
+
+     <!-- Demo scripts for this page-->
+     <script src="js/translations.js"></script>
+     <script src="js/demo/datatables-demo.js"></script>
 
 
- </head>
+  </head>
 
 <body id="page-top">
   <?php echo "$nav"; ?>
@@ -141,7 +145,7 @@
             Lista de Clientes</div>
           <div class="card-body">
             <div class="table-responsive">
-               <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+               <table class="table table-bordered datatable" width="100%" cellspacing="0">
                  <thead>
                    <tr>
                    <th>NOMBRE</th>

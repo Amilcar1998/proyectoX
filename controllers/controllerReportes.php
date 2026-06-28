@@ -1,4 +1,18 @@
-<?php include '../views/configuracion.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+include '../models/ModelPedido.php';
+include 'sesiones.php';
+
+$pedido = new ModelPedido();
+$correo = $_SESSION['s1'] ?? '';
+$session = $pedido->getSessionEmp($correo);
+$nombres = '';
+foreach ($session as $key) {
+    $nombres = $key['nombreEmp'] . ' ' . $key['apellido'];
+}
+
+include '../views/configuracion.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -91,10 +105,7 @@
 
    <div id="wrapper">
        <!-- Sidebar -->
-       <?php 
-       include '../views/configuracion.php';
-       echo "$menu";
-       ?>
+       <?php echo "$menu"; ?>
 
        <div id="content-wrapper">
            <div class="container-fluid">
@@ -172,22 +183,70 @@
                        </div>
                    </div>
 
-                   <!-- Reporte 5 - Pedidos Proveedor -->
-                   <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                       <div class="card report-card shadow-report h-100">
-                           <div class="card-body-custom">
-                               <div class="report-icon text-info">
-                                   <i class="fas fa-truck fa-3x"></i>
-                               </div>
-                               <h5 class="report-title">Solicitud MP</h5>
-                               <p class="text-muted small mb-3">Pedidos a proveedores</p>
-                               <a href="reportePedidoProveedor.php" class="btn btn-info btn-report">
-                                   <i class="fas fa-eye mr-1"></i> Ver Reporte
-                               </a>
-                           </div>
-                       </div>
-                   </div>
-               </div>
+                    <!-- Reporte 5 - Pedidos Proveedor -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card report-card shadow-report h-100">
+                            <div class="card-body-custom">
+                                <div class="report-icon text-info">
+                                    <i class="fas fa-truck fa-3x"></i>
+                                </div>
+                                <h5 class="report-title">Solicitud MP</h5>
+                                <p class="text-muted small mb-3">Pedidos a proveedores</p>
+                                <a href="reportePedidoProveedor.php" class="btn btn-info btn-report">
+                                    <i class="fas fa-eye mr-1"></i> Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte 6 - Sesiones Activas -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card report-card shadow-report h-100">
+                            <div class="card-body-custom">
+                                <div class="report-icon text-success">
+                                    <i class="fas fa-users fa-3x"></i>
+                                </div>
+                                <h5 class="report-title">Usuarios Activos</h5>
+                                <p class="text-muted small mb-3">Sesiones actuales en el sistema</p>
+                                <a href="reporteSesionesActivas.php" class="btn btn-success btn-report">
+                                    <i class="fas fa-eye mr-1"></i> Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte 7 - Auditoria -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card report-card shadow-report h-100">
+                            <div class="card-body-custom">
+                                <div class="report-icon text-warning">
+                                    <i class="fas fa-clipboard-list fa-3x"></i>
+                                </div>
+                                <h5 class="report-title">Auditoria</h5>
+                                <p class="text-muted small mb-3">Historial de actividades</p>
+                                <a href="reporteAuditoria.php" class="btn btn-warning btn-report">
+                                    <i class="fas fa-eye mr-1"></i> Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporte 8 - Modulos -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card report-card shadow-report h-100">
+                            <div class="card-body-custom">
+                                <div class="report-icon text-primary">
+                                    <i class="fas fa-th-large fa-3x"></i>
+                                </div>
+                                <h5 class="report-title">Actividad Modulos</h5>
+                                <p class="text-muted small mb-3">Uso de modulos del sistema</p>
+                                <a href="reporteActividadModulos.php" class="btn btn-primary btn-report">
+                                    <i class="fas fa-eye mr-1"></i> Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
            </div>
            <!-- /.container-fluid -->
 
@@ -220,7 +279,9 @@
                    <a class="btn btn-primary" href="login.html">Cerrar sesión</a>
                </div>
            </div>
-       </div>
-   </div>
- </body>
- </html>
+        </div>
+    </div>
+    <!-- /#wrapper -->
+
+  </body>
+  </html>

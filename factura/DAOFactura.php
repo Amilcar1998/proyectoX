@@ -36,7 +36,7 @@ class DAOFactura{
         $res = $this->con->query($sql);
         $this->desconectar();
         //tabala con bootstrap
-        $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table table-striped table-dark datatable'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>NUMERO DE FACTURA</th>"
                     ."<th>MONTO</th>"
@@ -57,7 +57,7 @@ class DAOFactura{
                     ."</tr>";
         }
 
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
 
@@ -126,7 +126,7 @@ class DAOFactura{
         $res = $stmt->get_result();
         $this->desconectar();
         //tabala con bootstrap
-        $tabla = "<table class='table table-striped table-dark'>"."<thead class='table table-striped table-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table table-striped table-dark datatable'>"."<thead class='table table-striped table-dark'>";
         $tabla .="<tr>"
                     ."<th>NUMERO DE FACTURA</th>"
                     ."<th>MONTO</th>"
@@ -147,7 +147,7 @@ class DAOFactura{
                     ."</tr>";
         }
 
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
 

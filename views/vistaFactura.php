@@ -33,6 +33,10 @@
     <!-- Custom scripts for all pages-->
     <script src="../controllers/js/sb-admin.min.js"></script>
 
+     <!-- Demo scripts for this page-->
+     <script src="js/translations.js"></script>
+     <script src="js/demo/datatables-demo.js"></script>
+
 </head>
 
 <body id="page-top">

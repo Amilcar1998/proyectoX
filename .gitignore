@@ -1,3 +1,26 @@
-.idea
-.kilo
-.github
+# Archivos sensibles - NO subir a GitHub
+db/parametros.php
+
+# Dependencias
+vendor/
+composer.lock
+
+# Archivos temporales
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Sesiones y caches
+sessions/
+cache/
+
+# Configuraciones locales
+config.local.php
+.env
+.htaccess
+
+# Sistema
+Thumbs.db
+.DS_Store
+*.bak

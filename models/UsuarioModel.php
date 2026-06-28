@@ -1,43 +1,47 @@
 <?php
-include "../db/conexion.php";
+include __DIR__ . '/../db/conexion.php';
 
-class UsuarioModel extends conexion
-{
-    public function __construct()
+if (!class_exists('UsuarioModel')) {
+    class UsuarioModel extends Conexion
     {
-        parent::__construct();
-    }
-function validarUsuario($login,$pass){
-             $a=$login;
-             $b=sha1($pass);
-             $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='3'");
-             $para->bind_param("ss",$a,$b);
-             $para->execute();
-             while($para->fetch()) {
-                 return 1;
-             }
-             if(!$para->fetch()){
-             $a=$login;
-             $b=sha1($pass);
-             $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='1'");
-             $para->bind_param("ss",$a,$b);
-             $para->execute();
-             while($para->fetch()) {
-                 return 2;
-                 }
-             }if(!$para->fetch()){
-                     $a=$login;
-                     $b=sha1($pass);
-                     $para =$this->con->prepare("select * from usuarios where username=? and pass=? and id_Rol='2'");
-                     $para->bind_param("ss",$a,$b);
-                     $para->execute();
-                     if($para->fetch()){
-                         return 3;
-                     }
-             }else{
-                 return 0;
-             }
+        public function __construct()
+        {
+            parent::__construct();
+        }
 
-         
-         }
+        function validarUsuario($login, $pass)
+        {
+            $a = $login;
+            $b = sha1($pass);
+            $para = $this->con->prepare("SELECT * FROM usuarios WHERE username=? AND pass=? AND id_Rol='3'");
+            $para->bind_param("ss", $a, $b);
+            $para->execute();
+            $para->store_result();
+            if ($para->num_rows > 0) {
+                return 1;
+            }
+
+            $a = $login;
+            $b = sha1($pass);
+            $para = $this->con->prepare("SELECT * FROM usuarios WHERE username=? AND pass=? AND id_Rol='1'");
+            $para->bind_param("ss", $a, $b);
+            $para->execute();
+            $para->store_result();
+            if ($para->num_rows > 0) {
+                return 2;
+            }
+
+            $a = $login;
+            $b = sha1($pass);
+            $para = $this->con->prepare("SELECT * FROM usuarios WHERE username=? AND pass=? AND id_Rol='2'");
+            $para->bind_param("ss", $a, $b);
+            $para->execute();
+            $para->store_result();
+            if ($para->num_rows > 0) {
+                return 3;
+            }
+
+            return 0;
+        }
+    }
 }

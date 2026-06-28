@@ -1,0 +1,39 @@
+name: Deploy to XAMPP
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate parametros.php from secrets
+        run: |
+          cat > db/parametros.php << 'EOF'
+          <?php
+          if (!defined('SERVER')) {
+              define("SERVER","$_{{ secrets.DB_HOST }}");
+              define("USER","$_{{ secrets.DB_USER }}");
+              define("PASSWORD","$_{{ secrets.DB_PASS }}");
+              define("BASE","$_{{ secrets.DB_NAME }}");
+              define("CHAR","utf8mb4");
+          }
+          define("WOMPI_PUBLIC_KEY", "${{ secrets.WOMPI_PUBLIC_KEY }}");
+          define("WOMPI_PRIVATE_KEY", "${{ secrets.WOMPI_PRIVATE_KEY }}");
+          define("WOMPI_API_URL", "https://sandbox.wompi.co/v1/payment_intents");
+          ?>
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /ruta/a/proyectoX
+            git pull origin main
+            # El archivo parametros.php se regenera desde secrets en cada deploy

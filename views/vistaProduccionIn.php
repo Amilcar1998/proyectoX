@@ -105,7 +105,7 @@
             Produccion</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>ID Produccion</th>
@@ -212,8 +212,9 @@
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
 
-  <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
+    <!-- Demo scripts for this page-->
+    <script src="js/translations.js"></script>
+    <script src="js/demo/datatables-demo.js"></script>
 
   <!-- Footer -->
   <footer class="sticky-footer bg-dark mt-auto">

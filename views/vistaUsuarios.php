@@ -105,7 +105,7 @@ include 'configuracion.php';
         </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                   <?php echo "$thead"; ?>               
@@ -128,7 +128,7 @@ include 'configuracion.php';
                             <td>$usern</td>
                             <td>$pass</td>
                             <td>
-                            <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal' onClick=$('#txtUsuario').val('$usuario');$('#txtUser').val('$usern');$('#txtPass').val('$pass');$('#txtRol').val('$rol');>Cargar</button>
+                             <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal' onclick=\"$('#txtUsuario').val('$usuario');$('#txtUser').val('$usern');$('#txtPass').val('$pass');$('#txtRol').val('$rol');\">Cargar</button>
                             </td>
                             </tr>
                       " ;
@@ -149,9 +149,9 @@ include 'configuracion.php';
                             <td>$user</td>
                             <td>$pass</td>
                             <td>
-                            <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal' onClick=$('#txtUsuario').val('$idC');$('#txtUser').val('$user');$('#txtPass').val('$pass');$('#txtRol').val('$rol'); >
-                            Cargar
-                            </button></td>
+                             <button class='btn btn-success' data-toggle='modal' data-target='#exampleModal' onclick=\"$('#txtUsuario').val('$idC');$('#txtUser').val('$user');$('#txtPass').val('$pass');$('#txtRol').val('$rol'); \">
+                             Cargar
+                             </button></td>
                             </tr>" ;
                     }
                       
@@ -169,9 +169,9 @@ include 'configuracion.php';
                             <td>$usern</td>
                             <td>$contra</td>
                             <td>$nRol</td>
-                            <td><button class='btn btn-success' data-toggle='modal' data-target='#exampleModal' onClick=$('#txtUsuario').val('$user');$('#txtUser').val('$usern');$('#txtPass').val('$contra');$('#txtRol').val('$rol');>
-                            Cargar
-                            </button></td>
+                             <td><button class='btn btn-success' data-toggle='modal' data-target='#exampleModal' onclick=\"$('#txtUsuario').val('$user');$('#txtUser').val('$usern');$('#txtPass').val('$contra');$('#txtRol').val('$rol');\">
+                             Cargar
+                             </button></td>
                             </tr>
 
                       ";
@@ -249,7 +249,8 @@ include 'configuracion.php';
   <script src="js/sb-admin.min.js"></script>
 
   <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/demo/datatables-demo.js"></script>
 
   <!-- Footer -->
   <footer class="sticky-footer bg-dark mt-auto">

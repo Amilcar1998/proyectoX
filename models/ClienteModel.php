@@ -3,11 +3,11 @@ include "../db/conexion.php";
 include "../models/Cliente.php";
 include '../models/Usuario.php';
 
-class ClienteModel extends conexion
-{
-	
-	function __construct()
-	{
+if (!class_exists('ClienteModel')) {
+    class ClienteModel extends Conexion
+    {
+        public function __construct()
+        {
 		parent::__construct();
 	}
 
@@ -33,15 +33,18 @@ function getAddUs($u){
         return $r;
     
  	}
-  function getSessionEmp(){
-         $correo=$_SESSION["s1"];
-        $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
-        $r=array();
-        while($row=$res->fetch_assoc()) {
-            $r[]=$row;
-        }
-        return $r;
+  function getSessionEmp($correo = null){
+      if ($correo === null) {
+          $correo = $_SESSION["s1"] ?? '';
       }
+      $correo = $this->con->real_escape_string($correo);
+     $res=$this->con->query("select nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+     $r=array();
+     while($row=$res->fetch_assoc()) {
+         $r[]=$row;
+     }
+     return $r;
+   }
 	    function getUser(){
         $res=$this->con->query("select * from usuarios where id_Rol ='2'");
         $r=array();
@@ -80,13 +83,13 @@ function modificarCliente($e){
          $a=$e->getIdCliente();
          $res=$this->con->prepare("DELETE FROM cliente WHERE idCliente=?");
          $res->bind_param('i',$a);
-         $res->execute();
+       $res->execute();
        }
    
 
 
+   }
 }
-
 
 
  ?>

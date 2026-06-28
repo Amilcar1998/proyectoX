@@ -21,7 +21,7 @@ class DAOPedidoProveedor extends Conexion{
                                   INNER JOIN empleado e ON pp.idEmpleado = e.idEmpleado
                                   INNER JOIN materiaprima mp ON pp.idMateriaPrima = mp.idMateriaPrima
                                   ORDER BY pp.idPedido DESC");
-        $tabla = "<table class='table'>"."<thead class='thead-dark'>";
+        $tabla = "<div class='table-responsive'><table class='table datatable'>"."<thead class='thead-dark'>";
         $tabla .="<tr>"
                     ."<th>PROVEEDOR</th>"
                     ."<th>EMPLEADO</th>"
@@ -45,7 +45,7 @@ class DAOPedidoProveedor extends Conexion{
                         ."<td><a href=\"javascript:cargar('".$fila["idPedido"]."','".$fila["nombreProveedor"]."','".$fila["empleado"]."','".$fila["NombreMP"]."','".$fila["fecha"]."','".$fila["cantidadMP"]."','".$fila["monto"]."','".$fila["precioMP"]."')\">select</a></td>"
                     ."</tr>";
         }
-        $tabla .="</tbody></table>";
+        $tabla .="</tbody></table></div>";
         $res->close();
         return $tabla;
 
