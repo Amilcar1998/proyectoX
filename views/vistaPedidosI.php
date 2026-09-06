@@ -1,15 +1,13 @@
+<?php include 'configuracion.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-    <title>🏭 Producción Individual</title>
+  <title>📦 Pedidos - Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
   <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -38,61 +36,17 @@
       max-height: calc(100vh - 280px);
       overflow-y: auto;
     }
-    .sidebar {
-      height: 100vh;
-      overflow-y: auto;
-    }
   </style>
 
 </head>
 
 <body id="page-top">
 
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-    <a class="navbar-brand mr-1" href="index.html">Concentrados El Gordito</a>
-
-    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-      <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0"></form>
-
-    <!-- Navbar -->
-    <ul class="navbar-nav ml-auto ml-md-0">
-      <li>
-        <button class="btn btn-warning"><?php echo $nombres; ?></button>
-      </li>
-      <li class="nav-item dropdown no-arrow mx-1">
-        <form>
-      <button class="btn btn-info" name="c" id="c">Cerrar Session</button>
-        </form>
-      </li>
-     
-    </ul>
-
-  </nav>
+  <?php echo $nav; ?>
 
   <div id="wrapper">
 
-    <!-- Sidebar -->
-    <ul class="sidebar navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="controllerPedidosIn.php">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Pedidos</span>
-        </a>
-      </li>
-      <li class="nav-item dropdown-toggle">
-        <a class="nav-link" href="controllerProduccionIn.php">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Produccion</span>
-        </a>
-      </li>
-     
-      
-    </ul>
+    <?php echo $menu; ?>
 
     <div id="content-wrapper">
 
@@ -101,62 +55,77 @@
          <hr>
             
                             <?php
-                            if (isset($id)) {
-                                echo "<div class='row'>
-                                        <div class='col-md-3'>
-                                        <form action='controllerProduccionIn.php' method='POST'>
-                                        <input type='hidden' name='id' id='id' value=$id>
-                                        <button class='btn btn-info' name='agregar' id='agregar'>agregar a Produccion</button></form></div>
-                                        <div class='col-md-3'><a href='controllerPedidos.php' <button class='btn btn-primary' >Regresar</button></a></div>
-                        
+                            if (isset($id) && (int)$id > 0) {
+                                echo "<div class='row'>";
+                                if (!empty($detalle) && count($detalle) > 0) {
+                                    echo "<div class='col-md-3'>
+                                            <form action='controllerProduccionIn.php' method='POST'>
+                                            <input type='hidden' name='id' id='id' value='$id'>
+                                            <button class='btn btn-info' name='agregar' id='agregar'><i class='fas fa-industry'></i> Agregar a Producción</button></form></div>";
+                                }
+                                echo "<div class='col-md-3'><a href='controllerPedidosIn.php' class='btn btn-primary'><i class='fas fa-arrow-left'></i> Regresar</a></div>
                                     </div>";
                                 echo "<hr>";
 
+                                echo "<h5 class='text-white mb-3'><i class='fas fa-boxes'></i> Productos del Pedido #$id</h5>";
                                 echo "<div class='table-responsive'><table class='table table-striped table-dark table-hover datatable' width='100%' cellspacing='0'>
-                                        <tr>'
+                                        <thead>
+                                        <tr>
                                         <th>ID Detalle</th>
                                         <th>Unidades</th>
                                         <th>Nombre Producto</th>
-                                        </tr>";
-                                foreach ($detalle as $key) {
-                                    $ped=$key['idDetallePedido'];
-                                    $cantidad=$key['cantidad'];
-                                    $nRes=$key['nombreReceta'];
+                                        </tr>
+                                        </thead>
+                                        <tbody>";
+                                if (!empty($detalle) && is_array($detalle)) {
+                                    foreach ($detalle as $key) {
+                                        $ped = htmlspecialchars((string)($key['idDetallePedido'] ?? ''));
+                                        $cantidad = htmlspecialchars((string)($key['cantidad'] ?? ''));
+                                        $nRes = htmlspecialchars((string)($key['nombreReceta'] ?? ''));
 
-                                    echo "<tr>
-                                          <td>$ped</td>
-                                          <td>$cantidad</td>
-                                          <td>$nRes</td>      
-                                          </tr>";
+                                        echo "<tr>
+                                              <td>$ped</td>
+                                              <td>$cantidad</td>
+                                              <td>$nRes</td>      
+                                              </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='3' class='text-center'>No se encontraron detalles para este pedido.</td></tr>";
                                 }
-                                echo "</table></div>";
+                                echo "</tbody></table></div>";
                                 echo "<hr>";
-                                echo "<hr>";
+
+                                echo "<h5 class='text-white mb-3'><i class='fas fa-flask'></i> Desglose de Materia Prima por Receta</h5>";
                                 echo "<div class='table-responsive'><table class='table table-bordered table-dark table-hover datatable' width='100%' cellspacing='0'>
+                                        <thead>
                                         <tr>
                                         <th>ID Receta</th>
                                         <th>Materia Prima</th>
-                                        <th>cantidad</th>
+                                        <th>Cantidad</th>
                                         <th>Fecha</th>
                                         <th>Producto</th>
                                         </tr>
-                                        ";
-                                        
-                                foreach ($receta as $res) {
-                                    $idR=$res['idDetalleReceta'];
-                                    $Mp=$res['NombreMP'];
-                                    $cantida=$res['cantidaSa'];
-                                    $fecha=$res['fechaSa'];
-                                    $producto=$res['nombreReceta'];
-                                    $id=$res['idPedido'];
-                                    echo "<tr>
-                                          <td>$idR</td>  
-                                          <td>$Mp</td>
-                                          <td>$cantida</td>
-                                          <td>$fecha</td>
-                                          <td>$producto</td>
-                                          </tr>";
-                                 }echo "</table></div>";
+                                        </thead>
+                                        <tbody>";
+                                if (!empty($receta) && is_array($receta)) {
+                                    foreach ($receta as $res) {
+                                        $idR = htmlspecialchars((string)($res['idDetalleReceta'] ?? ''));
+                                        $Mp = htmlspecialchars((string)($res['NombreMP'] ?? ''));
+                                        $cantida = htmlspecialchars((string)($res['cantidaSa'] ?? ''));
+                                        $fecha = htmlspecialchars((string)($res['fechaSa'] ?? ''));
+                                        $producto = htmlspecialchars((string)($res['nombreReceta'] ?? ''));
+                                        echo "<tr>
+                                              <td>$idR</td>  
+                                              <td>$Mp</td>
+                                              <td>$cantida</td>
+                                              <td>$fecha</td>
+                                              <td>$producto</td>
+                                              </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='5' class='text-center'>No hay detalle de materias primas para este pedido.</td></tr>";
+                                }
+                                echo "</tbody></table></div>";
                             
                         }else{
                         $tabla="<div class='card mb-3'>

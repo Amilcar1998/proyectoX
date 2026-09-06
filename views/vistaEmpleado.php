@@ -1,300 +1,501 @@
 <?php 
-
-include 'configuracion.php';
-
- ?>
+include 'configuracion.php'; 
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="Gestión de Empleados - Concentrados El Gordito">
+  <meta name="author" content="Concentrados El Gordito">
 
-    <title>👷 Empleado</title>
-  
+  <title>👷 Gestión de Empleados | Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
-  <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <!-- Page level plugin CSS-->
-  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
-  
-  <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
-  <script type="text/javascript" src="../controllers/vendor/sweetalert2.all.min.js"></script">>
+  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
+  <link href="vendor/sb-admin.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
-  <script type="text/javascript">
-
-
-  </script>
-  
 </head>
 <body id="page-top">
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-   <a class="navbar-brand mr-1" href="index.html">Concentrados El gordito</a>
-    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-      <i class="fas fa-bars"></i>
-    </button>
-
-
-    <!-- Navbar -->
-    
-      <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-      <div class="input-group">
-        <div class="input-group-append">
-          <button class="btn btn-success"> 
-            <?php foreach ($session as $key) {
-              
-          $nombre = $key['nombreEmp']."&nbsp;&nbsp;".$key['apellido'];
-          echo "$nombre";
-        } ?></button>
-            
-          </button>
-        </div>
-      </div>
-    </form>
-    <ul class="navbar-nav ml-auto ml-md-0">
-      <div>
-      <form><button class='btn btn-warning' id='c' name='c' value='c'>Cerrar session</button></form>
-      </div>
-    </ul>
-
-  </nav>
+  <?php echo "$nav"; ?>
 
   <div id="wrapper">
 
-    <!-- Sidebar -->
-
-<?php 
-  echo "$menu";
-
-
- ?>
-
-
-
+    <?php echo "$menu"; ?>
 
     <div id="content-wrapper">
 
       <div class="container-fluid">
-      <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Empleado</button>
-      <a href="repoEmpleado.php"><input type="submit" class="btn btn-success" name="" value="Imprimir"></a>
-        <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="breadcrumb bg-info"><h3>Reguistro de Empleado</h3></div>
-              <div class="container-fluid">
-             <form method="POST" id="miForm" action="#" enctype="multipart/form-data">
-              <div class="container">
-               
-                <div class="row"> 
-                  <div class="col-md-6">
-                    <label>Id Cliente</label>
-                    <input type="text" name="txtIdEmpleado" id="txtIdEmpleado" class="form-control txtIdEmpleado" readonly=true>
-                  </div>
-                    <div class="col-md-6">
-                    <label>Nombre</label>
-                    <input type="text" name="txtNombres" id="txtNombres" class="form-control">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <label>Apellidos</label>
-                    <input type="text" name="txtApellidos" id="txtApellidos" class="form-control">
-                  </div>
-                  <div class="col-md-6">
-                   <label>Genero</label>
-                     <select name="txtGenero" id="txtGenero" class="form-control">
-                    <option>seleccione...</option>
-                    <option value="Hombre">Hombre</option>
-                    <option value="Mujer">Mujer</option>
-                  </select>
 
-                  
-                </div>
-              </div>
-            <hr>
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="controllerDashboard.php">Dashboard</a>
+          </li>
+          <li class="breadcrumb-item active">Gestión de Empleados</li>
+        </ol>
 
-                 <div class="row">
-                 <div class="col-md-6">
-                   <label>Cargo</label>
-                   
-                     <select name="txtCargo" id="txtCargo" class="form-control">
-                       <option value="">seleccione....</option>
-                      <?php 
-                    foreach ($puesto as $c) {
-                     echo "<option value=".$c["idPuesto"].">".$c["nombrePuesto"]."</option>";
-                    } 
-                    ?>
-                    </select>
-                   </div>
-                   <div class="col-md-6">
-                   <label>Usuario</label>
-                   <select name="txtUser" id="txtUser" class="form-control">
-                     <option value="">seleccione....</option>
-                     <?php foreach ($usuarios as $u) {
-                       echo "<option value=".$u["idUsuario"].">".$u["username"]."</option>";
-                     } ?>
-                   </select>
-                   </div>
-
-                 </div>
-
-               </div>
-
-
-
-               </div>
-               <hr>
-              <center>
-               <input type="submit" class="btn btn-warning agregar" name="insertar" id="insertar" value="insertar">
-               <input type="submit" class="btn btn-warning modificar" name="modificar" id="modificar" value="Modificar">
-               <input type="submit" class="btn btn-primary eliminar" id="eliminar " name="eliminar" value="Eliminar">
-               <input type="submit"  class="btn btn-success reset" data-dismiss="modal"  value="Cerrar">
-               
-                
-                </center>
-              </form>
-              <hr>
-            </div>
-               
-             </div>
-           </div>
-         </div>
-         
-       <br><br>
-
-         <!-- DataTables Example -->
-         <div class="card mb-3">
-           <div class="card-header">
-             <i class="fas fa-table"></i>
-           Datos Empleados</div>
-           <div class="card-body">
-             <div class="table-responsive">
-               <table class="table table-bordered datatable" width="100%" cellspacing="0">
-                 <thead>
-                   <tr>
-                   <th>Nombre</th>
-                   <th>Apellidos</th>
-                   <th>Género</th>
-                   <th>Cargo</th> 
-                   <th>Usuario</th>
-                   <th>Acción</th>               
-                   </tr>
-
-                 </thead>
-                 <tbody>
-               <?php 
-                foreach ($datos as $e) {
-                   $idEmpleado=$e->getIdEmpleado();
-                   $nombres=str_replace(' ', '&nbsp;', $e->getNombre());
-                   $apellido=str_replace(' ', '&nbsp;', $e->getApellido()); 
-                   $genero=$e->getGenero();
-                   $cargo=$e->getCargo();
-                   $user=$e->getUsername();
-                 
-
-              
-                    echo "<tr>
-                    <td>$nombres</td>
-                    <td>$apellido</td>
-                    <td>$genero</td>
-                    <td>$cargo</td>
-                    <td>$user</td>
-                    <td>
-                    <button class='btn btn-warning cargar' data-toggle='modal' data-target='.modal' onclick=\"$('#txtIdEmpleado').val('$idEmpleado');$('#txtNombres').val('$nombres');$('#txtApellidos').val('$apellido');$('#txtGenero').val('$genero');$('#txtCargo').val('$cargo');$('#txtUser').val('$user');\">ver</button></td>
-                    </tr>";
-                }
-                   
-                 
-                ?>
-                 </tbody>
-               </table>
-             </div>
-           </div>
-           <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
-         </div>
-
-         
-
-
-       </div>
-       <!-- /.container-fluid -->
-
-       <!-- Sticky Footer -->
-       
-
-     </div>
-     <!-- /.content-wrapper -->
-
-   </div>
-   <!-- /#wrapper -->
-
-   <!-- Scroll to Top Button-->
-   <a class="scroll-to-top rounded" href="#page-top">
-     <i class="fas fa-angle-up"></i>
-   </a>
-
-   <!-- Logout Modal-->
-   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-     <div class="modal-dialog" role="document">
-       <div class="modal-content">
-         <div class="modal-header">
-           <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-             <span aria-hidden="true">×</span>
-           </button>
-         </div>
-         <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-         <div class="modal-footer">
-           <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-           <a class="btn btn-primary" href="login.html">Logout</a>
-         </div>
-       </div>
-     </div>
-   </div>
-
- <!-- Bootstrap core JavaScript-->
-    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Page level plugin JavaScript-->
-    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="../controllers/js/sb-admin.min.js"></script>
-    <script type="text/javascript" src="../controllers/Recursos/validaciones.js"></script>
-
-    <!-- Translations -->
-    <script src="js/translations.js"></script>
-
-    <!-- Demo scripts for this page-->
-    <script src="js/demo/datatables-demo.js"></script>
-
-    <!-- Footer -->
-    <footer class="sticky-footer bg-dark mt-auto">
-      <div class="container my-auto py-3">
-        <div class="copyright text-center my-auto">
-          <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+          <div>
+            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
+              <i class="fas fa-users-cog text-primary mr-2"></i>Gestión de Empleados
+            </h1>
+            <p class="text-muted mb-0">Administración del personal operativo, administrativo y sus credenciales de acceso.</p>
+          </div>
+          <div>
+            <button class="btn btn-primary shadow-sm" id="agregarC" data-toggle="modal" data-target="#modalEmpleado" onclick="limpiarEmpleado()">
+              <i class="fas fa-user-plus mr-1"></i>Nuevo Empleado
+            </button>
+            <a href="repoEmpleado.php" target="_blank" class="btn btn-outline-danger shadow-sm ml-2">
+              <i class="fas fa-file-pdf mr-1"></i>Exportar PDF
+            </a>
+          </div>
         </div>
+
+        <!-- Modal Empleado -->
+        <div class="modal fade" id="modalEmpleado" tabindex="-1" role="dialog" aria-labelledby="modalEmpleadoLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title font-weight-bold" id="modalEmpleadoLabel">
+                  <i class="fas fa-user-tie mr-2"></i><span id="modalTitulo">Registro de Empleado</span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form method="POST" id="formEmpleado" action="controllerEmpleado.php">
+                <div class="modal-body p-4 bg-light">
+                  <input type="hidden" name="txtIdEmpleado" id="txtIdEmpleado" value="">
+                  <input type="hidden" name="txtIdUsuario" id="txtIdUsuario" value="">
+
+                  <div class="row">
+                    <div class="col-md-6 form-group">
+                      <label for="txtNombres" class="font-weight-bold small">Nombres <span class="text-danger">*</span></label>
+                      <input type="text" name="txtNombres" id="txtNombres" class="form-control" required placeholder="Ej: Juan Carlos">
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label for="txtApellidos" class="font-weight-bold small">Apellidos <span class="text-danger">*</span></label>
+                      <input type="text" name="txtApellidos" id="txtApellidos" class="form-control" required placeholder="Ej: Perez Gomez">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4 form-group">
+                      <label for="txtGenero" class="font-weight-bold small">Género</label>
+                      <select name="txtGenero" id="txtGenero" class="form-control">
+                        <option value="Hombre">Hombre</option>
+                        <option value="Mujer">Mujer</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="txtCargo" class="font-weight-bold small">Puesto Laboral <span class="text-danger">*</span></label>
+                      <select name="txtCargo" id="txtCargo" class="form-control" required onchange="sugerirRolSegunPuesto()">
+                        <option value="">Seleccione un cargo...</option>
+                        <?php foreach ($puesto as $c): ?>
+                          <option value="<?php echo (int)$c['idPuesto']; ?>">
+                            <?php echo htmlspecialchars($c['nombrePuesto']); ?>
+                          </option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="txtRol" class="font-weight-bold small">Rol en el Sistema <span class="text-danger">*</span></label>
+                      <select name="txtRol" id="txtRol" class="form-control" required>
+                        <?php foreach ($rolesSistema as $r): ?>
+                          <option value="<?php echo (int)$r['id_Rol']; ?>">
+                            <?php echo htmlspecialchars($r['nombreRol']); ?>
+                            <?php echo (!empty($r['nombreRolPadre']) ? ' (Subrol de ' . htmlspecialchars($r['nombreRolPadre']) . ')' : ''); ?>
+                          </option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mb-2">
+                    <div class="col-md-8 form-group mb-2">
+                      <label for="txtUser" class="font-weight-bold small">Usuario Institucional (Generado Automáticamente)</label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text bg-white"><i class="fas fa-envelope text-muted"></i></span>
+                        </div>
+                        <input type="text" name="txtUser" id="txtUser" class="form-control bg-white" readonly placeholder="Se generará automáticamente (ej: juan.perez@gordito.com)">
+                      </div>
+                      <small class="form-text text-muted">El empleado utilizará este correo institucional para iniciar sesión.</small>
+                    </div>
+                    <div class="col-md-4 form-group mb-2" id="grupoEstadoEmpleado">
+                      <label class="font-weight-bold small">Estado del Empleado</label>
+                      <div class="custom-control custom-checkbox bg-white p-2 rounded border">
+                        <input type="checkbox" class="custom-control-input" id="chkActivoEmp" name="chkActivo" value="1" checked>
+                        <label class="custom-control-label font-weight-bold text-dark small" for="chkActivoEmp">
+                          <i class="fas fa-check-circle text-success mr-1"></i>Activo
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Asignación de Permisos a Submódulos -->
+                  <div class="card border-left-primary shadow-sm mb-2">
+                    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                      <div>
+                        <span class="font-weight-bold text-primary small">
+                          <i class="fas fa-shield-alt mr-1"></i>Asignación de Submódulos Permitidos
+                        </span>
+                        <small class="text-muted d-block" style="font-size: 0.72rem;">
+                          <i class="fas fa-info-circle text-info mr-1"></i>Gerente y Admin (o al dejar sin marcar) tienen acceso total a todos los submódulos.
+                        </small>
+                      </div>
+                      <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2" onclick="marcarSubmodulos('todos')">Todos</button>
+                        <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" onclick="marcarSubmodulos('rol')">Por Rol</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" onclick="marcarSubmodulos('ninguno')">Ninguno</button>
+                      </div>
+                    </div>
+                    <div class="card-body p-2" style="max-height: 230px; overflow-y: auto;">
+                      <div class="row no-gutters">
+                        <?php if (!empty($catalogoSubmodulos)): ?>
+                          <?php foreach ($catalogoSubmodulos as $modCat): ?>
+                            <div class="col-md-6 mb-2 px-1">
+                              <div class="p-2 border rounded bg-white h-100">
+                                <div class="font-weight-bold text-dark small mb-1 border-bottom pb-1">
+                                  <i class="fas <?php echo htmlspecialchars($modCat['iconoModulo']); ?> text-primary mr-1"></i>
+                                  <?php echo htmlspecialchars($modCat['nombreModulo']); ?>
+                                </div>
+                                <?php foreach ($modCat['submodulos'] as $subCat): ?>
+                                  <div class="custom-control custom-checkbox small ml-1 my-1">
+                                    <input type="checkbox" class="custom-control-input chk-submodulo" name="submodulos[]" 
+                                           value="<?php echo (int)$subCat['idSubmodulo']; ?>" 
+                                           id="sub_<?php echo (int)$subCat['idSubmodulo']; ?>">
+                                    <label class="custom-control-label text-dark font-weight-normal" for="sub_<?php echo (int)$subCat['idSubmodulo']; ?>">
+                                      <i class="fas <?php echo htmlspecialchars($subCat['icono']); ?> mr-1 text-muted" style="font-size: 0.75rem;"></i>
+                                      <?php echo htmlspecialchars($subCat['nombre']); ?>
+                                    </label>
+                                  </div>
+                                <?php endforeach; ?>
+                              </div>
+                            </div>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer bg-white">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i>Cerrar</button>
+                  <button type="submit" class="btn btn-primary" name="insertar" id="btnInsertar">
+                    <i class="fas fa-save mr-1"></i>Guardar Empleado
+                  </button>
+                  <button type="submit" class="btn btn-warning" name="modificar" id="btnModificar" style="display: none;">
+                    <i class="fas fa-edit mr-1"></i>Guardar Cambios
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+         
+        <!-- Formulario oculto para alternar estado de empleado -->
+        <form id="formCambiarEstadoEmpleado" method="POST" action="controllerEmpleado.php" style="display: none;">
+          <input type="hidden" name="cambiar_estado" value="1">
+          <input type="hidden" name="txtIdEmpleado" id="estadoIdEmpleado" value="">
+          <input type="hidden" name="nuevoEstado" id="estadoNuevoEmpleado" value="">
+        </form>
+
+        <!-- Tabla de Empleados -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-table mr-2"></i>Listado Oficial de Empleados</h6>
+            <span class="badge badge-primary px-3 py-2"><?php echo count($datos); ?> Empleados Registrados</span>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover datatable" width="100%" cellspacing="0">
+                <thead class="thead-light">
+                  <tr>
+                    <th style="width: 60px;"># ID</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Género</th>
+                    <th>Puesto Laboral</th> 
+                    <th>Rol en Sistema</th>
+                    <th>Usuario Institucional</th>
+                    <th class="text-center" style="width: 100px;">Estado</th>
+                    <th class="text-center" style="width: 190px;">Acciones</th>               
+                  </tr>
+                </thead>
+                <tbody>
+                <?php 
+                if (!empty($datos)):
+                  foreach ($datos as $e):
+                     $idEmpleado = (int)$e->getIdEmpleado();
+                     $nombresEmp = $e->getNombre();
+                     $apellidoEmp = $e->getApellido(); 
+                     $generoEmp = $e->getGenero();
+                     $cargoEmp = $e->getCargo();
+                     $userEmp = $e->getUsername();
+                     $idPuestoEmp = $e->getIdPuesto();
+                     $idUsuarioEmp = $e->getIdUsuario();
+                     $idRolEmp = (int)$e->getIdRol();
+                     $nombreRolEmp = $e->getNombreRol();
+                     $activoEmp = (int)$e->getActivo();
+
+                     $badgeRol = 'badge-secondary';
+                     if ($idRolEmp === 1 || $idRolEmp === 4) $badgeRol = 'badge-primary';
+                ?>
+                <tr class="<?php echo ($activoEmp === 0 ? 'table-secondary text-muted' : ''); ?>">
+                  <td class="align-middle font-weight-bold">#<?php echo $idEmpleado; ?></td>
+                  <td class="align-middle"><?php echo htmlspecialchars($nombresEmp); ?></td>
+                  <td class="align-middle"><?php echo htmlspecialchars($apellidoEmp); ?></td>
+                  <td class="align-middle">
+                    <?php if (strtolower($generoEmp) === 'hombre' || strtolower($generoEmp) === 'm'): ?>
+                      <span class="text-muted"><i class="fas fa-mars mr-1 text-primary"></i>Hombre</span>
+                    <?php else: ?>
+                      <span class="text-muted"><i class="fas fa-venus mr-1 text-danger"></i>Mujer</span>
+                    <?php endif; ?>
+                  </td>
+                  <td class="align-middle"><?php echo htmlspecialchars($cargoEmp); ?></td>
+                  <td class="align-middle"><span class="badge <?php echo $badgeRol; ?> font-weight-normal"><?php echo htmlspecialchars($nombreRolEmp); ?></span></td>
+                  <td class="align-middle">
+                    <code><?php echo htmlspecialchars($userEmp); ?></code>
+                  </td>
+                  <td class="text-center align-middle">
+                    <?php if ($activoEmp === 1): ?>
+                      <span class="badge badge-success">Activo</span>
+                    <?php else: ?>
+                      <span class="badge badge-danger">Inactivo</span>
+                    <?php endif; ?>
+                  </td>
+                  <td class="text-center align-middle">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modalEmpleado" onclick='cargarEmpleado("<?php echo htmlspecialchars((string)$idEmpleado, ENT_QUOTES); ?>", "<?php echo htmlspecialchars($nombresEmp, ENT_QUOTES); ?>", "<?php echo htmlspecialchars($apellidoEmp, ENT_QUOTES); ?>", "<?php echo htmlspecialchars($generoEmp, ENT_QUOTES); ?>", "<?php echo htmlspecialchars((string)$idPuestoEmp, ENT_QUOTES); ?>", "<?php echo htmlspecialchars((string)$idUsuarioEmp, ENT_QUOTES); ?>", "<?php echo htmlspecialchars($userEmp, ENT_QUOTES); ?>", "<?php echo htmlspecialchars((string)$idRolEmp, ENT_QUOTES); ?>", "<?php echo $activoEmp; ?>")'>
+                        <i class="fas fa-edit mr-1"></i>Editar
+                      </button>
+                      <?php if ($activoEmp === 1): ?>
+                        <button type="button" class="btn btn-outline-danger" onclick="confirmarEstadoEmpleado(<?php echo $idEmpleado; ?>, 0, '<?php echo htmlspecialchars($nombresEmp.' '.$apellidoEmp, ENT_QUOTES); ?>')">
+                          <i class="fas fa-ban mr-1"></i>Desactivar
+                        </button>
+                      <?php else: ?>
+                        <button type="button" class="btn btn-outline-success" onclick="confirmarEstadoEmpleado(<?php echo $idEmpleado; ?>, 1, '<?php echo htmlspecialchars($nombresEmp.' '.$apellidoEmp, ENT_QUOTES); ?>')">
+                          <i class="fas fa-check mr-1"></i>Activar
+                        </button>
+                      <?php endif; ?>
+                    </div>
+                  </td>
+                </tr>
+                <?php 
+                  endforeach;
+                endif;
+                ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer small text-muted">
+            <i class="fas fa-clock mr-1"></i>Actualizado el <?php echo date('d/m/Y \a \l\a\s H:i'); ?>
+          </div>
+        </div>
+
       </div>
-    </footer>
+      <!-- /.container-fluid -->
 
-  </body>
+      <!-- Sticky Footer -->
+      <footer class="sticky-footer bg-white shadow-sm border-top">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Concentrados El Gordito &copy; <?php echo date('Y'); ?></span>
+          </div>
+        </div>
+      </footer>
 
-  </html>
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="vendor/datatables/jquery.dataTables.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="js/sb-admin.min.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/demo/datatables-demo.js"></script>
+
+  <script>
+    const SUBMODULOS_POR_ROL = <?php 
+      $map = [];
+      if (!empty($rolesJerarquia)) {
+          foreach ($rolesJerarquia as $rj) {
+              $map[(int)$rj['id_Rol']] = $rj['submodulosEfectivos'] ?? [];
+          }
+      }
+      if (empty($map)) {
+          $map = [
+              1 => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+              2 => [1, 2, 4, 5, 6, 7, 8, 12, 13],
+              4 => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+              5 => [1, 2, 4, 5, 6, 7, 8, 11, 12, 13],
+              6 => [1, 2, 4, 5, 6, 7, 8, 12, 13],
+              7 => [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13]
+          ];
+      }
+      echo json_encode($map); 
+    ?>;
+
+    function marcarSubmodulos(modo) {
+      $('.chk-submodulo').prop('checked', false);
+      if (modo === 'todos') {
+        $('.chk-submodulo').prop('checked', true);
+      } else if (modo === 'rol') {
+        const rolActual = parseInt($('#txtRol').val()) || 2;
+        const permitidos = SUBMODULOS_POR_ROL[rolActual] || SUBMODULOS_POR_ROL[2] || [];
+        permitidos.forEach(function(id) {
+          $('#sub_' + id).prop('checked', true);
+        });
+      }
+    }
+
+    function actualizarUsuarioPreview() {
+      if ($('#txtIdEmpleado').val() === '') {
+        var n = $('#txtNombres').val().trim().split(/\s+/)[0] || '';
+        var a = $('#txtApellidos').val().trim().split(/\s+/)[0] || '';
+        n = n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        a = a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        if (n || a) {
+          $('#txtUser').val((n && a ? n + '.' + a : (n || a)) + '@gordito.com');
+        } else {
+          $('#txtUser').val('');
+        }
+      }
+    }
+
+    $('#txtNombres, #txtApellidos').on('input', actualizarUsuarioPreview);
+
+    function sugerirRolSegunPuesto() {
+      var puesto = parseInt($('#txtCargo').val()) || 0;
+      if (puesto === 1) {
+        $('#txtRol').val('1'); // Gerente General -> Gerente
+      } else if (puesto === 2) {
+        $('#txtRol').val('5'); // Jefe de Produccion -> Subrol Jefe de Producción
+      } else if (puesto === 5) {
+        $('#txtRol').val('7'); // Ventas -> Subrol Supervisor de Ventas
+      } else if (puesto === 6) {
+        $('#txtRol').val('6'); // Almacenista -> Subrol Jefe de Almacén
+      } else if (puesto === 12) {
+        $('#txtRol').val('4'); // Sistemas -> Administrador
+      } else {
+        // Operario y otros puestos operativos
+        $('#txtRol').val('2'); // Empleado Operativo Base
+      }
+      marcarSubmodulos('rol');
+    }
+
+    $('#txtRol').on('change', function() {
+      marcarSubmodulos('rol');
+    });
+
+    function cargarEmpleado(id, nombres, apellidos, genero, cargo, idUsuario, username, idRol, activo) {
+      $('#modalTitulo').text('Modificar Empleado #' + id);
+      $('#txtIdEmpleado').val(id);
+      $('#txtNombres').val(nombres);
+      $('#txtApellidos').val(apellidos);
+      $('#txtGenero').val(genero);
+      $('#txtCargo').val(cargo);
+      $('#txtRol').val(idRol || '2');
+      $('#txtIdUsuario').val(idUsuario);
+      $('#txtUser').val(username);
+      $('#chkActivoEmp').prop('checked', parseInt(activo) !== 0);
+
+      $('#btnInsertar').hide();
+      $('#btnModificar').show();
+
+      // Cargar submódulos asignados del usuario vía AJAX
+      $('.chk-submodulo').prop('checked', false);
+      if (idUsuario) {
+        $.getJSON('controllerEmpleado.php?accion=obtenerSubmodulosUsuario&idUsuario=' + idUsuario, function(res) {
+          if (res && res.exito && res.submodulos && res.submodulos.length > 0) {
+            res.submodulos.forEach(function(idSub) {
+              $('#sub_' + idSub).prop('checked', true);
+            });
+          } else {
+            marcarSubmodulos('rol');
+          }
+        }).fail(function() {
+          marcarSubmodulos('rol');
+        });
+      } else {
+        marcarSubmodulos('rol');
+      }
+    }
+
+    function limpiarEmpleado() {
+      $('#modalTitulo').text('Registro de Empleado');
+      $('#txtIdEmpleado').val('');
+      $('#txtNombres').val('');
+      $('#txtApellidos').val('');
+      $('#txtGenero').val('Hombre');
+      $('#txtCargo').val('');
+      $('#txtRol').val('2');
+      $('#txtIdUsuario').val('');
+      $('#txtUser').val('');
+      $('#chkActivoEmp').prop('checked', true);
+
+      $('#btnInsertar').show();
+      $('#btnModificar').hide();
+
+      marcarSubmodulos('rol');
+    }
+
+    function confirmarEstadoEmpleado(idEmpleado, nuevoEstado, nombre) {
+      const accion = nuevoEstado === 1 ? 'activar' : 'desactivar';
+      const colorBoton = nuevoEstado === 1 ? '#28a745' : '#dc3545';
+      const textoAccion = nuevoEstado === 1 ? 'El empleado y su usuario de acceso quedarán activos para operar.' : 'El empleado y su cuenta institucional quedarán desactivados y no podrán iniciar sesión.';
+
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: `¿Desea ${accion} al empleado?`,
+          text: `Empleado: ${nombre}. ${textoAccion}`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: colorBoton,
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: `Sí, ${accion}`,
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $('#estadoIdEmpleado').val(idEmpleado);
+            $('#estadoNuevoEmpleado').val(nuevoEstado);
+            $('#formCambiarEstadoEmpleado').submit();
+          }
+        });
+      } else {
+        if (confirm(`¿Desea ${accion} al empleado ${nombre}? ${textoAccion}`)) {
+          $('#estadoIdEmpleado').val(idEmpleado);
+          $('#estadoNuevoEmpleado').val(nuevoEstado);
+          $('#formCambiarEstadoEmpleado').submit();
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
 <?php 
-if(isset($msj,$icon)){
-  echo "<script>Swal.fire('$msj','','$icon');</script>";
+if (isset($msj, $icon)) {
+  echo "<script>Swal.fire({ title: '$msj', icon: '$icon', confirmButtonText: 'Aceptar' });</script>";
 }
-
- ?>
+?>

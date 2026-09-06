@@ -1,5 +1,6 @@
 <?php 
- include '../models/ReportModel.php';
+require_once __DIR__ . '/sesiones.php';
+include '../models/ReportModel.php';
 
 require_once __DIR__ . '/vendor/autoload.php';
 

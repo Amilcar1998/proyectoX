@@ -56,50 +56,49 @@ include '../views/configuracion.php';
     <div id="content-wrapper">
 
       <div class="container-fluid">
-      <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target=".modal">Agregar al Inventario</button>
-      &nbsp;&nbsp;<a href="../controllers/reporteInventarioGeneral.php" target="_blank"><button class="btn btn-success">Imprimir Reporte</button></a>
-        <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
+      <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target="#modalInventario" onclick="limpiarInventario()"><i class="fas fa-plus mr-1"></i>Agregar al Inventario</button>
+      &nbsp;&nbsp;<a href="../controllers/reporteInventarioGeneral.php" target="_blank"><button class="btn btn-success"><i class="fas fa-print mr-1"></i>Imprimir Reporte</button></a>
+        <!-- Modal Inventario -->
+        <div class="modal fade" id="modalInventario" tabindex="-1" role="dialog" aria-labelledby="modalInventarioLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-              <div class="btn-info"><hr><center><h4>Registros Inventario</h4><hr></center></div>
-              <div class="container-fluid">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalInventarioLabel"><i class="fas fa-boxes mr-2"></i>Registro de Inventario</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
               <form method="POST" id="miForm" action="#" name="formulario" enctype="multipart/form-data">
-              <hr>
-            <div class="row">
-                <div class="col-md-6">
-                  <label>ID Inventario</label>
-                  <input type="text" name="txtId" id="txtId" value="" size="30" placeholder="Id Inventario" class="form-control" readonly>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6 form-group">
+                      <label for="txtId">ID Inventario</label>
+                      <input type="text" name="txtId" id="txtId" placeholder="Automático" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label for="txtIdMateriaPrima">Materia Prima</label> 
+                      <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control" required>
+                        <option value="">Seleccione materia prima...</option>
+                        <?php foreach ($materiasPrimas as $mp) {
+                          echo "<option value='".($mp["idMateriaPrima"] ?? '')."'>".($mp["NombreMP"] ?? '')."</option>";
+                        } ?>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 form-group">  
+                      <label for="txtExistencias">Existencias</label>
+                      <input type="number" step="any" name="txtExistencias" id="txtExistencias" placeholder="Cantidad en existencias" class="form-control" required>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-md-6">
-                  <label>Materia Prima</label> 
-                   <select name="txtIdMateriaPrima" id="txtIdMateriaPrima" class="form-control">
-                     <option value="">seleccione materia prima</option>
-                      <?php foreach ($materiasPrimas as $mp) {
-                        echo "<option value='".($mp["idMateriaPrima"] ?? '')."'>".($mp["NombreMP"] ?? '')."</option>";
-                      } ?>
-                   </select>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary reset" data-dismiss="modal"><i class="fas fa-times mr-1"></i>Cerrar</button>
+                  <input type="submit" value="Guardar" name="btnGuardar" class="btn btn-primary agregar">
+                  <input type="submit" value="Modificar" name="btnModificar" class="btn btn-warning modificar">
+                  <input type="submit" value="Eliminar" name="btnEliminar" class="btn btn-danger eliminar">
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">  
-                    <label>Existencias</label>
-                    <input type="text" name="txtExistencias" id="txtExistencias" value="" size="30" placeholder="Existencias" class="form-control">
-                </div>
-            </div>
-            <hr>
-            <center>
-            <input type="submit" value="guardar" name="btnGuardar" class="btn btn-primary">
-            <input type="submit" value="modificar" name="btnModificar" class="btn btn-warning">
-            <input type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">
-          </center>
-            
-        </form>
-
-
-
-              <hr>
-           </div>
-              
+              </form>
             </div>
           </div>
         </div>
@@ -131,29 +130,19 @@ include '../views/configuracion.php';
 
                  </tfoot>
                  <tbody>
-                <?php 
-                   foreach ($tabla as $fila) {
-                    $idInventario=isset($fila["idInventario"]) ? $fila["idInventario"] : '';
-                    $idMateriaPrima=isset($fila["idMateriaPrima"]) ? $fila["idMateriaPrima"] : '';
-                    $NombreMP=isset($fila["NombreMP"]) ? $fila["NombreMP"] : '';
-                    $Existencias=isset($fila["Existencias"]) ? $fila["Existencias"] : '';
-
-                 echo "
-                 <tr>
-                    <td>$NombreMP</td>
-                    <td>$Existencias</td>
-                    <td>
-                    <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onclick=\"$('#txtId').val('$idInventario');$('#txtIdMateriaPrima').val('$idMateriaPrima');$('#txtExistencias').val('$Existencias');\">Cargar</button>
-                    </td>
-                    
+                <?php if (!empty($tabla)): ?>
+                  <?php foreach ($tabla as $fila): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($fila['NombreMP'] ?? ''); ?></td>
+                      <td><?php echo htmlspecialchars($fila['Existencias'] ?? ''); ?></td>
+                      <td>
+                        <button type="button" class="btn btn-warning btn-sm cargar" data-toggle="modal" data-target="#modalInventario" onclick='cargarInventario("<?php echo htmlspecialchars($fila['idInventario'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['idMateriaPrima'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['Existencias'] ?? '', ENT_QUOTES); ?>")'>
+                          <i class="fas fa-edit mr-1"></i>Editar
+                        </button>
+                      </td>
                     </tr>
-
-                 ";
-
-               }
-                    
-                 
-                ?>
+                  <?php endforeach; ?>
+                <?php endif; ?>
                  </tbody>
                </table>
             </div>
@@ -184,16 +173,16 @@ include '../views/configuracion.php';
   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-sign-out-alt mr-2"></i>¿Desea cerrar sesión?</h5>
+          <button class="close text-white" type="button" data-dismiss="modal" aria-label="Cerrar">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-body">Selecciona "Cerrar sesión" si estás listo para finalizar tu sesión actual.</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+          <a class="btn btn-danger" href="sesiones.php?c=c">Cerrar sesión</a>
         </div>
       </div>
     </div>
@@ -220,6 +209,20 @@ include '../views/configuracion.php';
 
     <!-- Demo scripts for this page-->
     <script src="js/demo/datatables-demo.js"></script>
+
+    <script>
+      function cargarInventario(id, idMP, existencias) {
+        $('#txtId').val(id);
+        $('#txtIdMateriaPrima').val(idMP);
+        $('#txtExistencias').val(existencias);
+      }
+
+      function limpiarInventario() {
+        $('#txtId').val('');
+        $('#txtIdMateriaPrima').val('');
+        $('#txtExistencias').val('');
+      }
+    </script>
 
    <!-- Footer -->
    <footer class="sticky-footer bg-dark mt-auto">

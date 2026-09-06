@@ -58,59 +58,58 @@ include 'configuracion.php';
     <div id="content-wrapper">
 
       <div class="container-fluid">
-      <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target=".modal">Agregar Proveedor</button>
-      &nbsp;&nbsp;<a href="repoProveedor.php"><button class="btn btn-success">Imprimir</button></a>
-        <div class="modal fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
+      <button class="btn btn-primary Nagregar" id="agregarC" data-toggle="modal" data-target="#modalProveedor" onclick="limpiarProveedor()"><i class="fas fa-plus mr-1"></i>Agregar Proveedor</button>
+      &nbsp;&nbsp;<a href="repoProveedor.php"><button class="btn btn-success"><i class="fas fa-print mr-1"></i>Imprimir</button></a>
+        <!-- Modal Proveedor -->
+        <div class="modal fade" id="modalProveedor" tabindex="-1" role="dialog" aria-labelledby="modalProveedorLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-              <div class="btn-info"><hr><center><h4>Registros Proveedor</h4><hr></center></div>
-              <div class="container-fluid">
-             <form method="POST" id="miForm" action="#" name="formulario" enctype="multipart/form-data">
-              <hr>
-            <div class="row">
-                <div class="col-md-6">
-                    <label>id Proveedor</label>
-                    <input type="text" name="txtId" id="txtId" value="" size="30" placeholder="Id Proveedor" class="form-control">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalProveedorLabel"><i class="fas fa-truck mr-2"></i>Registro de Proveedor</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form method="POST" id="miForm" action="#" name="formulario" enctype="multipart/form-data">
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6 form-group">
+                      <label for="txtId">ID Proveedor</label>
+                      <input type="text" name="txtId" id="txtId" placeholder="Automático" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label for="txtNombre">Nombre Proveedor</label> 
+                      <input type="text" name="txtNombre" id="txtNombre" placeholder="Nombre de proveedor" class="form-control" required>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 form-group">  
+                      <label for="txtContacto">Contacto</label>
+                      <input type="text" name="txtContacto" id="txtContacto" placeholder="Nombre de contacto" class="form-control">
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label for="txtNit">NIT</label>
+                      <input type="text" name="txtNit" id="txtNit" placeholder="Número de NIT" class="form-control">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 form-group">
+                      <label for="txtCorreo">Correo Electrónico</label>
+                      <input type="email" name="txtCorreo" id="txtCorreo" placeholder="correo@ejemplo.com" class="form-control">
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label for="txtTelefono">Teléfono</label>
+                      <input type="text" name="txtTelefono" id="txtTelefono" placeholder="Teléfono" class="form-control">
+                    </div>
+                  </div>
                 </div>
-                <div class="col-md-6">
-                <label>Nombre</label> 
-                <input type="text" name="txtNombre" id="txtNombre" value="" size="30" placeholder="Nombre de proveedor" class="form-control">
-            </div>
-            </div>
-            <div class="row">
-               
-                <div class="col-md-6">  
-                    <label>Contacto</label>
-                    <input type="text" name="txtContacto" id="txtContacto" value="" size="30" placeholder="contacto" class="form-control">
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary reset" data-dismiss="modal"><i class="fas fa-times mr-1"></i>Cerrar</button>
+                  <input type="submit" value="Guardar" name="btnGuardar" class="btn btn-primary agregar">
+                  <input type="submit" value="Modificar" name="btnModificar" class="btn btn-warning modificar">
+                  <input type="submit" value="Eliminar" name="btnEliminar" class="btn btn-danger eliminar">
                 </div>
-                <div class="col-md-6">
-                    <label>Nit</label>
-                    <input type="text" name="txtNit" id="txtNit" value="" size="30" placeholder="Nit" class="form-control">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <label>Correo</label>
-                    <input type="text" name="txtCorreo" id="txtCorreo" value="" size="30" placeholder="correo electronico" class="form-control"></div>
-                <div class="col-md-6">
-                    <label>Telefono</label>
-                    <input type="text" name="txtTelefono" id="txtTelefono" value="" size="30" placeholder="Telefono" class="form-control">
-                </div>
-            </div>
-            <hr>
-            <center>
-            <input type="submit" value="guardar" name="btnGuardar" class="btn btn-primary">
-            <input type="submit" value="modificar" name="btnModificar" class="btn btn-warning">
-            <input type="submit" value="eliminar" name="btnEliminar" class="btn btn-danger">
-          </center>
-            
-        </form>
-
-
-
-              <hr>
-           </div>
-              
+              </form>
             </div>
           </div>
         </div>
@@ -137,37 +136,22 @@ include 'configuracion.php';
 
                  </thead>
                  <tbody>
-               <?php 
-               foreach ($tab as $fila) {
-                 $idProv =$fila["idProveedor"];
-                 $nombres=$fila["nombreProveedor"];
-                 $nombre=str_replace(' ', '&nbsp;', $nombres);
-                 $contacto=$fila["contacto"];
-                 $nit=$fila["NIT"];
-                 $correoP=$fila["correoP"];
-                 $telefono=$fila["telefono"];
-  
-                 echo "
-                 <tr>
-                    <td>$nombres</td>
-                    <td>$contacto</td>
-                    <td>$nit</td>
-                    <td>$correoP</td>
-                    <td>$telefono</td>
-                    <td>
-                    <button class='btn btn-primary' data-toggle='modal' data-target='.modal' onclick=\"$('#txtId').val('$idProv');$('#txtNombre').val('$nombre');$('#txtContacto').val('$contacto');$('#txtNit').val('$nit');$('#txtCorreo').val('$correoP');$('#txtTelefono').val('$telefono');\">Cargar</button>
-                    </td>
-                    
+                <?php if (!empty($tab)): ?>
+                  <?php foreach ($tab as $fila): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($fila['nombreProveedor'] ?? ''); ?></td>
+                      <td><?php echo htmlspecialchars($fila['contacto'] ?? ''); ?></td>
+                      <td><?php echo htmlspecialchars($fila['NIT'] ?? ''); ?></td>
+                      <td><?php echo htmlspecialchars($fila['correoP'] ?? ''); ?></td>
+                      <td><?php echo htmlspecialchars($fila['telefono'] ?? ''); ?></td>
+                      <td>
+                        <button type="button" class="btn btn-warning btn-sm cargar" data-toggle="modal" data-target="#modalProveedor" onclick='cargarProveedor("<?php echo htmlspecialchars($fila['idProveedor'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['nombreProveedor'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['contacto'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['NIT'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['correoP'] ?? '', ENT_QUOTES); ?>", "<?php echo htmlspecialchars($fila['telefono'] ?? '', ENT_QUOTES); ?>")'>
+                          <i class="fas fa-edit mr-1"></i>Editar
+                        </button>
+                      </td>
                     </tr>
-
-                 ";
-
-                
-              }
-                
-                   
-                 
-                ?>
+                  <?php endforeach; ?>
+                <?php endif; ?>
                 </tbody>
               </table>
             </div>
@@ -198,16 +182,16 @@ include 'configuracion.php';
   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-sign-out-alt mr-2"></i>¿Desea cerrar sesión?</h5>
+          <button class="close text-white" type="button" data-dismiss="modal" aria-label="Cerrar">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-body">Selecciona "Cerrar sesión" si estás listo para finalizar tu sesión actual.</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+          <a class="btn btn-danger" href="sesiones.php?c=c">Cerrar sesión</a>
         </div>
       </div>
     </div>
@@ -232,6 +216,26 @@ include 'configuracion.php';
    <!-- Demo scripts for this page-->
    <script src="js/translations.js"></script>
    <script src="js/demo/datatables-demo.js"></script>
+
+   <script>
+      function cargarProveedor(id, nombre, contacto, nit, correo, telefono) {
+        $('#txtId').val(id);
+        $('#txtNombre').val(nombre);
+        $('#txtContacto').val(contacto);
+        $('#txtNit').val(nit);
+        $('#txtCorreo').val(correo);
+        $('#txtTelefono').val(telefono);
+      }
+
+      function limpiarProveedor() {
+        $('#txtId').val('');
+        $('#txtNombre').val('');
+        $('#txtContacto').val('');
+        $('#txtNit').val('');
+        $('#txtCorreo').val('');
+        $('#txtTelefono').val('');
+      }
+    </script>
 
    <!-- Footer -->
    <footer class="sticky-footer bg-dark mt-auto">

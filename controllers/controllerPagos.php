@@ -1,40 +1,54 @@
 <?php
-session_start();
-if (isset($_SESSION['s1']) || isset($_SESSION['s2']) || isset($_SESSION['c1'])) {
-    if ($_SESSION['s1']) {
-        header('Location: controllerEmpleado.php');
-    } elseif ($_SESSION['s2']) {
-        header('Location: controllerPedidosIn.php');
+require_once __DIR__ . '/sesiones.php';
+require_once __DIR__ . '/../models/PagoModel.php';
+require_once __DIR__ . '/../models/AuditoriaHelper.php';
+require_once __DIR__ . '/../models/ModelDashboard.php';
+
+$pagoModel = new PagoModel();
+
+// Endpoint AJAX: Obtener detalle completo de un pago para el modal
+if (isset($_GET['accion']) && $_GET['accion'] === 'obtenerDetalle') {
+    header('Content-Type: application/json');
+    $idPago = (int)($_GET['idPago'] ?? 0);
+    $pagoDetalle = $pagoModel->obtenerPagoPorId($idPago);
+    if ($pagoDetalle) {
+        echo json_encode(['status' => 'success', 'pago' => $pagoDetalle]);
     } else {
-        header('Location: controllerIndividualC.php');
+        http_response_code(404);
+        echo json_encode(['status' => 'error', 'mensaje' => 'Pago no encontrado']);
     }
     exit();
 }
 
-include '../models/PagoModel.php';
-include '../controllers/sesiones.php';
-include '../models/AuditoriaHelper.php';
+$idRolSesion = (int)($_SESSION['id_Rol'] ?? 0);
+$esAdmin = ($idRolSesion === 1 || $idRolSesion === 4 || isset($_SESSION['s1']));
 
-$pagoModel = new PagoModel();
-$esAdmin = false;
-$idUsuarioFiltro = 0;
-
-if (isset($_SESSION['s1'])) {
-    $esAdmin = true;
-    $idUsuarioFiltro = 0;
-    $pagos = $pagoModel->getPagos(100, 0);
-} elseif (isset($_SESSION['s2'])) {
-    $username = $_SESSION['s2'];
-    $idUsuarioFiltro = obtenerIdUsuarioPorUsername($username);
-    $pagos = $pagoModel->getPagosPorUsuario($idUsuarioFiltro);
-} elseif (isset($_SESSION['c1'])) {
-    $username = $_SESSION['c1'];
-    $idUsuarioFiltro = obtenerIdUsuarioPorUsername($username);
-    $pagos = $pagoModel->getPagosPorUsuario($idUsuarioFiltro);
-} else {
-    $pagos = [];
+// Obtener nombre del usuario para el navbar
+$correoUsuario = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? ''));
+$daoDash = new ModelDashboard();
+$nombres = $correoUsuario;
+if (!empty($correoUsuario)) {
+    $sessionEmp = $daoDash->getSessionEmp($correoUsuario);
+    if (!empty($sessionEmp)) {
+        $nombres = ($sessionEmp[0]['nombreEmp'] ?? '') . ' ' . ($sessionEmp[0]['apellido'] ?? '');
+    }
 }
 
-$stats = $idUsuarioFiltro > 0 ? $pagoModel->getTotalPagosPorUsuario($idUsuarioFiltro) : ['total' => 0, 'totalMonto' => 0];
+if ($esAdmin) {
+    $pagos = $pagoModel->listarPagos(200, 0);
+    $estadisticas = $pagoModel->obtenerEstadisticasGlobales();
+} else {
+    $idUsuario = obtenerIdUsuarioPorUsername($correoUsuario);
+    $pagos = $pagoModel->obtenerPagosPorUsuario($idUsuario, 100, 0);
+    $estadisticasUsuario = $pagoModel->obtenerEstadisticasPorUsuario($idUsuario);
+    $estadisticas = [
+        'totalTransacciones' => $estadisticasUsuario['total'],
+        'totalRecaudado' => $estadisticasUsuario['totalMonto'],
+        'totalCompletados' => $estadisticasUsuario['total'],
+        'totalPendientes' => 0,
+        'totalFallidos' => 0,
+        'ticketPromedio' => $estadisticasUsuario['total'] > 0 ? ($estadisticasUsuario['totalMonto'] / $estadisticasUsuario['total']) : 0.0
+    ];
+}
 
-include '../views/vistaPagos.php';
+include __DIR__ . '/../views/vistaPagos.php';

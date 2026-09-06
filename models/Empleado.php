@@ -100,14 +100,68 @@ private $idEmpleado;
     {
         $this->username = $username;
     }
-private $nombre;
-private $apellido;
-private $genero;
-private $cargo;
-private $username;
+    private $nombre;
+    private $apellido;
+    private $genero;
+    private $cargo;
+    private $username;
+    private $idPuesto;
+    private $idUsuario;
+    private $id_Rol;
+    private $nombreRol;
+    private $activo;
 
+    public function getActivo()
+    {
+        return $this->activo;
+    }
 
-    public function __construct($idEmpleado, $nombre, $apellido, $genero, $cargo, $username)
+    public function setActivo($activo)
+    {
+        $this->activo = $activo;
+    }
+
+    public function getIdPuesto()
+    {
+        return $this->idPuesto;
+    }
+
+    public function setIdPuesto($idPuesto)
+    {
+        $this->idPuesto = $idPuesto;
+    }
+
+    public function getIdUsuario()
+    {
+        return $this->idUsuario;
+    }
+
+    public function setIdUsuario($idUsuario)
+    {
+        $this->idUsuario = $idUsuario;
+    }
+
+    public function getIdRol()
+    {
+        return $this->id_Rol;
+    }
+
+    public function setIdRol($id_Rol)
+    {
+        $this->id_Rol = $id_Rol;
+    }
+
+    public function getNombreRol()
+    {
+        return $this->nombreRol;
+    }
+
+    public function setNombreRol($nombreRol)
+    {
+        $this->nombreRol = $nombreRol;
+    }
+
+    public function __construct($idEmpleado, $nombre, $apellido, $genero, $cargo, $username, $idPuesto = '', $idUsuario = '', $id_Rol = 2, $nombreRol = 'Empleado', $activo = 1)
     {
         $this->idEmpleado = $idEmpleado;
         $this->nombre = $nombre;
@@ -115,7 +169,11 @@ private $username;
         $this->genero = $genero;
         $this->cargo = $cargo;
         $this->username = $username;
+        $this->idPuesto = $idPuesto;
+        $this->idUsuario = $idUsuario;
+        $this->id_Rol = $id_Rol;
+        $this->nombreRol = $nombreRol;
+        $this->activo = $activo;
     }
-
 
 }

@@ -1,16 +1,30 @@
 <?php
-include '../models/ModelPedido.php';
-include 'sesiones.php';
+require_once __DIR__ . '/../models/ModelPedido.php';
+require_once __DIR__ . '/sesiones.php';
 $pedido = new ModelPedido();
 $datos = $pedido->getPedido();
 $correo = $_SESSION['s2'] ?? '';
-$nombres = $pedido->getNombreUsuario();
+$session = !empty($correo) ? $pedido->getSessionEmp($correo) : [];
+$nombres = $pedido->obtenerNombreUsuario();
 $fechaActual = date('d/m/Y');
-foreach ($session as $key) {
-    $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
 
+if (!empty($session) && is_array($session)) {
+    foreach ($session as $key) {
+        $nombreEmp = $key['nombreEmp'] ?? '';
+        $apellido = $key['apellido'] ?? '';
+        $nombres = trim($nombreEmp . ' ' . $apellido);
+    }
+}
+$id = null;
+$detalle = [];
+$receta = [];
 
+if (isset($_REQUEST['detalle']) || isset($_REQUEST['receta'])) {
+    $id = isset($_REQUEST['id']) ? (int)$_REQUEST['id'] : (int)($_REQUEST['idDetalle'] ?? 0);
+    if ($id > 0) {
+        $detalle = $pedido->obtenerDetallePedido($id);
+        $receta = $pedido->obtenerRecetaPorPedido($id);
+    }
 }
 
-
-include '../views/vistaPedidosI.php';
+include __DIR__ . '/../views/vistaPedidosI.php';

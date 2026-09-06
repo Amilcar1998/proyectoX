@@ -20,8 +20,8 @@
     <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
     <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../controllers/js/sb-admin.min.js"></script>
-    <script src="js/translations.js"></script>
-    <script src="js/demo/datatables-demo.js"></script>
+    <script src="../controllers/js/translations.js"></script>
+    <script src="../controllers/js/demo/datatables-demo.js"></script>
     <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
 
     <script>

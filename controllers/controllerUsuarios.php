@@ -1,44 +1,48 @@
 <?php 
-include "../models/ModelUser.php";
-include "sesiones.php";
-$objU= new ModelUser();
+require_once __DIR__ . "/sesiones.php";
+require_once __DIR__ . "/../models/ModelUser.php";
+
+$objU = new ModelUser();
+
+$msj = null;
+$icon = null;
+
+if (isset($_POST["cambiar_estado"])) {
+    $idUsuario = (int)($_POST['txtIdUsuario'] ?? 0);
+    $nuevoEstado = (int)($_POST['nuevoEstado'] ?? 1);
+    $objU->cambiarEstadoUsuario($idUsuario, $nuevoEstado);
+    $estadoTxt = ($nuevoEstado === 1) ? 'activado' : 'desactivado';
+    $msj = "Se ha $estadoTxt el usuario exitosamente";
+    $icon = "success";
+}
+
+if (isset($_REQUEST["modificar"])) {
+    $u = new Usuario($_REQUEST["txtUsuario"], $_REQUEST["txtUser"], sha1($_REQUEST["txtPass"]), $_REQUEST["txtRol"]);
+    $objU->modificarUsuario($u);
+    $msj = "Se ha modificado el usuario exitosamente";
+    $icon = "success";
+}
 
 if (isset($_REQUEST["empleado"])) {
-	$userEmp=$objU->getUsuario();
-	$nombre='Datos de Empleado';
-	$thead ="<th>usuario</th><th>Nombre</th><th>Usuario</th><th>Contraseña</th><th>Accion</th>";
+    $userEmp = $objU->getUsuario();
+    $nombre = 'Cuentas de Usuarios Empleados';
+    $thead = "<th># ID</th><th>Nombre y Apellido</th><th>Usuario Institucional</th><th>Rol</th><th>Estado</th><th class='text-center'>Acciones</th>";
+} elseif (isset($_REQUEST["cliente"])) {
+    $userCli = $objU->getUsuarioCli();
+    $thead = "<th># ID</th><th>Nombre Cliente</th><th>Usuario / Correo</th><th>Rol</th><th>Estado</th><th class='text-center'>Acciones</th>";
+    $nombre = "Cuentas de Usuarios Clientes";
+} else {
+    $m = $objU->getUsuarios();
+    $nombre = 'Todas las Cuentas de Usuarios';
+    $thead = "<th># ID</th><th>Nombre de Usuario / Correo</th><th>Rol en Sistema</th><th>Estado</th><th class='text-center'>Acciones</th>";
 }
-if (isset($_REQUEST["cliente"])) {
-	$userCli = $objU->getUsuarioCli();
-	$thead ="<th>usuario</th><th>Nombre</th><th>Usuario</th><th>Contraseña</th><th>Accion</th>";
-	$nombre = "Datos Cliente";
-	
-}
-if (isset($userEmp) !=true && isset($userCli)!=true) {
-	$m=$objU->getUsuarios();
-	$nombre='Datos de Usuario';
-	$thead ="<th>Id usuario</th><th>Nombre Usuario</th><th>Contraseña</th><th>Rol</th><th>Accion</th>";
-
-}
-if(isset($_REQUEST["modificar"])){
-	$u=new Usuario($_REQUEST["txtUsuario"],$_REQUEST["txtUser"],sha1($_REQUEST["txtPass"]),$_REQUEST["txtRol"],);
-	$objU->modificarUsuario($u);
-	 $msj="se ha Modificado el registro exitosamente";
-	 $icon="success";
-
-
-	
-}
-
-
 
 $rol = $objU->getRol();
-$session = $objU->getSessionEmp();
+$correo = $_SESSION["s1"] ?? ($_SESSION['s2'] ?? '');
+$session = $objU->getSessionEmp($correo);
 $nombres = '';
 foreach ($session as $key) {
-  $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
-  }
+    $nombres = trim(($key['nombreEmp'] ?? '') . ' ' . ($key['apellido'] ?? ''));
+}
 
-include "../views/vistaUsuarios.php";
-
- ?>
+include __DIR__ . "/../views/vistaUsuarios.php";

@@ -1,5 +1,5 @@
 <?php
-include_once "../db/conexion.php";
+include_once __DIR__ . "/../db/conexion.php";
 include_once __DIR__ . "/AuditoriaModel.php";
 
 if (!function_exists('obtenerIdUsuarioPorUsername')) {
@@ -69,3 +69,40 @@ if (!function_exists('logModuloAcceso')) {
         $model->log((int)$idUsuario, (string)$username, 'vista', $modulo, 'Acceso a modulo');
     }
 }
+
+if (!function_exists('logAccionAuditoria')) {
+    function logAccionAuditoria($tipoEvento, $modulo, $descripcion, $username = null)
+    {
+        if (empty($username)) {
+            $username = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? 'admin'));
+        }
+        $idUsuario = obtenerIdUsuarioPorUsername($username);
+        $model = new AuditoriaModel();
+        $model->log((int)$idUsuario, (string)$username, (string)$tipoEvento, (string)$modulo, (string)$descripcion);
+    }
+}
+
+if (!function_exists('verificarSesionActivaEnBD')) {
+    function verificarSesionActivaEnBD(string $sessionId): ?array
+    {
+        $model = new AuditoriaModel();
+        return $model->obtenerSesionActivaPorId($sessionId);
+    }
+}
+
+if (!function_exists('iniciarSesionSegura')) {
+    function iniciarSesionSegura(int $segundosDuracion = 86400)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.gc_maxlifetime', (string)$segundosDuracion);
+            session_set_cookie_params([
+                'lifetime' => $segundosDuracion,
+                'path' => '/',
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
+            session_start();
+        }
+    }
+}
+

@@ -27,7 +27,7 @@ $tab = $prov->getTabla();
 $session = $prov->getSessionEmp($_SESSION['s1'] ?? '');
 $nombres = '';
 foreach ($session as $key) {
-    $nombres = $key['nombreEmp'].'&nbsp;&nbsp;'.$key['apellido'];
+    $nombres = trim(($key['nombreEmp'] ?? '') . ' ' . ($key['apellido'] ?? ''));
 }
 
 

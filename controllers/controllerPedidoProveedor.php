@@ -13,7 +13,7 @@ $session = $pedidoProv->getSessionEmp($correo);
 
 $nombres = '';
 if (!empty($session)) {
-    $nombres = $session[0]['nombreEmp'] . '&nbsp;&nbsp;' . $session[0]['apellido'];
+    $nombres = trim(($session[0]['nombreEmp'] ?? '') . ' ' . ($session[0]['apellido'] ?? ''));
 }
 
 if(isset($_REQUEST["btnGuardar"])){

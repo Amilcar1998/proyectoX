@@ -1,5 +1,5 @@
 <?php
-include "../db/conexion.php";
+require_once __DIR__ . '/../db/conexion.php';
 
 if (!class_exists('PlanPagoModel')) {
     class PlanPagoModel extends Conexion

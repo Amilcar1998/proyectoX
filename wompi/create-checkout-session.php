@@ -3,95 +3,211 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../db/conexion.php';
 require_once __DIR__ . '/../models/PlanPagoModel.php';
-require_once __DIR__ . '/../controllers/sesiones.php';
 require_once __DIR__ . '/../models/AuditoriaHelper.php';
 
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
-if (!isset($_SESSION['s1']) && !isset($_SESSION['s2']) && !isset($_SESSION['c1'])) {
-    http_response_code(401);
-    echo json_encode(['error' => 'No autorizado']);
-    exit();
+if (session_status() === PHP_SESSION_NONE) { 
+    session_start(); 
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
-$planId = $input['planId'] ?? 0;
+$input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-if ($planId <= 0) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Plan invalido']);
-    exit();
-}
+$wompiClientId = defined('WOMPI_PUBLIC_KEY') ? WOMPI_PUBLIC_KEY : '';
+$wompiClientSecret = defined('WOMPI_PRIVATE_KEY') ? WOMPI_PRIVATE_KEY : '';
 
-$planModel = new PlanPagoModel();
-$plan = $planModel->getPlanPorId($planId);
-
-if (!$plan || !$plan['activo']) {
-    http_response_code(404);
-    echo json_encode(['error' => 'Plan no disponible']);
-    exit();
-}
-
-$wompiPrivateKey = WOMPI_PRIVATE_KEY ?? '';
-if (empty($wompiPrivateKey)) {
+if (empty($wompiClientId) || empty($wompiClientSecret)) {
     http_response_code(500);
-    echo json_encode(['error' => 'Wompi no configurado']);
+    echo json_encode(['error' => 'Credenciales de Wompi no configuradas en db/parametros.php.']);
     exit();
 }
 
-$username = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? ''));
-$idUsuario = obtenerIdUsuarioPorUsername($username);
+// 1. Determinar el usuario o cliente
+$idUsuario = 0;
 
+// Prioridad 1: sesión PHP activa (usuario logueado en el sistema)
+if (isset($_SESSION['s1']) || isset($_SESSION['s2']) || isset($_SESSION['c1'])) {
+    $username = (string)($_SESSION['s1'] ?? $_SESSION['s2'] ?? $_SESSION['c1'] ?? '');
+    try {
+        $con = new Conexion();
+        $conn = $con->getConnection();
+        $stmtU = $conn->prepare("SELECT idUsuario FROM usuarios WHERE username = ? LIMIT 1");
+        if ($stmtU) {
+            $stmtU->bind_param("s", $username);
+            $stmtU->execute();
+            $resU = $stmtU->get_result();
+            if ($resU && $rowU = $resU->fetch_assoc()) {
+                $idUsuario = (int)$rowU['idUsuario'];
+            }
+            $stmtU->close();
+        }
+    } catch (Exception $e) {
+        $idUsuario = 0;
+    }
+}
+
+// Prioridad 2: idUsuario enviado desde el formulario de registro/login de la landing
+if ($idUsuario === 0 && !empty($input['idUsuario']) && (int)$input['idUsuario'] > 0) {
+    $idUsuario = (int)$input['idUsuario'];
+}
+
+$nombreCliente = trim((string)($input['nombre'] ?? 'Cliente'));
+$telefonoCliente = trim((string)($input['telefono'] ?? ''));
+$correoCliente = trim((string)($input['correo'] ?? ''));
+if (empty($correoCliente) || !filter_var($correoCliente, FILTER_VALIDATE_EMAIL)) {
+    $correoCliente = 'ventas@concentradoselgordito.com';
+}
+
+$planId = (int)($input['planId'] ?? 0);
+$items = $input['items'] ?? [];
+
+$montoTotalUSD = 0.0;
+$nombreProducto = '';
+$metadatos = [
+    'idUsuario' => $idUsuario,
+    'nombreCliente' => $nombreCliente,
+    'telefonoCliente' => $telefonoCliente,
+    'correoCliente' => $correoCliente,
+    'origen' => 'landing_page'
+];
+
+if ($planId > 0) {
+    // Compra de un plan
+    $planModel = new PlanPagoModel();
+    $plan = $planModel->getPlanPorId($planId);
+
+    if (!$plan || !$plan['activo']) {
+        http_response_code(404);
+        echo json_encode(['error' => 'El plan seleccionado no está disponible']);
+        exit();
+    }
+
+    $montoTotalUSD = (float)$plan['monto'];
+    $nombreProducto = 'Plan ' . $plan['nombrePlan'] . ' - Concentrados El Gordito';
+    $metadatos['idPlanPago'] = $planId;
+    $metadatos['nombrePlan'] = $plan['nombrePlan'];
+} elseif (!empty($items) && is_array($items)) {
+    // Compra de carrito con productos/planes
+    $resumenItems = [];
+    foreach ($items as $item) {
+        $cant = max(1, (int)($item['cantidad'] ?? 1));
+        $precio = (float)($item['precio'] ?? 0);
+        $montoTotalUSD += ($precio * $cant);
+        $resumenItems[] = $cant . 'x ' . ($item['nombre'] ?? 'Producto');
+    }
+    $nombreProducto = 'Pedido Carrito: ' . implode(', ', array_slice($resumenItems, 0, 3));
+    if (count($resumenItems) > 3) {
+        $nombreProducto .= ' y más';
+    }
+    $metadatos['tipo'] = 'carrito_productos';
+    $metadatos['total_items'] = count($items);
+    $metadatos['items'] = $items;
+} else {
+    http_response_code(400);
+    echo json_encode(['error' => 'No se proporcionaron productos ni planes válidos para procesar el pago.']);
+    exit();
+}
+
+if ($montoTotalUSD <= 0) {
+    http_response_code(400);
+    echo json_encode(['error' => 'El monto a pagar debe ser mayor a $0.00 USD.']);
+    exit();
+}
+
+// 2. Obtener Token de Acceso desde Wompi El Salvador OAuth2
+$chAuth = curl_init('https://id.wompi.sv/connect/token');
+curl_setopt($chAuth, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($chAuth, CURLOPT_POST, true);
+curl_setopt($chAuth, CURLOPT_POSTFIELDS, http_build_query([
+    'grant_type' => 'client_credentials',
+    'client_id' => $wompiClientId,
+    'client_secret' => $wompiClientSecret,
+    'audience' => 'wompi_api'
+]));
+curl_setopt($chAuth, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+curl_setopt($chAuth, CURLOPT_TIMEOUT, 15);
+
+$authResponse = curl_exec($chAuth);
+$authHttpCode = curl_getinfo($chAuth, CURLINFO_HTTP_CODE);
+curl_close($chAuth);
+
+$authData = json_decode($authResponse, true);
+$accessToken = $authData['access_token'] ?? '';
+
+if ($authHttpCode !== 200 || empty($accessToken)) {
+    http_response_code(502);
+    echo json_encode(['error' => 'No se pudo autenticar con Wompi SV. Verifica las credenciales configuradas.']);
+    exit();
+}
+
+// 3. Crear Enlace de Pago en Wompi El Salvador (https://api.wompi.sv/EnlacePago)
+$referencia = 'CONC-' . ($idUsuario > 0 ? $idUsuario : 'GUEST') . '-' . time();
 $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
     . '://' . $_SERVER['HTTP_HOST']
-    . dirname($_SERVER['SCRIPT_NAME']);
+    . dirname(dirname($_SERVER['SCRIPT_NAME']));
 
-$monto = (int)($plan['monto'] * 100);
+$redirectUrl = rtrim($baseUrl, '/') . '/wompi/success.php?ref=' . $referencia . '&usuario=' . $idUsuario;
 
-$payload = [
-    'amount_in_cents' => $monto,
-    'currency' => 'COP',
-    'checkout' => [
-        'redirect_url' => rtrim($baseUrl, '/') . '/wompi/success.php?plan_id=' . $planId . '&usuario=' . $idUsuario
-    ],
-    'reference' => 'CONC-' . $idUsuario . '-' . time(),
-    'metadata' => [
-        'idUsuario' => $idUsuario,
-        'idPlanPago' => $planId,
-        'nombrePlan' => $plan['nombrePlan']
+$bodyEnlace = [
+    'identificadorEnlaceComercio' => $referencia,
+    'monto' => round($montoTotalUSD, 2),
+    'nombreProducto' => substr($nombreProducto, 0, 100),
+    'configuracion' => [
+        'urlRedirect' => $redirectUrl,
+        'emailsNotificacion' => $correoCliente
     ]
 ];
 
-$ch = curl_init(WOMPI_API_URL);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
+$chEnlace = curl_init('https://api.wompi.sv/EnlacePago');
+curl_setopt($chEnlace, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($chEnlace, CURLOPT_POST, true);
+curl_setopt($chEnlace, CURLOPT_POSTFIELDS, json_encode($bodyEnlace));
+curl_setopt($chEnlace, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Authorization: Bearer ' . $wompiPrivateKey
+    'Authorization: Bearer ' . $accessToken
 ]);
+curl_setopt($chEnlace, CURLOPT_TIMEOUT, 20);
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+$enlaceResponse = curl_exec($chEnlace);
+$enlaceHttpCode = curl_getinfo($chEnlace, CURLINFO_HTTP_CODE);
+curl_close($chEnlace);
 
-if ($httpCode >= 200 && $httpCode < 300) {
-    $sessionData = json_decode($response, true);
-    $checkoutUrl = $sessionData['data']['checkout_url'] ?? '';
-    $paymentIntentId = $sessionData['data']['id'] ?? '';
+$enlaceData = json_decode($enlaceResponse, true);
 
-    if ($checkoutUrl) {
-        echo json_encode([
-            'url' => $checkoutUrl,
-            'payment_intent_id' => $paymentIntentId,
-            'reference' => $payload['reference']
-        ]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'No se pudo obtener la URL de pago']);
+if ($enlaceHttpCode >= 200 && $enlaceHttpCode < 300 && !empty($enlaceData['urlEnlace'])) {
+    // Registrar pago inicial en la base de datos
+    try {
+        $con = new Conexion();
+        $conn = $con->getConnection();
+        $stmtP = $conn->prepare(
+            "INSERT INTO pagos (idUsuario, idPlanPago, monto, moneda, metodo_pago, estado, referencia, descripcion, fecha_hora, ip_address, user_agent, metadata)
+             VALUES (?, ?, ?, 'USD', 'wompi', 'pendiente', ?, ?, NOW(), ?, ?, ?)"
+        );
+        if ($stmtP) {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+            $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+            $desc = 'Wompi SV Enlace: ' . ($enlaceData['idEnlace'] ?? '');
+            $metaJson = json_encode($metadatos);
+            $stmtP->bind_param("iidsssss", $idUsuario, $planId, $montoTotalUSD, $referencia, $desc, $ip, $ua, $metaJson);
+            $stmtP->execute();
+            $stmtP->close();
+        }
+    } catch (Exception $e) {
+        // Registro de auditoría opcional
     }
+
+    $urlCheckout = !empty($enlaceData['urlEnlaceLargo']) ? $enlaceData['urlEnlaceLargo'] : $enlaceData['urlEnlace'];
+
+    echo json_encode([
+        'url' => $urlCheckout,
+        'urlEnlace' => $enlaceData['urlEnlace'],
+        'qr' => $enlaceData['urlQrCodeEnlace'] ?? '',
+        'idEnlace' => $enlaceData['idEnlace'] ?? '',
+        'reference' => $referencia
+    ]);
 } else {
-    http_response_code($httpCode);
-    $errorData = json_decode($response, true);
-    echo json_encode(['error' => $errorData['status']['message'] ?? 'Error al crear la intencion de pago']);
+    http_response_code(400);
+    $errorMsg = 'Error al generar el enlace de pago en Wompi SV.';
+    if (!empty($enlaceData['mensajes']) && is_array($enlaceData['mensajes'])) {
+        $errorMsg = implode('. ', $enlaceData['mensajes']);
+    }
+    echo json_encode(['error' => $errorMsg]);
 }

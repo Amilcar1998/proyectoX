@@ -109,15 +109,10 @@ proyectoX/
 │   ├── cancel.php
 │   └── webhook.php
 │
-├── factura/                    # Facturación (legacy)
-├── detalleFactura/             # Detalle de compras (legacy)
-├── inventario/                 # Lógica de inventario (legacy)
-├── materiaPrima/               # Lógica materias primas
-├── puesto/                     # Lógica puestos laborales
 ├── vendor/                     # Composer (mPDF, PSR)
 ├── mpdf/                       # Librería mPDF
 ├── index.php                   # Landing page pública
-├── reset_password.php          # Controlador de reset de contraseña
+├── reset_password.php          # Enrutador delegado a controllerRecuperarClave.php
 └── composer.json
 ```
 

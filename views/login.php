@@ -1,181 +1,14 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
-if (isset($_SESSION['s1']) || isset($_SESSION['s2']) || isset($_SESSION['c1'])) {
-    header('Location: controllerEmpleado.php');
+if (basename($_SERVER['PHP_SELF']) === 'login.php') {
+    header("Location: ../controllers/controlUser.php");
     exit();
 }
 
-$error = '';
-$success = '';
-$successMsg = '';
-$resetLinkHtml = '';
-$showRecovery = false;
-$showReset = false;
-$tokenValido = false;
-$emailRecovery = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $mysqli = new mysqli('localhost', 'root', '', 'concentrados');
-    if (!$mysqli->connect_errno) {
-        $mysqli->set_charset('utf8mb4');
-        
-        if (isset($_POST['solicitar_recuperacion'])) {
-            $email = trim($_POST['email'] ?? '');
-            
-            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $error = 'Por favor ingrese un correo válido';
-            } else {
-                $stmt = $mysqli->prepare("SELECT u.idUsuario, u.username FROM usuarios u WHERE u.username = ?");
-                $stmt->bind_param('s', $email);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($result->num_rows > 0) {
-                    $usuario = $result->fetch_assoc();
-                    $token = bin2hex(random_bytes(32));
-                    $expiracion = date('Y-m-d H:i:s', strtotime('+1 hour'));
-                    
-                    $stmtInsert = $mysqli->prepare("INSERT INTO recuperacion_pass (email, token, expiracion) VALUES (?, ?, ?)");
-                    $stmtInsert->bind_param('sss', $email, $token, $expiracion);
-                    $stmtInsert->execute();
-                    
-                    $resetLink = "http://localhost/ProyectoX/reset_password.php?token=$token";
-                    
-                    $asunto = "Recuperación de contraseña - Concentrados El Gordito";
-                    $mensaje = "<html><body style='font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;'><div style='max-width:600px;margin:0 auto;background:white;padding:30px;border-radius:10px;'><h2 style='color:#1e3a8a;'>Recuperación de contraseña</h2><p>Hola, haz clic en el siguiente enlace para restablecer tu contraseña:</p><a href='$resetLink' style='display:inline-block;padding:14px 28px;background:#7c3aed;color:white;text-decoration:none;border-radius:8px;font-weight:600;'>Restablecer contraseña</a><p style='margin-top:20px;color:#666;'>El enlace expira en 1 hora.</p></div></body></html>";
-                    $cabeceras = "MIME-Version: 1.0\r\n";
-                    $cabeceras .= "Content-type: text/html; charset=utf-8\r\n";
-                    $cabeceras .= "From: Concentrados El Gordito <admin@localhost>\r\n";
-                    $cabeceras .= "Reply-To: admin@localhost\r\n";
-                    
-                    $enviado = @mail($email, $asunto, $mensaje, $cabeceras);
-                    
-                    if ($enviado) {
-                        $successMsg = "Correo de recuperación enviado a $email.";
-                    } else {
-                        $successMsg = "No se pudo enviar el correo automáticamente. Usa el enlace directo:";
-                        $resetLinkHtml = "<a href='$resetLink' target='_blank' style='color:#1e40af;font-weight:bold;word-break:break-all;'>$resetLink</a>";
-                    }
-                } else {
-                    $success = "Si el correo existe en nuestro sistema, recibirás un enlace de recuperación.";
-                }
-            }
-        }
-        
-        if (isset($_POST['reset_password'])) {
-            $token = $_POST['token'] ?? '';
-            $nuevaPass = $_POST['nueva_pass'] ?? '';
-            $confirmarPass = $_POST['confirmar_pass'] ?? '';
-            
-            if (empty($token) || empty($nuevaPass) || empty($confirmarPass)) {
-                $error = 'Todos los campos son obligatorios';
-            } elseif ($nuevaPass !== $confirmarPass) {
-                $error = 'Las contraseñas no coinciden';
-            } elseif (strlen($nuevaPass) < 6) {
-                $error = 'La contraseña debe tener al menos 6 caracteres';
-            } else {
-                $stmt = $mysqli->prepare("SELECT id, email, expiracion, usado FROM recuperacion_pass WHERE token = ? AND usado = 0");
-                $stmt->bind_param('s', $token);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($result->num_rows > 0) {
-                    $row = $result->fetch_assoc();
-                    if (strtotime($row['expiracion']) > time()) {
-                        $passHash = sha1($nuevaPass);
-                        
-                        $stmtUpdate = $mysqli->prepare("UPDATE usuarios SET pass = ? WHERE username = ?");
-                        $stmtUpdate->bind_param('ss', $passHash, $row['email']);
-                        $stmtUpdate->execute();
-                        
-                        $stmtUpdate2 = $mysqli->prepare("UPDATE recuperacion_pass SET usado = 1 WHERE id = ?");
-                        $stmtUpdate2->bind_param('i', $row['id']);
-                        $stmtUpdate2->execute();
-                        
-                        $success = 'Contraseña actualizada correctamente. Ahora puedes iniciar sesión.';
-                        $showReset = false;
-                    } else {
-                        $error = 'El enlace de recuperación ha expirado o ya fue utilizado';
-                        $showReset = false;
-                    }
-                } else {
-                    $error = 'El enlace de recuperación es inválido o ha expirado';
-                    $showReset = false;
-                }
-            }
-            
-            if (!empty($error) && !empty($token)) {
-                $stmtToken = $mysqli->prepare("SELECT id, email, expiracion, usado FROM recuperacion_pass WHERE token = ? AND usado = 0");
-                $stmtToken->bind_param('s', $token);
-                $stmtToken->execute();
-                $resToken = $stmtToken->get_result();
-                if ($resToken->num_rows > 0) {
-                    $rowToken = $resToken->fetch_assoc();
-                    if (strtotime($rowToken['expiracion']) > time()) {
-                        $showReset = true;
-                        $tokenValido = true;
-                        $emailRecovery = $rowToken['email'];
-                    }
-                }
-            }
-        }
-        
-        if (isset($_GET['token'])) {
-            $token = $_GET['token'];
-            $stmt = $mysqli->prepare("SELECT id, email, expiracion, usado FROM recuperacion_pass WHERE token = ?");
-            $stmt->bind_param('s', $token);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                if (strtotime($row['expiracion']) > time() && !$row['usado']) {
-                    $showReset = true;
-                    $tokenValido = true;
-                    $emailRecovery = $row['email'];
-                } else {
-                    $error = 'El enlace de recuperación ha expirado o ya fue utilizado';
-                }
-            } else {
-                $error = 'Token de recuperación inválido';
-            }
-        }
-        
-        $mysqli->close();
-    }
-}
-
-require_once __DIR__ . '/../models/UsuarioModel.php';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($error)) {
-    $obUser = new UsuarioModel();
-    $r = $obUser->validarUsuario(trim($_POST['login'] ?? ''), $_POST['pass'] ?? '');
-    
-    if ($r == 1) {
-        $_SESSION['s1'] = trim($_POST['login']);
-        require_once __DIR__ . '/../models/AuditoriaModel.php';
-        $aud = new AuditoriaModel();
-        $aud->log(0, trim($_POST['login']), 'login', 'empleado', 'Inicio de sesion exitoso');
-        header('Location: controllerEmpleado.php');
-        exit();
-    } elseif ($r == 2) {
-        $_SESSION['s2'] = trim($_POST['login']);
-        require_once __DIR__ . '/../models/AuditoriaModel.php';
-        $aud = new AuditoriaModel();
-        $aud->log(0, trim($_POST['login']), 'login', 'cliente', 'Inicio de sesion exitoso');
-        header('Location: controllerPedidosIn.php');
-        exit();
-    } elseif ($r == 3) {
-        $_SESSION['c1'] = trim($_POST['login']);
-        require_once __DIR__ . '/../models/AuditoriaModel.php';
-        $aud = new AuditoriaModel();
-        $aud->log(0, trim($_POST['login']), 'login', 'cliente_individual', 'Inicio de sesion exitoso');
-        header('Location: controllerIndividualC.php');
-        exit();
-    } else {
-        $error = 'Usuario o contraseña incorrectos';
-    }
-}
+$error = $error ?? '';
+$success = $success ?? '';
+$successMsg = $successMsg ?? '';
+$resetLinkHtml = $resetLinkHtml ?? '';
+$showReset = $showReset ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -185,8 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Iniciar Sesión | Concentrados El Gordito</title>
     
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -196,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 30%, #7c3aed 70%, #db2777 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #064e3b 40%, #059669 80%, #0f172a 100%);
             position: relative;
             overflow: hidden;
         }
@@ -214,9 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
             width: 200%;
             height: 200%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.2) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(5, 150, 105, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
             animation: float 20s linear infinite;
         }
 
@@ -269,13 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
         .logo {
             width: 72px;
             height: 72px;
-            background: linear-gradient(135deg, #1e3a8a, #7c3aed);
+            background: linear-gradient(135deg, #064e3b, #059669);
             border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 16px;
-            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.4);
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.45);
             position: relative;
         }
 
@@ -386,25 +222,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
         .btn-login {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #059669 0%, #064e3b 100%);
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35);
             margin-top: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            font-family: inherit;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.45);
         }
 
         .btn-login:active {
@@ -551,6 +388,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
 </head>
 <body>
     <div class="login-container">
+        <!-- Brand Badge -->
+        <div style="text-align:center; margin-bottom:18px; animation: slideUp 0.4s ease-out;">
+            <span style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:50px; padding:7px 18px; color:rgba(255,255,255,0.92); font-size:0.82rem; font-weight:600; letter-spacing:0.3px; backdrop-filter:blur(8px);">
+                <i class="fas fa-industry" style="color:#10b981;"></i>
+                Concentrados El Gordito
+            </span>
+        </div>
         <div class="login-card">
             <div class="login-header">
                 <div class="logo">
@@ -633,7 +477,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validar']) && empty($
                             Actualizar Contraseña
                         </button>
                         
-                        <button type="button" class="btn-login btn-back" onclick="window.location.href='login.php'">
+                        <button type="button" class="btn-login btn-back" onclick="window.location.href='controlUser.php'">
                             <i class="fas fa-arrow-left"></i>
                             Volver al Login
                         </button>

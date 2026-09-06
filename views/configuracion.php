@@ -1,30 +1,70 @@
 <?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../models/PermisoModel.php';
+
+$permisoModel = new PermisoModel();
+
 $nombres = $nombres ?? '';
 $nombres = is_array($nombres) ? '' : $nombres;
+if (empty($nombres)) {
+    $nombres = $permisoModel->obtenerNombreUsuario();
+    if (empty($nombres)) {
+        $nombres = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? 'Usuario'));
+    }
+}
+$nombres = html_entity_decode((string)$nombres, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+$nombres = str_replace(["\xc2\xa0", '&nbsp;'], ' ', $nombres);
+$nombres = preg_replace('/\s+/', ' ', trim($nombres));
 
-$currentPage = basename($_SERVER['PHP_SELF']);
+$currentPage = basename($_SERVER['SCRIPT_NAME'] ?? ($_SERVER['PHP_SELF'] ?? ''));
 
-$nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
+$idRol = (int)($_SESSION['id_Rol'] ?? 0);
+if ($idRol === 0) {
+    if (isset($_SESSION['s1'])) {
+        $idRol = 1;
+    } elseif (isset($_SESSION['s2'])) {
+        $idRol = 2;
+    } elseif (isset($_SESSION['c1'])) {
+        $idRol = 3;
+    }
+}
 
-   <a class='navbar-brand mr-1' href='index.html'>Concentrados El gordito</a>
+$idUsuarioSesion = (int)($_SESSION['idUsuario'] ?? 0);
+$brandHome = $permisoModel->obtenerRutaHome($idRol);
+$modulosPermitidos = $permisoModel->obtenerModulosPorRol($idRol, $idUsuarioSesion);
+$rolNombre = $permisoModel->obtenerNombreRol($idRol);
+
+$badgeRolClass = 'badge-primary';
+if ($idRol === 1) {
+    $badgeRolClass = 'badge-primary';
+} elseif ($idRol === 2) {
+    $badgeRolClass = 'badge-info';
+} elseif ($idRol === 3) {
+    $badgeRolClass = 'badge-success';
+} elseif ($idRol === 4) {
+    $badgeRolClass = 'badge-danger';
+}
+
+$nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
+
+   <a class='navbar-brand mr-1' href='{$brandHome}'><i class='fas fa-seedling text-success mr-2'></i>Concentrados El Gordito</a>
     <button class='btn btn-link btn-sm text-white order-1 order-sm-0' id='sidebarToggle' href='#'>
       <i class='fas fa-bars'></i>
     </button>
 
-
     <!-- Navbar -->
     
-       <form class='d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0'>
-      <div class='input-group'>
-        <div class='input-group-append'>
-           <button class='btn btn-success'> " . $nombres . "
-          </button>
-        </div>
+    <div class='d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0'>
+      <div class='text-white d-flex align-items-center'>
+        <span class='badge {$badgeRolClass} text-uppercase px-2 py-1 mr-2' style='font-size: 0.75rem;'><i class='fas fa-user-shield mr-1'></i>" . htmlspecialchars($rolNombre) . "</span>
+        <span class='font-weight-bold text-light mr-3'><i class='fas fa-user-circle mr-1 text-info'></i>" . htmlspecialchars((string)$nombres) . "</span>
       </div>
-    </form>
+    </div>
     <ul class='navbar-nav ml-auto ml-md-0'>
       <div>
-      <form><button class='btn btn-warning' id='c' name='c' value='c'>Cerrar session</button></form>
+      <a href='sesiones.php?c=c' class='btn btn-outline-warning btn-sm' id='c'><i class='fas fa-sign-out-alt mr-1'></i>Cerrar sesión</a>
       </div>
     </ul>
 
@@ -49,44 +89,103 @@ $nav="<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
       overflow-y: auto;
     }
     .sidebar {
-      height: 100vh;
-      overflow-y: auto;
+      width: 235px !important;
+      min-width: 235px !important;
+      height: calc(100vh - 56px) !important;
+      max-height: calc(100vh - 56px) !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      background-color: #212529 !important;
+      flex-shrink: 0;
+    }
+    .sidebar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar::-webkit-scrollbar-track {
+      background: #1a1e21;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #495057;
+      border-radius: 3px;
+    }
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: #6c757d;
     }
   </style>
 ";
 
-$menuItems = [
-  ['href' => 'controllerDashboard.php', 'icon' => 'fa-chart-line', 'label' => 'Dashboard'],
-  ['href' => 'controllerEmpleado.php', 'icon' => 'fa-user-tie', 'label' => 'Empleados'],
-  ['href' => 'controllerCliente.php', 'icon' => 'fa-address-book', 'label' => 'Clientes'],
-  ['href' => 'controllerUsuarios.php', 'icon' => 'fa-users-cog', 'label' => 'Usuarios'],
-  ['href' => 'controllerProveedor.php', 'icon' => 'fa-building', 'label' => 'Proveedores'],
-  ['href' => 'controllerPedidoProveedor.php', 'icon' => 'fa-shopping-cart', 'label' => 'Pedidos a Proveedor'],
-  ['href' => 'controllerPedidos.php', 'icon' => 'fa-box-open', 'label' => 'Pedidos'],
-  ['href' => 'controllerProduccion.php', 'icon' => 'fa-industry', 'label' => 'Produccion'],
-  ['href' => 'controllerInventario.php', 'icon' => 'fa-warehouse', 'label' => 'Inventario'],
-  ['href' => 'controllerMateriaPrima.php', 'icon' => 'fa-leaf', 'label' => 'Materia Prima'],
-  ['href' => 'controllerPuesto.php', 'icon' => 'fa-briefcase', 'label' => 'Puesto'],
-  ['href' => 'controllerFactura.php', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Factura'],
-  ['href' => 'controllerDetalleCompra.php', 'icon' => 'fa-shopping-bag', 'label' => 'Detalle Compra'],
-  ['href' => 'controllerPlanPago.php', 'icon' => 'fa-credit-card', 'label' => 'Planes de Pago'],
-  ['href' => 'controllerPagos.php', 'icon' => 'fa-money-bill-wave', 'label' => 'Pagos'],
-  ['href' => 'controllerReportes.php', 'icon' => 'fa-chart-pie', 'label' => 'Reportes'],
-];
+$menu = "<ul class='sidebar navbar-nav' style='padding-bottom: 2.5rem;'>";
 
-$menu = "<div style='max-height: calc(100vh - 100px); overflow-y: auto; overflow-x: hidden;'>
-       <ul class='sidebar navbar-nav'>";
-foreach ($menuItems as $item) {
-    $activeClass = ($item['href'] === $currentPage) ? 'active' : '';
-    $menu .= "<li class='nav-item $activeClass'>
-           <a class='nav-link' href='{$item['href']}'>
-             <i class='fas fa-fw {$item['icon']}'></i>
-             <span>{$item['label']}</span>
+foreach ($modulosPermitidos as $item) {
+    $submodulos = $item['submodulos'] ?? [];
+    $tieneSubmodulos = !empty($submodulos);
+    $icono = !empty($item['icono']) ? htmlspecialchars($item['icono']) : 'fa-folder';
+    $nombre = htmlspecialchars($item['nombre']);
+    $controlador = htmlspecialchars($item['controlador']);
+    $idMod = (int)$item['idModulo'];
+    
+    // Comprobar si la página actual coincide con el módulo o alguno de sus submódulos
+    $isParentActive = ($item['controlador'] === $currentPage);
+    $isChildActive = false;
+    foreach ($submodulos as $sub) {
+        $subScript = basename(explode('?', $sub['controlador_accion'])[0]);
+        if ($subScript === $currentPage) {
+            $isChildActive = true;
+            break;
+        }
+    }
+    
+    $activeClass = ($isParentActive || $isChildActive) ? 'active' : '';
+
+    if ($tieneSubmodulos) {
+        $collapseId = "collapseMod_" . $idMod;
+        $showClass = ($isParentActive || $isChildActive) ? 'show' : '';
+        $expanded = ($isParentActive || $isChildActive) ? 'true' : 'false';
+        $collapsedClass = ($isParentActive || $isChildActive) ? '' : 'collapsed';
+
+        $menu .= "<li class='nav-item {$activeClass}'>
+           <a class='nav-link {$collapsedClass} d-flex align-items-center justify-content-between' href='#{$collapseId}' data-toggle='collapse' aria-expanded='{$expanded}' aria-controls='{$collapseId}' style='cursor: pointer;'>
+             <div>
+               <i class='fas fa-fw {$icono} mr-1'></i>
+               <span>{$nombre}</span>
+             </div>
+             <i class='fas fa-chevron-down ml-auto' style='font-size: 0.75rem; transition: transform 0.2s;'></i>
+           </a>
+           <div id='{$collapseId}' class='collapse {$showClass}' style='background-color: #1a1e21;'>
+             <div class='py-1'>";
+        
+        foreach ($submodulos as $sub) {
+            $subUrl = htmlspecialchars($sub['controlador_accion']);
+            $subNombre = htmlspecialchars($sub['nombre']);
+            $subIcono = !empty($sub['icono']) ? htmlspecialchars($sub['icono']) : 'fa-circle-notch';
+            $subScript = basename(explode('?', $sub['controlador_accion'])[0]);
+            $isThisSubActive = ($subScript === $currentPage);
+            $subClass = $isThisSubActive ? 'text-white font-weight-bold bg-dark' : 'text-light';
+
+            $menu .= "<a class='nav-link py-1 pl-4 d-flex align-items-center {$subClass}' href='{$subUrl}' style='font-size: 0.85rem;'>
+               <i class='fas fa-fw {$subIcono} mr-2' style='font-size: 0.75rem; opacity: 0.8;'></i>
+               <span>{$subNombre}</span>
+             </a>";
+        }
+
+        $menu .= "  </div>
+           </div>
+         </li>";
+    } else {
+        $badge = ($item['controlador'] === 'controllerPagos.php') 
+            ? " <span class='badge badge-success float-right text-uppercase' style='font-size: 0.65rem; margin-top: 4px;'>Wompi</span>" 
+            : "";
+        $menu .= "<li class='nav-item {$activeClass}'>
+           <a class='nav-link' href='{$controlador}'>
+             <i class='fas fa-fw {$icono}'></i>
+             <span>{$nombre}</span>{$badge}
            </a>
          </li>";
+    }
 }
-$menu .= "      </ul>
-     </div>";
+$menu .= "</ul>";
+
+
 
 
 ?>

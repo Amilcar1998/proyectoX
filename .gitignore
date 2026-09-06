@@ -24,3 +24,4 @@ config.local.php
 Thumbs.db
 .DS_Store
 *.bak
+scratch/

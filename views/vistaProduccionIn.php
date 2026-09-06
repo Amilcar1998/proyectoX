@@ -1,15 +1,13 @@
+<?php include 'configuracion.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-    <title>🏭 Producción Insumos</title>
+  <title>🏭 Producción - Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
   <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -38,62 +36,17 @@
       max-height: calc(100vh - 280px);
       overflow-y: auto;
     }
-    .sidebar {
-      height: 100vh;
-      overflow-y: auto;
-    }
   </style>
 
 </head>
 
 <body id="page-top">
 
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-    <a class="navbar-brand mr-1" href="index.html">Concentrados El Gordito</a>
-
-    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-      <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-      </div>
-    </form>
-
-    <!-- Navbar -->
-    <ul class="navbar-nav ml-auto ml-md-0">
-      <li class="nav-item dropdown no-arrow mx-1">
-        <button class="btn btn-primary"><?php echo $nombres; ?></button>
-      </li>
-      <li class="nav-item dropdown no-arrow mx-1">
-       
-      </li>
-      <li class="nav-item dropdown no-arrow">
-       <form><button class="btn btn-info" name="c" id="c">Cerrar Session</button></form>
-      </li>
-    </ul>
-
-  </nav>
+  <?php echo $nav; ?>
 
   <div id="wrapper">
 
-    <!-- Sidebar -->
-    <ul class="sidebar navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="controllerPedidosIn.php">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Pedidos</span>
-        </a>
-      </li>
-      
-      <li class="nav-item">
-        <a class="nav-link" href="controllerProduccionIn.php">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Produccion</span></a>
-      </li>
-
-    </ul>
+    <?php echo $menu; ?>
 
     <div id="content-wrapper">
 
@@ -102,17 +55,18 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            Produccion</div>
+            Producción
+          </div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>ID Produccion</th>
-                    <th>Fecha Produccion</th>
-                    <th>estado Pedido</th>
+                    <th>ID Producción</th>
+                    <th>Fecha Producción</th>
+                    <th>Estado Pedido</th>
                     <th>Id Pedido</th>
-                    <th>FechaPedido</th>
+                    <th>Fecha Pedido</th>
                     <th>Nombre Cliente</th>
                     <th>Empleado</th>
                     <th>Acciones</th>
@@ -120,15 +74,14 @@
                 </thead>
                 <tbody>
                   <?php
-
                    foreach ($data as $key) {
-                    $idProduccion =$key['idProduccion'];
-                    $fechaProduccion=$key['fechaP'];
-                    $estadoProduccion=$key['estadoP'];
-                    $idPedido=$key['idPedido'];
-                    $fechaPedido=$key['fechaPedido'];
-                    $nombreCliente=$key['NombreCliente'];
-                    $emp=$key['nombreEmp'];
+                    $idProduccion = $key['idProduccion'];
+                    $fechaProduccion = $key['fechaP'];
+                    $estadoProduccion = $key['estadoP'];
+                    $idPedido = $key['idPedido'];
+                    $fechaPedido = $key['fechaPedido'];
+                    $nombreCliente = $key['NombreCliente'];
+                    $emp = $key['nombreEmp'];
                     echo "<tr>
                             <td>$idProduccion</td>
                             <td>$fechaProduccion</td>
@@ -140,10 +93,6 @@
                             <td><form method='POST'><input type='hidden' name='produccionID' id='produccionID' value='$idProduccion'><button class='btn btn-info' id='eliminar' name='eliminar'>Cargar</button></form></td>
                         </tr>";
                    }
-
-
-
-
                   ?>
                 </tbody>
               </table>
@@ -152,18 +101,13 @@
           <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a  \l\a\s H:i'); ?></div>
         </div>
       </div>
-
-        
-  
-       
-      </div>
       <!-- /.container-fluid -->
 
       <!-- Sticky Footer -->
-      <footer class="sticky-footer">
-        <div class="container my-auto">
+      <footer class="sticky-footer bg-dark mt-auto">
+        <div class="container my-auto py-3">
           <div class="copyright text-center my-auto">
-            <span>Copyright © Your Website 2019</span>
+            <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
           </div>
         </div>
       </footer>
@@ -179,25 +123,6 @@
     <i class="fas fa-angle-up"></i>
   </a>
 
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Bootstrap core JavaScript-->
   <script src="../controllers/vendor/jquery/jquery.min.js"></script>
   <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -212,18 +137,9 @@
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
 
-    <!-- Demo scripts for this page-->
-    <script src="js/translations.js"></script>
-    <script src="js/demo/datatables-demo.js"></script>
-
-  <!-- Footer -->
-  <footer class="sticky-footer bg-dark mt-auto">
-    <div class="container my-auto py-3">
-      <div class="copyright text-center my-auto">
-        <span class="text-white">Copyright &copy; Concentrados El Gordito 2026</span>
-      </div>
-    </div>
-  </footer>
+  <!-- Demo scripts for this page-->
+  <script src="js/translations.js"></script>
+  <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 
@@ -232,5 +148,4 @@
 if(isset($msj,$icon)){
   echo "<script>Swal.fire('$msj','','$icon');</script>";
 }
-
- ?>
+?>

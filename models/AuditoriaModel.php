@@ -1,5 +1,5 @@
 <?php
-include "../db/conexion.php";
+require_once __DIR__ . '/../db/conexion.php';
 
 if (!class_exists('AuditoriaModel')) {
     class AuditoriaModel extends Conexion
@@ -30,9 +30,17 @@ if (!class_exists('AuditoriaModel')) {
             $types = "";
 
             if ($fechaInicio && $fechaFin) {
-                $where = "WHERE fecha_hora BETWEEN ? AND ?";
-                $params = [$fechaInicio, $fechaFin . ' 23:59:59'];
+                $where = "WHERE a.fecha_hora BETWEEN ? AND ?";
+                $params = [$fechaInicio . ' 00:00:00', $fechaFin . ' 23:59:59'];
                 $types = "ss";
+            } elseif ($fechaInicio) {
+                $where = "WHERE a.fecha_hora >= ?";
+                $params = [$fechaInicio . ' 00:00:00'];
+                $types = "s";
+            } elseif ($fechaFin) {
+                $where = "WHERE a.fecha_hora <= ?";
+                $params = [$fechaFin . ' 23:59:59'];
+                $types = "s";
             }
 
             $sql = "SELECT a.*, u.username as nombre_completo
@@ -96,11 +104,21 @@ if (!class_exists('AuditoriaModel')) {
             $stmt = $this->con->prepare(
                 "INSERT INTO sesiones_activas (session_id, idUsuario, username, id_Rol, nombre_usuario, login_time, last_activity, ip_address, user_agent, activo)
                  VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, 1)
-                 ON DUPLICATE KEY UPDATE last_activity = NOW(), ip_address = VALUES(ip_address), user_agent = VALUES(user_agent)"
+                 ON DUPLICATE KEY UPDATE activo = 1, last_activity = NOW(), ip_address = VALUES(ip_address), user_agent = VALUES(user_agent), idUsuario = VALUES(idUsuario), username = VALUES(username), id_Rol = VALUES(id_Rol)"
             );
             if (!$stmt) return false;
-            $ok = $stmt->bind_param("siiisss", $sessionId, $idUsuario, $username, $idRol, $nombreUsuario, $ipAddress, $userAgent);
+            $ok = $stmt->bind_param("sisisss", $sessionId, $idUsuario, $username, $idRol, $nombreUsuario, $ipAddress, $userAgent);
             if (!$ok) return false;
+            $result = $stmt->execute();
+            $stmt->close();
+            return $result;
+        }
+
+        public function cerrarOtrasSesionesDeUsuario(int $idUsuario, string $sesionActualId)
+        {
+            $stmt = $this->con->prepare("UPDATE sesiones_activas SET activo = 0 WHERE idUsuario = ? AND session_id != ?");
+            if (!$stmt) return false;
+            $stmt->bind_param("is", $idUsuario, $sesionActualId);
             $result = $stmt->execute();
             $stmt->close();
             return $result;
@@ -130,6 +148,54 @@ if (!class_exists('AuditoriaModel')) {
             $result = $stmt->execute();
             $stmt->close();
             return $result;
+        }
+
+        public function limpiarSesionesExpiradas(): bool
+        {
+            $stmt = $this->con->prepare(
+                "UPDATE sesiones_activas SET activo = 0 WHERE last_activity < NOW() - INTERVAL 1 DAY AND activo = 1"
+            );
+            if (!$stmt) return false;
+            $result = $stmt->execute();
+            $stmt->close();
+            return $result;
+        }
+
+        public function obtenerSesionActivaPorId(string $sessionId): ?array
+        {
+            $this->limpiarSesionesExpiradas();
+            $stmt = $this->con->prepare(
+                "SELECT session_id, idUsuario, username, id_Rol, nombre_usuario, last_activity 
+                 FROM sesiones_activas 
+                 WHERE session_id = ? AND activo = 1 AND last_activity >= NOW() - INTERVAL 1 DAY 
+                 LIMIT 1"
+            );
+            if (!$stmt) return null;
+            $stmt->bind_param("s", $sessionId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $sesion = $result->fetch_assoc();
+            $stmt->close();
+            return $sesion ?: null;
+        }
+
+        public function obtenerSesionActivaPorUsuario(string $usuario): ?array
+        {
+            $this->limpiarSesionesExpiradas();
+            $stmt = $this->con->prepare(
+                "SELECT session_id, idUsuario, username, id_Rol, nombre_usuario, last_activity 
+                 FROM sesiones_activas 
+                 WHERE username = ? AND activo = 1 AND last_activity >= NOW() - INTERVAL 1 DAY 
+                 ORDER BY last_activity DESC 
+                 LIMIT 1"
+            );
+            if (!$stmt) return null;
+            $stmt->bind_param("s", $usuario);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $sesion = $result->fetch_assoc();
+            $stmt->close();
+            return $sesion ?: null;
         }
     }
 }

@@ -11,6 +11,6 @@ if (!defined('SERVER')) {
 }
 
 // Wompi - obten estas credenciales en https://dashboard.wompi.co/
-define("WOMPI_PUBLIC_KEY", "pub_test_TU_APP_ID_AQUI");
-define("WOMPI_PRIVATE_KEY", "priv_test_TU_API_SECRET_AQUI");
+define("WOMPI_PUBLIC_KEY", "d01ac1a6-c618-48fb-870b-8276438a79b3");
+define("WOMPI_PRIVATE_KEY", "4bd17a7b-ed83-4505-b61e-7d456f3bfd5d");
 define("WOMPI_API_URL", "https://sandbox.wompi.co/v1/payment_intents");

@@ -1,14 +1,19 @@
 <?php
-include "../db/conexion.php";
-include "../models/DetalleCompraEntity.php";
+require_once __DIR__ . '/../db/conexion.php';
+require_once __DIR__ . '/DetalleCompraEntity.php';
 
 class ModelDetalleCompra extends Conexion {
     public function __construct() {
         parent::__construct();
     }
 
-    public function getTabla(): array {
-        $res = $this->con->query("SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac FROM detalleCompra dc INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP");
+    public function obtenerTabla(): array {
+        $sql = "SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac 
+                FROM detalleCompra dc 
+                INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima 
+                INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP 
+                ORDER BY dc.idDetalleCompra DESC";
+        $res = $this->con->query($sql);
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -16,8 +21,12 @@ class ModelDetalleCompra extends Conexion {
         return $r;
     }
 
+    public function getTabla(): array {
+        return $this->obtenerTabla();
+    }
+
     public function insertar($obj): bool {
-        $stmt = $this->con->prepare("insert into detalleCompra (idDetalleCompra, idMateriaPrima, cantidadMP, precioMP, idFacturaMP) values (?,?,?,?,?)");
+        $stmt = $this->con->prepare("INSERT INTO detalleCompra (idDetalleCompra, idMateriaPrima, cantidadMP, precioMP, idFacturaMP) VALUES (?,?,?,?,?)");
         $id = $obj->getIdDetalleCompra();
         $mp = $obj->getIdMateriaPrima();
         $cantidad = $obj->getCantidadMP();
@@ -28,13 +37,13 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function eliminar(int $idDetalleCompra): bool {
-        $stmt = $this->con->prepare("delete from detalleCompra where idDetalleCompra=?");
+        $stmt = $this->con->prepare("DELETE FROM detalleCompra WHERE idDetalleCompra=?");
         $stmt->bind_param("i", $idDetalleCompra);
         return $stmt->execute();
     }
 
     public function modificar($obj): bool {
-        $stmt = $this->con->prepare("update detalleCompra set idMateriaPrima=?, cantidadMP=?, precioMP=?, idFacturaMP=? where idDetalleCompra=?");
+        $stmt = $this->con->prepare("UPDATE detalleCompra SET idMateriaPrima=?, cantidadMP=?, precioMP=?, idFacturaMP=? WHERE idDetalleCompra=?");
         $mp = $obj->getIdMateriaPrima();
         $cantidad = $obj->getCantidadMP();
         $precio = $obj->getPrecioMP();
@@ -44,7 +53,7 @@ class ModelDetalleCompra extends Conexion {
         return $stmt->execute();
     }
 
-    public function getFiltro(string $buscar, string $criterio): array {
+    public function obtenerFiltro(string $buscar, string $criterio): array {
         $sql = "SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac
                 FROM detalleCompra dc
                 INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima
@@ -62,8 +71,26 @@ class ModelDetalleCompra extends Conexion {
         return $r;
     }
 
+    public function getFiltro(string $buscar, string $criterio): array {
+        return $this->obtenerFiltro($buscar, $criterio);
+    }
+
+    public function obtenerSesionEmpleado(string $correo): array {
+        $correoSeguro = $this->con->real_escape_string($correo);
+        $res = $this->con->query("SELECT idEmpleado, nombreEmp, apellido FROM empleado INNER JOIN usuarios ON empleado.idUsuario=usuarios.idUsuario WHERE username='$correoSeguro'");
+        $r = [];
+        while ($row = $res->fetch_assoc()) {
+            $r[] = $row;
+        }
+        return $r;
+    }
+
     public function getSessionEmp(string $correo): array {
-        $res = $this->con->query("select idEmpleado,nombreEmp,apellido from empleado inner join usuarios on empleado.idUsuario=usuarios.idUsuario where username='$correo'");
+        return $this->obtenerSesionEmpleado($correo);
+    }
+
+    public function obtenerMateriasPrimas(): array {
+        $res = $this->con->query("SELECT idMateriaPrima, NombreMP FROM materiaprima ORDER BY NombreMP ASC");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -72,7 +99,11 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function getMateriasPrimas(): array {
-        $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima");
+        return $this->obtenerMateriasPrimas();
+    }
+
+    public function obtenerFacturas(): array {
+        $res = $this->con->query("SELECT idFacturaMP, numeroFac FROM factura ORDER BY idFacturaMP DESC");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -81,12 +112,7 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function getFacturas(): array {
-        $res = $this->con->query("select idFacturaMP, numeroFac from factura");
-        $r = [];
-        while ($row = $res->fetch_assoc()) {
-            $r[] = $row;
-        }
-        return $r;
+        return $this->obtenerFacturas();
     }
 }
 ?>

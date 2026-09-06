@@ -1,18 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-if (isset($_SESSION['s1']) || isset($_SESSION['s2']) || isset($_SESSION['c1'])) {
-    if ($_SESSION['s1']) {
-        header('Location: controllerEmpleado.php');
-    } elseif ($_SESSION['s2']) {
-        header('Location: controllerPedidosIn.php');
-    } else {
-        header('Location: controllerIndividualC.php');
-    }
-    exit();
-}
-
-include '../models/AuditoriaModel.php';
-include '../controllers/sesiones.php';
+require_once __DIR__ . '/sesiones.php';
+require_once __DIR__ . '/../models/AuditoriaModel.php';
 
 $auditoria = new AuditoriaModel();
 $fechaInicio = $_GET['fecha_inicio'] ?? null;
