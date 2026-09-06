@@ -1,2 +1,6 @@
 [phases.setup]
 nixPkgs = ["php82", "php82Extensions.mysqli", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.mbstring", "php82Extensions.curl", "apacheHttpd"]
+
+[variables]
+NIXPACKS_PHP_VERSION = "8.2"
+PHP_VERSION = "8.2"
