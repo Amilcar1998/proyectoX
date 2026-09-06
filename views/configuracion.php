@@ -70,46 +70,85 @@ $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 
   </nav>
   <style>
-    html, body { height: 100%; }
-    #wrapper { min-height: 100vh; }
-    #content-wrapper {
+    html {
+      min-height: 100%;
+    }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f5f9;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
-    footer.sticky-footer {
-      position: relative !important;
-      margin-top: auto;
-      width: 100% !important;
-      height: auto !important;
-      padding: 1rem 0;
-    }
-    .table-responsive {
-      max-height: calc(100vh - 280px);
-      overflow-y: auto;
+    #wrapper {
+      display: flex;
+      flex: 1 0 auto;
+      width: 100%;
+      align-items: stretch;
     }
     .sidebar {
       width: 235px !important;
       min-width: 235px !important;
-      height: calc(100vh - 56px) !important;
-      max-height: calc(100vh - 56px) !important;
+      background-color: #111827 !important;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      position: sticky !important;
+      top: 0;
+      height: 100vh !important;
+      max-height: 100vh !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
-      background-color: #212529 !important;
-      flex-shrink: 0;
+      scrollbar-width: thin;
+      scrollbar-color: #64748b #1e293b;
     }
     .sidebar::-webkit-scrollbar {
-      width: 5px;
+      width: 6px;
     }
     .sidebar::-webkit-scrollbar-track {
-      background: #1a1e21;
+      background: #1e293b;
+      border-radius: 4px;
     }
     .sidebar::-webkit-scrollbar-thumb {
-      background: #495057;
-      border-radius: 3px;
+      background: #64748b;
+      border-radius: 4px;
     }
     .sidebar::-webkit-scrollbar-thumb:hover {
-      background: #6c757d;
+      background: #94a3b8;
+    }
+    #content-wrapper {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 235px);
+      min-width: 0;
+      background-color: #f1f5f9;
+    }
+    .container-fluid {
+      flex: 1 0 auto;
+      width: 100%;
+    }
+    .table-responsive {
+      width: 100% !important;
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+    }
+    footer.sticky-footer {
+      position: static !important;
+      width: 100% !important;
+      background-color: #111827 !important;
+      color: #94a3b8 !important;
+      border-top: 1px solid #1f2937 !important;
+      margin-top: auto;
+      padding: 1.1rem 0 !important;
+      flex-shrink: 0;
+    }
+    footer.sticky-footer .copyright, footer.sticky-footer span {
+      color: #cbd5e1 !important;
+      font-size: 0.86rem;
+      font-weight: 500;
     }
   </style>
 ";
@@ -172,13 +211,10 @@ foreach ($modulosPermitidos as $item) {
            </div>
          </li>";
     } else {
-        $badge = ($item['controlador'] === 'controllerPagos.php') 
-            ? " <span class='badge badge-success float-right text-uppercase' style='font-size: 0.65rem; margin-top: 4px;'>Wompi</span>" 
-            : "";
         $menu .= "<li class='nav-item {$activeClass}'>
            <a class='nav-link' href='{$controlador}'>
              <i class='fas fa-fw {$icono}'></i>
-             <span>{$nombre}</span>{$badge}
+             <span>{$nombre}</span>
            </a>
          </li>";
     }

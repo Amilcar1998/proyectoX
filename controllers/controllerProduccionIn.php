@@ -3,8 +3,11 @@ require_once __DIR__ . '/../models/ModelProduccion.php';
 require_once __DIR__ . '/sesiones.php';
 
 $prod = new ModelProduccion();
-$data = $prod->getProduccion();
-$correo = $_SESSION['s2'] ?? '';
+$correo = $_SESSION['s2'] ?? ($_SESSION['s1'] ?? '');
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
+$idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
+
 $session = !empty($correo) ? $prod->getSessionEmp($correo) : [];
 $idEmp = 1;
 if (!empty($session) && is_array($session)) {
@@ -41,7 +44,7 @@ if (isset($_REQUEST['agregar'])) {
 
     if ($r == 1) {
         $p = new Produccion('', $fechaActual, 'activo', $id, $idEmp);
-        $prod->insertar($p);
+        $prod->insertar($p, $idEmpresaSesion);
         $msj = "Se ha pasado a producción exitosamente";
         $icon = "success";
         $prod->alterPedido($id);
@@ -54,6 +57,9 @@ if (isset($_REQUEST['agregar'])) {
 if (isset($_REQUEST['eliminar'])) {
     $p = new Produccion($_REQUEST['produccionID'], '', 'activo', "", $idEmp);
     $prod->eliminar($p);
+    $msj = 'Orden de producción eliminada';
+    $icon = 'success';
 }
 
+$data = $prod->getProduccion($idEmpresaFiltro);
 include __DIR__ . '/../views/vistaProduccionIn.php';

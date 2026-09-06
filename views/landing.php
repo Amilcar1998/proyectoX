@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../models/HelperUrl.php';
+$urlBaseApp = obtenerUrlBase();
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -9,6 +13,10 @@
   <meta name="author" content="Concentrados El Gordito">
 
   <title>Concentrados El Gordito - Nutrición Animal de Alto Rendimiento</title>
+
+  <script>
+    window.BASE_URL = '<?php echo $urlBaseApp; ?>';
+  </script>
 
   <!-- Bootstrap 4.6 & FontAwesome & Google Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,7 +34,7 @@
     }
 
     * {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -39,7 +47,7 @@
     .navbar-main {
       background-color: #0f172a !important;
       border-bottom: 2px solid #1e293b;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
     }
     .navbar-brand {
       font-weight: 800;
@@ -56,25 +64,124 @@
       color: #38bdf8 !important;
     }
 
-    /* Hero Section */
+    /* Hero Section Full Width */
     .hero-section {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #ffffff;
-      padding: 70px 0 60px 0;
-      border-bottom: 1px solid #334155;
+      padding: 0;
+      border-bottom: 2px solid #1e293b;
+      position: relative;
+      background-color: #0f172a;
     }
     .hero-badge {
       display: inline-block;
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid rgba(34, 197, 94, 0.4);
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.5);
       color: #4ade80;
       font-weight: 700;
-      font-size: 0.85rem;
-      padding: 6px 14px;
+      font-size: 0.9rem;
+      padding: 7px 16px;
       border-radius: 9999px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+    }
+    .hero-badge-info {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+    }
+    .hero-badge-warning {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: rgba(251, 191, 36, 0.5);
+      color: #fbbf24;
+    }
+
+    /* Hero Carousel Full-Width Cinematic */
+    .hero-carousel-container {
+      width: 100%;
+      position: relative;
+    }
+    .hero-slide-bg {
+      min-height: 600px;
+      background-size: cover;
+      background-position: center center;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .hero-slide-bg::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.78) 50%, rgba(15, 23, 42, 0.5) 100%);
+      z-index: 1;
+    }
+    .hero-slide-content {
+      position: relative;
+      z-index: 2;
+      padding: 60px 0;
+      max-width: 820px;
+    }
+    .carousel-indicators.hero-indicators {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      z-index: 3;
+    }
+    .carousel-indicators.hero-indicators li {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.45);
+      border: 2px solid transparent;
+      margin: 0 6px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .carousel-indicators.hero-indicators li.active {
+      width: 40px;
+      border-radius: 8px;
+      background-color: #22c55e;
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+    .hero-control-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 4;
+    }
+    .hero-control-btn.prev-btn { left: 30px; }
+    .hero-control-btn.next-btn { right: 30px; }
+    .hero-control-btn:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #3b82f6;
+      transform: translateY(-50%) scale(1.1);
+    }
+    @media (max-width: 767.98px) {
+      .hero-slide-bg {
+        min-height: 480px;
+      }
+      .hero-control-btn.prev-btn { left: 10px; }
+      .hero-control-btn.next-btn { right: 10px; }
+      .hero-slide-content {
+        padding: 40px 15px;
+        text-align: center;
+      }
     }
 
     /* Stat Cards - SB Admin Style */
@@ -180,6 +287,31 @@
       box-shadow: 0 10px 30px rgba(22,163,74,0.5);
     }
 
+    /* Floating WhatsApp Button */
+    .floating-wa-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 1040;
+      background: #25d366;
+      color: #ffffff;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 25px rgba(37,211,102,0.45);
+      transition: all 0.25s ease;
+      text-decoration: none !important;
+    }
+    .floating-wa-btn:hover {
+      transform: scale(1.12);
+      color: #ffffff;
+      box-shadow: 0 12px 30px rgba(37,211,102,0.6);
+    }
+
     /* Section Styling */
     section {
       padding: 65px 0;
@@ -205,7 +337,7 @@
     <div class="container">
       <a class="navbar-brand text-white d-flex align-items-center" href="#inicio">
         <i class="fas fa-seedling text-success mr-2 fa-lg"></i>
-        <span>Concentrados El Gordito</span>
+        <span><?php echo htmlspecialchars($infoEmpresa['nombre'] ?? 'Concentrados El Gordito'); ?></span>
       </a>
 
       <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Navegación">
@@ -236,57 +368,165 @@
             <i class="fas fa-shopping-cart mr-1"></i>
             <span class="badge badge-success ml-1" id="navCartCount">0</span>
           </button>
-          <a href="controllers/controlUser.php" class="btn btn-primary btn-sm font-weight-bold shadow-sm">
-            <i class="fas fa-user-circle mr-1"></i>Iniciar Sesión
-          </a>
+          <?php if (!empty($_SESSION['s1']) || !empty($_SESSION['s2']) || !empty($_SESSION['c1'])): ?>
+            <a href="controllers/controllerDashboard.php" class="btn btn-outline-warning btn-sm font-weight-bold shadow-sm">
+              <i class="fas fa-tachometer-alt mr-1"></i>Mi Panel
+            </a>
+          <?php else: ?>
+            <a href="controllers/controlUser.php" class="btn btn-primary btn-sm font-weight-bold shadow-sm">
+              <i class="fas fa-user-circle mr-1"></i>Iniciar Sesión
+            </a>
+          <?php endif; ?>
         </div>
       </div>
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
-  <section class="hero-section text-center text-lg-left" id="inicio">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-7 mb-5 mb-lg-0">
-          <span class="hero-badge">
-            <i class="fas fa-check-circle mr-1"></i>Fórmulas 100% Nutricionales y Balanceadas
-          </span>
-          <h1 class="display-4 font-weight-bold mb-3" style="letter-spacing: -0.03em; line-height: 1.15;">
-            Nutrición Animal de <span class="text-warning">Alto Rendimiento</span> para tu Granja
-          </h1>
-          <p class="lead text-light mb-4" style="color: #cbd5e1 !important; font-size: 1.15rem;">
-            Concentrados de alta digestibilidad formulados para maximizar la conversión alimenticia y el desarrollo de porcinos, aves de corral y ganado bovino en El Salvador.
-          </p>
-          <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
-            <a href="#productos" class="btn btn-warning btn-lg font-weight-bold text-dark px-4 py-3 shadow mr-3 mb-2">
-              <i class="fas fa-box-open mr-2"></i>Ver Catálogo de Mezclas
-            </a>
-            <a href="#planes" class="btn btn-outline-light btn-lg font-weight-bold px-4 py-3 mb-2">
-              <i class="fas fa-crown mr-2"></i>Planes Comerciales
-            </a>
-          </div>
-        </div>
-
-        <div class="col-lg-5">
-          <div class="card shadow-lg bg-dark text-white border-0" style="border-radius: 16px; background: rgba(15, 23, 42, 0.75) !important; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15) !important;">
-            <div class="card-body p-4 text-center">
-              <div class="bg-success text-white p-3 rounded-circle d-inline-flex mb-3 shadow" style="width: 64px; height: 64px; align-items: center; justify-content: center; font-size: 28px;">
-                <i class="fas fa-store-alt"></i>
+  <!-- HERO SECTION CON CARRUSEL FULL-WIDTH DE IMÁGENES -->
+  <section class="hero-section text-left" id="inicio">
+    <div class="hero-carousel-container position-relative">
+      <div id="heroCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="4000" data-pause="hover">
+        
+        <div class="carousel-inner">
+          
+          <!-- Slide 1: Avicultura y Nutrición de Alto Rendimiento -->
+          <div class="carousel-item active">
+            <div class="hero-slide-bg" style="background-image: url('views/Recursos/banner_aves.jpg');">
+              <div class="container">
+                <div class="hero-slide-content">
+                  <span class="hero-badge">
+                    <i class="fas fa-egg mr-1"></i>Fórmulas Avícolas Certificadas
+                  </span>
+                  <h1 class="display-4 font-weight-bold text-white mb-3" style="letter-spacing: -0.03em; line-height: 1.15; font-size: 3rem;">
+                    Nutrición Animal de <span class="text-warning">Alto Rendimiento</span> para tu Granja
+                  </h1>
+                  <p class="lead text-light mb-4" style="color: #e2e8f0 !important; font-size: 1.2rem; line-height: 1.6;">
+                    Alimentos balanceados y concentrados formulados con aminoácidos esenciales y alta proteína que aceleran la ganancia de peso y garantizan una óptima digestibilidad.
+                  </p>
+                  <div class="d-flex flex-wrap gap-3">
+                    <a href="#productos" class="btn btn-warning btn-lg font-weight-bold text-dark px-4 py-3 shadow mr-3 mb-2">
+                      <i class="fas fa-box-open mr-2"></i>Ver Catálogo de Mezclas
+                    </a>
+                    <a href="#planes" class="btn btn-outline-light btn-lg font-weight-bold px-4 py-3 mr-3 mb-2">
+                      <i class="fas fa-crown mr-2"></i>Planes Comerciales
+                    </a>
+                    <button class="btn btn-success btn-lg font-weight-bold px-4 py-3 shadow mb-2" onclick="abrirModalCarrito()">
+                      <i class="fas fa-shopping-cart mr-2"></i>Hacer Pedido Online
+                    </button>
+                  </div>
+                </div>
               </div>
-              <h4 class="font-weight-bold text-white mb-2">Portal de Clientes</h4>
-              <p class="small text-muted mb-4" style="color: #94a3b8 !important;">
-                Accede a tu cuenta para crear pedidos en línea, dar seguimiento al despacho y gestionar tus pagos en tiempo real.
-              </p>
-              <a href="controllers/controlUser.php" class="btn btn-success btn-block font-weight-bold py-2 shadow-sm mb-2">
-                <i class="fas fa-sign-in-alt mr-2"></i>Acceder al Sistema
-              </a>
-              <span class="small text-muted" style="color: #64748b !important;">
-                ¿Eres cliente nuevo? <a href="#planes" class="text-warning font-weight-bold">Suscríbete a un plan</a>
-              </span>
             </div>
           </div>
+
+          <!-- Slide 2: Porcicultura y Crecimiento -->
+          <div class="carousel-item">
+            <div class="hero-slide-bg" style="background-image: url('views/Recursos/banner_cerdos.jpg');">
+              <div class="container">
+                <div class="hero-slide-content">
+                  <span class="hero-badge hero-badge-info">
+                    <i class="fas fa-bacon mr-1"></i>Línea Porcina Integral
+                  </span>
+                  <h1 class="display-4 font-weight-bold text-white mb-3" style="letter-spacing: -0.03em; line-height: 1.15; font-size: 3rem;">
+                    Crecimiento y Engorde con <span class="text-info">Mayor Eficiencia</span>
+                  </h1>
+                  <p class="lead text-light mb-4" style="color: #e2e8f0 !important; font-size: 1.2rem; line-height: 1.6;">
+                    Alimentos balanceados para inicio, desarrollo y finalización formulados con precisión científica para reducir el tiempo a mercado y maximizar tus ganancias.
+                  </p>
+                  <div class="d-flex flex-wrap gap-3">
+                    <a href="#productos" class="btn btn-info btn-lg font-weight-bold text-white px-4 py-3 shadow mr-3 mb-2">
+                      <i class="fas fa-box-open mr-2"></i>Concentrados Porcinos
+                    </a>
+                    <a href="#planes" class="btn btn-outline-light btn-lg font-weight-bold px-4 py-3 mr-3 mb-2">
+                      <i class="fas fa-truck-moving mr-2"></i>Despacho Programado
+                    </a>
+                    <button class="btn btn-success btn-lg font-weight-bold px-4 py-3 shadow mb-2" onclick="abrirModalCarrito()">
+                      <i class="fas fa-shopping-cart mr-2"></i>Comprar Sacos
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3: Ganado Bovino y Lechero -->
+          <div class="carousel-item">
+            <div class="hero-slide-bg" style="background-image: url('views/Recursos/banner_ganado.jpg');">
+              <div class="container">
+                <div class="hero-slide-content">
+                  <span class="hero-badge hero-badge-warning">
+                    <i class="fas fa-cheese mr-1"></i>Ganadería Bovina y Lechera
+                  </span>
+                  <h1 class="display-4 font-weight-bold text-white mb-3" style="letter-spacing: -0.03em; line-height: 1.15; font-size: 3rem;">
+                    Alta Productividad en <span class="text-success">Leche y Carne</span>
+                  </h1>
+                  <p class="lead text-light mb-4" style="color: #e2e8f0 !important; font-size: 1.2rem; line-height: 1.6;">
+                    Suplementación energética, proteica y mineral formulada para potenciar el rendimiento lechero y la ganancia de peso diaria en hatos de todo El Salvador.
+                  </p>
+                  <div class="d-flex flex-wrap gap-3">
+                    <a href="#productos" class="btn btn-success btn-lg font-weight-bold px-4 py-3 shadow mr-3 mb-2">
+                      <i class="fas fa-box-open mr-2"></i>Ver Fórmulas Bovinas
+                    </a>
+                    <a href="#contacto" class="btn btn-outline-light btn-lg font-weight-bold px-4 py-3 mr-3 mb-2">
+                      <i class="fas fa-user-md mr-2"></i>Asesoría Nutricional
+                    </a>
+                    <button class="btn btn-warning btn-lg font-weight-bold text-dark px-4 py-3 shadow mb-2" onclick="abrirModalCarrito()">
+                      <i class="fas fa-shopping-cart mr-2"></i>Cotizar Pedido
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 4: Planta de Molienda y Cobertura Nacional -->
+          <div class="carousel-item">
+            <div class="hero-slide-bg" style="background-image: url('views/Recursos/banner_planta.jpg');">
+              <div class="container">
+                <div class="hero-slide-content">
+                  <span class="hero-badge">
+                    <i class="fas fa-industry mr-1"></i>Tecnología de Molienda & Trazabilidad
+                  </span>
+                  <h1 class="display-4 font-weight-bold text-white mb-3" style="letter-spacing: -0.03em; line-height: 1.15; font-size: 3rem;">
+                    Planta de Producción y <span class="text-warning">Despacho Nacional</span>
+                  </h1>
+                  <p class="lead text-light mb-4" style="color: #e2e8f0 !important; font-size: 1.2rem; line-height: 1.6;">
+                    Capacidad industrial de molienda y almacenamiento con estrictos controles de calidad en cada lote. Entrega puntual y pasarela de pago segura con Wompi SV.
+                  </p>
+                  <div class="d-flex flex-wrap gap-3">
+                    <a href="#productos" class="btn btn-warning btn-lg font-weight-bold text-dark px-4 py-3 shadow mr-3 mb-2">
+                      <i class="fas fa-boxes mr-2"></i>Ver Todo el Catálogo
+                    </a>
+                    <a href="#nosotros" class="btn btn-outline-light btn-lg font-weight-bold px-4 py-3 mr-3 mb-2">
+                      <i class="fas fa-shield-alt mr-2"></i>Nuestra Calidad
+                    </a>
+                    <a href="controllers/controlUser.php" class="btn btn-primary btn-lg font-weight-bold shadow mb-2">
+                      <i class="fas fa-sign-in-alt mr-2"></i>Acceso a Clientes
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        <!-- Indicadores Inferiores del Carrusel -->
+        <ol class="carousel-indicators hero-indicators">
+          <li data-target="#heroCarousel" data-slide-to="0" class="active"></li>
+          <li data-target="#heroCarousel" data-slide-to="1"></li>
+          <li data-target="#heroCarousel" data-slide-to="2"></li>
+          <li data-target="#heroCarousel" data-slide-to="3"></li>
+        </ol>
+
+        <!-- Flechas de Control Laterales -->
+        <button class="hero-control-btn prev-btn" type="button" data-target="#heroCarousel" data-slide="prev" title="Anterior">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="hero-control-btn next-btn" type="button" data-target="#heroCarousel" data-slide="next" title="Siguiente">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+
       </div>
     </div>
   </section>
@@ -514,64 +754,159 @@
     </div>
   </section>
 
-  <!-- SECCIÓN DE CALIDAD / POR QUÉ ELEGIRNOS -->
+  <!-- SECCIÓN INSTITUCIONAL / SOBRE LA EMPRESA & CALIDAD -->
   <section id="nosotros" class="bg-white">
     <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-          <span class="text-success font-weight-bold text-uppercase small">Compromiso Nutricional</span>
-          <h2 class="section-title h2 font-weight-bold mt-1 mb-3">Formulaciones Científicas de Máxima Calidad</h2>
-          <p class="text-muted mb-4">
-            En <strong>Concentrados El Gordito</strong> seleccionamos materias primas de primer nivel y controlamos estrictamente cada mezcla para asegurar el aporte exacto de proteínas, aminoácidos, vitaminas y minerales.
-          </p>
+      <div class="text-center mb-5">
+        <span class="text-success font-weight-bold text-uppercase small" style="letter-spacing: 0.05em;">Acerca de Nosotros</span>
+        <h2 class="section-title h2 font-weight-bold mt-1"><?php echo htmlspecialchars($infoEmpresa['nombre'] ?? 'Concentrados El Gordito'); ?></h2>
+        <p class="section-subtitle">
+          <?php echo htmlspecialchars($infoEmpresa['eslogan'] ?? 'Nutrición Animal de Alto Rendimiento para el Campo Salvadoreño'); ?>
+        </p>
+      </div>
 
-          <div class="row">
-            <div class="col-sm-6 mb-3">
-              <div class="d-flex align-items-start">
-                <div class="text-success mr-3 mt-1"><i class="fas fa-check-square fa-lg"></i></div>
-                <div>
-                  <h6 class="font-weight-bold text-gray-900 mb-1">Materias Primas Certificadas</h6>
-                  <p class="small text-muted mb-0">Maíz, soya, premezclas y minerales rigurosamente inspeccionados.</p>
-                </div>
-              </div>
-            </div>
+      <!-- Resumen / Quiénes Somos -->
+      <div class="row mb-5 align-items-center">
+        <div class="col-lg-7 mb-4 mb-lg-0">
+          <div class="pr-lg-4">
+            <h4 class="font-weight-bold text-gray-900 mb-3">
+              <i class="fas fa-building text-primary mr-2"></i>Nuestra Trayectoria y Compromiso
+            </h4>
+            <p class="text-muted text-justify" style="line-height: 1.8; font-size: 1.05rem;">
+              <?php echo nl2br(htmlspecialchars($infoEmpresa['resumen'] ?? 'Somos una empresa salvadoreña dedicada a la elaboración y distribución de alimentos balanceados y concentrados de primera calidad para aves, ganado bovino y porcinos. Impulsamos la productividad agropecuaria con fórmulas de precisión e ingredientes rigurosamente seleccionados.')); ?>
+            </p>
 
-            <div class="col-sm-6 mb-3">
-              <div class="d-flex align-items-start">
-                <div class="text-success mr-3 mt-1"><i class="fas fa-check-square fa-lg"></i></div>
-                <div>
-                  <h6 class="font-weight-bold text-gray-900 mb-1">Entregas Puntuales</h6>
-                  <p class="small text-muted mb-0">Despacho eficiente directo a tu granja o punto de distribución.</p>
-                </div>
-              </div>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+              <?php if (!empty($infoEmpresa['whatsapp'])): ?>
+                <a href="<?php echo htmlspecialchars($infoEmpresa['whatsapp_enlace'] ?? '#'); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-success font-weight-bold shadow-sm mr-2 mb-2">
+                  <i class="fab fa-whatsapp mr-1 fa-lg"></i>Escríbenos al WhatsApp (<?php echo htmlspecialchars($infoEmpresa['whatsapp']); ?>)
+                </a>
+              <?php endif; ?>
+              <?php if (!empty($infoEmpresa['telefono'])): ?>
+                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $infoEmpresa['telefono'])); ?>" class="btn btn-outline-primary font-weight-bold mr-2 mb-2">
+                  <i class="fas fa-phone-alt mr-1"></i>Llamar: <?php echo htmlspecialchars($infoEmpresa['telefono']); ?>
+                </a>
+              <?php endif; ?>
             </div>
           </div>
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-5">
+          <!-- Tarjeta de Información y Canales de Atención -->
           <div class="card border-0 shadow-sm bg-light p-4 rounded-lg">
-            <h5 class="font-weight-bold text-gray-900 mb-3"><i class="fas fa-info-circle text-primary mr-2"></i>Información de la Empresa</h5>
+            <h5 class="font-weight-bold text-gray-900 mb-3 border-bottom pb-2">
+              <i class="fas fa-map-marked-alt text-primary mr-2"></i>Canales de Atención y Ubicación
+            </h5>
             <ul class="list-unstyled mb-0">
-              <li class="mb-3 d-flex align-items-center">
-                <i class="fas fa-map-marker-alt text-danger mr-3 fa-lg" style="width: 20px;"></i>
-                <span><?php echo htmlspecialchars($infoEmpresa['direccion'] ?? 'El Salvador, Centroamérica'); ?></span>
+              <li class="mb-3 d-flex align-items-start">
+                <i class="fas fa-map-marker-alt text-danger mr-3 mt-1 fa-lg" style="width: 20px;"></i>
+                <div>
+                  <strong class="d-block text-dark small font-weight-bold">Dirección de Planta:</strong>
+                  <span class="text-muted small"><?php echo htmlspecialchars($infoEmpresa['direccion'] ?? 'Carretera Panamericana Km 65, El Salvador'); ?></span>
+                </div>
               </li>
-              <li class="mb-3 d-flex align-items-center">
-                <i class="fas fa-phone-alt text-primary mr-3 fa-lg" style="width: 20px;"></i>
-                <span><?php echo htmlspecialchars($infoEmpresa['telefono'] ?? '+503 2222-0000'); ?></span>
+              <li class="mb-3 d-flex align-items-start">
+                <i class="fas fa-phone-alt text-primary mr-3 mt-1 fa-lg" style="width: 20px;"></i>
+                <div>
+                  <strong class="d-block text-dark small font-weight-bold">Teléfono Fijo / PBX:</strong>
+                  <span class="text-muted small"><?php echo htmlspecialchars($infoEmpresa['telefono'] ?? '+503 2440-1234'); ?></span>
+                  <?php if (!empty($infoEmpresa['telefono_movil'])): ?>
+                    <span class="text-muted small"> | Móvil: <?php echo htmlspecialchars($infoEmpresa['telefono_movil']); ?></span>
+                  <?php endif; ?>
+                </div>
               </li>
-              <li class="mb-3 d-flex align-items-center">
-                <i class="fas fa-envelope text-info mr-3 fa-lg" style="width: 20px;"></i>
-                <span><?php echo htmlspecialchars($infoEmpresa['email'] ?? 'contacto@concentradoselgordito.com'); ?></span>
+              <li class="mb-3 d-flex align-items-start">
+                <i class="fas fa-envelope text-info mr-3 mt-1 fa-lg" style="width: 20px;"></i>
+                <div>
+                  <strong class="d-block text-dark small font-weight-bold">Correo Electrónico:</strong>
+                  <a href="mailto:<?php echo htmlspecialchars($infoEmpresa['correo'] ?? 'contacto@concentradoselgordito.com'); ?>" class="text-primary small font-weight-bold">
+                    <?php echo htmlspecialchars($infoEmpresa['correo'] ?? 'contacto@concentradoselgordito.com'); ?>
+                  </a>
+                </div>
               </li>
-              <li class="d-flex align-items-center">
-                <i class="fas fa-clock text-warning mr-3 fa-lg" style="width: 20px;"></i>
-                <span><?php echo htmlspecialchars($infoEmpresa['horario'] ?? 'Lunes a Sábado: 7:00 AM - 5:00 PM'); ?></span>
+              <li class="mb-3 d-flex align-items-start">
+                <i class="fas fa-clock text-warning mr-3 mt-1 fa-lg" style="width: 20px;"></i>
+                <div>
+                  <strong class="d-block text-dark small font-weight-bold">Horarios de Atención:</strong>
+                  <span class="text-muted small"><?php echo htmlspecialchars($infoEmpresa['horario'] ?? 'Lunes a Viernes: 7:00 AM – 5:00 PM | Sábados: 7:00 AM – 12:00 MD'); ?></span>
+                </div>
               </li>
+              <?php if (!empty($infoEmpresa['facebook']) || !empty($infoEmpresa['instagram'])): ?>
+                <li class="pt-2 border-top d-flex align-items-center justify-content-between">
+                  <span class="small font-weight-bold text-gray-700">Síguenos en Redes:</span>
+                  <div>
+                    <?php if (!empty($infoEmpresa['facebook'])): ?>
+                      <a href="<?php echo htmlspecialchars($infoEmpresa['facebook']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary rounded-circle mr-1" title="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                      </a>
+                    <?php endif; ?>
+                    <?php if (!empty($infoEmpresa['instagram'])): ?>
+                      <a href="<?php echo htmlspecialchars($infoEmpresa['instagram']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-danger rounded-circle" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                      </a>
+                    <?php endif; ?>
+                  </div>
+                </li>
+              <?php endif; ?>
             </ul>
           </div>
         </div>
       </div>
+
+      <!-- Misión y Visión (Tarjetas SB Admin) -->
+      <div class="row mb-5">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <div class="card stat-card border-left-primary h-100 p-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-primary text-white rounded-circle p-3 mr-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 20px;">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h5 class="font-weight-bold text-gray-900 mb-0">Nuestra Misión</h5>
+            </div>
+            <p class="text-muted mb-0" style="line-height: 1.7;">
+              <?php echo nl2br(htmlspecialchars($infoEmpresa['mision'] ?? 'Proveer soluciones nutricionales balanceadas con los más altos estándares de calidad, materias primas de primera categoría y tecnología de molienda avanzada, maximizando el rendimiento, la salud y la rentabilidad de las granjas salvadoreñas.')); ?>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card stat-card border-left-success h-100 p-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-success text-white rounded-circle p-3 mr-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 20px;">
+                <i class="fas fa-eye"></i>
+              </div>
+              <h5 class="font-weight-bold text-gray-900 mb-0">Nuestra Visión</h5>
+            </div>
+            <p class="text-muted mb-0" style="line-height: 1.7;">
+              <?php echo nl2br(htmlspecialchars($infoEmpresa['vision'] ?? 'Consolidarnos como la planta de concentrados líder y más confiable de El Salvador, reconocida por la excelencia de nuestras fórmulas, trazabilidad productiva y compromiso genuino con el desarrollo agropecuario.')); ?>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pilares de Calidad y Compromiso -->
+      <?php if (!empty($infoEmpresa['pilares']) && is_array($infoEmpresa['pilares'])): ?>
+        <div class="border-top pt-5">
+          <div class="text-center mb-4">
+            <h4 class="font-weight-bold text-gray-900">Pilares de Calidad y Confianza</h4>
+            <p class="text-muted small">Lo que nos distingue en el mercado agropecuario salvadoreño</p>
+          </div>
+          <div class="row">
+            <?php foreach ($infoEmpresa['pilares'] as $pilar): ?>
+              <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 bg-light p-3 h-100 text-center rounded-lg shadow-sm">
+                  <div class="text-primary mb-3" style="font-size: 32px;">
+                    <i class="<?php echo htmlspecialchars($pilar['icono'] ?? 'fas fa-check-circle'); ?>"></i>
+                  </div>
+                  <h6 class="font-weight-bold text-gray-900 mb-2"><?php echo htmlspecialchars($pilar['titulo'] ?? ''); ?></h6>
+                  <p class="text-muted small mb-0"><?php echo htmlspecialchars($pilar['descripcion'] ?? ''); ?></p>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+
     </div>
   </section>
 
@@ -623,10 +958,10 @@
       <div class="row align-items-center">
         <div class="col-md-6 text-center text-md-left mb-3 mb-md-0">
           <div class="font-weight-bold text-white mb-1">
-            <i class="fas fa-seedling text-success mr-1"></i> Concentrados El Gordito &copy; 2026
+            <i class="fas fa-seedling text-success mr-1"></i> <?php echo htmlspecialchars($infoEmpresa['nombre'] ?? 'Concentrados El Gordito'); ?> &copy; <?php echo date('Y'); ?>
           </div>
           <span class="small text-muted" style="color: #94a3b8 !important;">
-            Nutrición y alimentos balanceados para granjas en El Salvador. Todos los derechos reservados.
+            <?php echo htmlspecialchars($infoEmpresa['eslogan'] ?? 'Nutrición Animal de Alto Rendimiento para el Campo Salvadoreño'); ?>. Todos los derechos reservados.
           </span>
         </div>
         <div class="col-md-6 text-center text-md-right">
@@ -640,6 +975,13 @@
       </div>
     </div>
   </footer>
+
+  <!-- BOTÓN FLOTANTE DE WHATSAPP (MODERNO) -->
+  <?php if (!empty($infoEmpresa['whatsapp'])): ?>
+    <a href="<?php echo htmlspecialchars($infoEmpresa['whatsapp_enlace'] ?? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $infoEmpresa['whatsapp'])); ?>" target="_blank" rel="noopener noreferrer" class="floating-wa-btn" title="Chatea con un asesor por WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+  <?php endif; ?>
 
   <!-- BOTÓN FLOTANTE DE CARRITO -->
   <button class="floating-cart-btn" onclick="abrirModalCarrito()" id="btnCarritoFlotante" style="display: none;">
@@ -869,7 +1211,9 @@
         }))
       };
 
-      fetch('wompi/create-checkout-session.php', {
+      const endpointWompi = (window.BASE_URL ? window.BASE_URL.replace(/\/$/, '') : '') + '/wompi/create-checkout-session.php';
+
+      fetch(endpointWompi, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -936,7 +1280,9 @@
             didOpen: () => { Swal.showLoading(); }
           });
 
-          fetch('wompi/create-checkout-session.php', {
+          const endpointWompi = (window.BASE_URL ? window.BASE_URL.replace(/\/$/, '') : '') + '/wompi/create-checkout-session.php';
+
+          fetch(endpointWompi, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -972,8 +1318,15 @@
       e.target.reset();
     }
 
-    // Filtros de productos
+    // Inicialización del carrusel y filtros
     $(document).ready(function() {
+      // Iniciar auto-reproducción del carrusel cada 4 segundos
+      $('#heroCarousel').carousel({
+        interval: 4000,
+        pause: 'hover',
+        ride: 'carousel'
+      });
+
       actualizarContadoresCarrito();
 
       $('#filtrosCategorias .filter-btn').on('click', function() {

@@ -1,7 +1,7 @@
 <?php
 
-include "../db/conexion.php";
-include 'Proveedor.php';
+require_once __DIR__ . "/../db/conexion.php";
+require_once __DIR__ . "/../models/Proveedor.php";
 
 class ModelProveedor extends Conexion {
 
@@ -9,24 +9,27 @@ class ModelProveedor extends Conexion {
         parent::__construct();
     }
 
-    public function getTabla(): array {
-        $res = $this->con->query("select * from proveedor");
+    public function getTabla(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $res = $this->con->query("SELECT * FROM proveedor $condicion ORDER BY idProveedor ASC");
         $r = [];
-        while ($row = $res->fetch_assoc()) {
-            $r[] = $row;
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $r[] = $row;
+            }
         }
         return $r;
     }
 
-    public function insertar($p): bool {
-        $a = "";
+    public function insertar($p, int $idEmpresa = 1): bool {
         $b = $p->getNombreProveedor();
         $c = $p->getContacto();
         $d = $p->getNit();
         $e = $p->getCorreoP();
         $f = $p->getTelefono();
-        $res = $this->con->prepare("insert into proveedor(idProveedor,nombreProveedor,contacto,NIT,correoP,telefono) values(?,?,?,?,?,?)");
-        $res->bind_param('ssssss', $a, $b, $c, $d, $e, $f);
+        if ($idEmpresa <= 0) $idEmpresa = 1;
+        $res = $this->con->prepare("INSERT INTO proveedor(nombreProveedor,contacto,NIT,correoP,telefono,idEmpresa) VALUES(?,?,?,?,?,?)");
+        $res->bind_param('sssssi', $b, $c, $d, $e, $f, $idEmpresa);
         return $res->execute();
     }
 

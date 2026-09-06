@@ -1,5 +1,6 @@
 <?php
-include '../db/conexion.php';
+require_once __DIR__ . '/../db/conexion.php';
+require_once __DIR__ . '/../controllers/vendor/autoload.php';
 
 use Mpdf\Mpdf;
 
@@ -8,13 +9,15 @@ class ReporteMezclasModel extends Conexion {
         parent::__construct();
     }
 
-    public function getMezclas(): array {
+    public function getMezclas(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE (r.idEmpresa = " . (int)$idEmpresa . ") " : "";
         $sql = "SELECT r.idReceta AS Codigo_Receta, r.nombreReceta AS Mezcla,
                        r.PrecioUnitario AS Precio_Venta, mp.NombreMP AS Materia_Prima,
                        dr.cantidaSa AS Cantidad
                 FROM receta r
                 INNER JOIN detallereceta dr ON r.idReceta = dr.IdReceta
                 INNER JOIN materiaprima mp ON dr.idMateriaPrima = mp.idMateriaPrima
+                $condicion
                 ORDER BY r.nombreReceta, mp.NombreMP";
         $res = $this->con->query($sql);
         if (!$res) {

@@ -8,22 +8,25 @@ class ReportePedidosModel extends Conexion {
         parent::__construct();
     }
 
-    public function getPedidos(): array {
+    public function getPedidos(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE pe.idEmpresa = " . (int)$idEmpresa : "";
         $sql = "SELECT pe.idPedido AS Pedido,
                        CONCAT(cl.NombreCliente, ' ', cl.apellidosCliente) AS Cliente,
-                       cl.telefonoCliente AS Telefono,
-                       cl.direccionCliente AS Direccion,
+                       cl.telefono AS Telefono,
                        pe.fechaPedido AS Fecha,
-                       ep.estadoPedido AS Estado,
+                       ep.nombreEstado AS Estado,
                        r.nombreReceta AS Producto,
                        dp.cantidad AS Cantidad,
                        r.PrecioUnitario AS Precio,
-                       dp.cantidad * r.PrecioUnitario AS Subtotal
+                       dp.cantidad * r.PrecioUnitario AS Subtotal,
+                       COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS Empresa
                 FROM pedido pe
                 INNER JOIN cliente cl ON pe.idCliente = cl.idCliente
                 INNER JOIN estadopedido ep ON pe.idEstadoPedido = ep.idEstadoPedido
                 INNER JOIN detallepedido dp ON pe.idPedido = dp.IdPedido
                 INNER JOIN receta r ON dp.idReceta = r.idReceta
+                LEFT JOIN empresas emp ON pe.idEmpresa = emp.idEmpresa
+                $condicion
                 ORDER BY pe.idPedido DESC";
         $res = $this->con->query($sql);
         if (!$res) {

@@ -5,8 +5,11 @@ include 'sesiones.php';
 
 $dao = new ModelMateriaPrima();
 
-$tabla = $dao->getTabla();
-$correo = $_SESSION['s1'] ?? '';
+$correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? '');
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
+$idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
+
 $session = [];
 $nombres = '';
 
@@ -22,18 +25,17 @@ if (isset($_REQUEST["btnGuardar"])) {
     $obj = new MateriaPrima();
     $obj->setIdMateriaPrima($_REQUEST["txtIdMP"] ?? '');
     $obj->setNombreMP($_REQUEST["txtNombreMP"] ?? '');
-    $dao->insertar($obj);
-    $tabla = $dao->getTabla();
+    $dao->insertar($obj, $idEmpresaSesion);
 } else if (isset($_REQUEST["btnModificar"])) {
     $obj = new MateriaPrima();
     $obj->setIdMateriaPrima($_REQUEST["txtIdMP"] ?? '');
     $obj->setNombreMP($_REQUEST["txtNombreMP"] ?? '');
     $dao->modificar($obj);
-    $tabla = $dao->getTabla();
 } else if (isset($_REQUEST["btnEliminar"])) {
     $dao->eliminar($_REQUEST["txtIdMP"] ?? 0);
-    $tabla = $dao->getTabla();
 }
+
+$tabla = $dao->getTabla($idEmpresaFiltro);
 
 include "../views/vistaMateriaPrima.php";
 ?>

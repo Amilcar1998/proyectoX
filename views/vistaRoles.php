@@ -16,10 +16,78 @@ include 'configuracion.php';
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Page level plugin CSS-->
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
   <link href="vendor/sb-admin.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f1f5f9;
+    }
+
+    .card-custom {
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+
+    .table thead th {
+      background: #0f172a;
+      color: #f8fafc;
+      font-weight: 600;
+      border: none;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 14px 16px;
+    }
+
+    .table tbody td {
+      vertical-align: middle;
+      padding: 13px 16px;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+
+    /* BADGES MODERNOS */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .status-pill-completado {
+      background-color: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .status-pill-completado i { color: #059669; }
+
+    .status-pill-cancelado {
+      background-color: #fff1f2;
+      color: #9f1239;
+      border: 1px solid #fecdd3;
+    }
+    .status-pill-cancelado i { color: #e11d48; }
+
+    .status-pill-proceso {
+      background-color: #f0f9ff;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+    .status-pill-proceso i { color: #0284c7; }
+  </style>
 
 </head>
 <body id="page-top">
@@ -31,14 +99,14 @@ include 'configuracion.php';
 
     <div id="content-wrapper">
 
-      <div class="container-fluid">
+      <div class="container-fluid py-4">
 
         <!-- Breadcrumbs-->
-        <ol class="breadcrumb">
+        <ol class="breadcrumb bg-white shadow-sm rounded-lg mb-4 py-2 px-3 border">
           <li class="breadcrumb-item">
-            <a href="controllerDashboard.php">Dashboard</a>
+            <a href="controllerDashboard.php" class="text-secondary"><i class="fas fa-home"></i> Inicio</a>
           </li>
-          <li class="breadcrumb-item active">Roles y Permisos</li>
+          <li class="breadcrumb-item active text-dark font-weight-bold"><i class="fas fa-shield-alt mr-1"></i> Roles y Permisos</li>
         </ol>
 
         <!-- Header -->
@@ -262,22 +330,22 @@ include 'configuracion.php';
         </form>
 
         <!-- Tabla de Roles -->
-        <div class="card shadow mb-4">
-          <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-table mr-2"></i>Matriz Oficial de Roles y Subroles</h6>
-            <span class="badge badge-primary px-3 py-2"><?php echo count($listaRoles); ?> Roles Registrados</span>
+        <div class="card card-custom mb-4">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-shield-alt text-primary mr-2"></i>Matriz Oficial de Roles y Subroles</h6>
+            <span class="badge badge-light border text-dark px-3 py-2 font-weight-bold"><?php echo count($listaRoles); ?> Roles Registrados</span>
           </div>
-          <div class="card-body">
+          <div class="card-body p-4">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover datatable" width="100%" cellspacing="0">
-                <thead class="thead-light">
+              <table class="table table-custom table-hover datatable" width="100%" cellspacing="0">
+                <thead>
                   <tr>
-                    <th style="width: 60px;"># ID</th>
+                    <th class="text-center" style="width: 70px;"># ID</th>
                     <th>Nombre del Rol</th>
                     <th>Jerarquía</th>
                     <th>Descripción</th>
                     <th>Permisos Asignados</th>
-                    <th class="text-center" style="width: 100px;">Estado</th>
+                    <th class="text-center" style="width: 120px;">Estado</th>
                     <th class="text-center" style="width: 190px;">Acciones</th>               
                   </tr>
                 </thead>
@@ -294,51 +362,53 @@ include 'configuracion.php';
                   $esProtegido = in_array($idR, [1, 4], true);
                 ?>
                 <tr class="<?php echo ($activoR === 0 ? 'table-secondary text-muted' : ''); ?>">
-                  <td class="align-middle font-weight-bold">#<?php echo $idR; ?></td>
+                  <td class="text-center font-weight-bold">
+                    <span class="badge badge-light border px-2 py-1">#<?php echo $idR; ?></span>
+                  </td>
                   <td class="align-middle">
                     <span class="font-weight-bold text-dark"><?php echo htmlspecialchars($nombreR); ?></span>
                   </td>
                   <td class="align-middle">
                     <?php if (!empty($padreR)): ?>
-                      <span class="text-muted"><i class="fas fa-level-up-alt text-primary mr-1"></i>Hereda de <strong><?php echo htmlspecialchars($padreR); ?></strong></span>
+                      <span class="text-primary font-weight-bold"><i class="fas fa-level-up-alt mr-1"></i>Hereda de <?= htmlspecialchars($padreR) ?></span>
                     <?php else: ?>
                       <span class="text-muted"><i class="fas fa-layer-group mr-1 text-secondary"></i>Rol Base</span>
                     <?php endif; ?>
                   </td>
                   <td class="align-middle">
-                    <span class="text-muted"><?php echo htmlspecialchars($descR); ?></span>
+                    <span class="text-muted small"><?php echo htmlspecialchars($descR); ?></span>
                   </td>
                   <td class="align-middle">
                     <?php if ($accesoTot === 1): ?>
-                      <span class="badge badge-success font-weight-normal"><i class="fas fa-check-circle mr-1"></i>Acceso Total (Todos)</span>
+                      <span class="badge role-pill-admin"><i class="fas fa-check-circle mr-1"></i>Acceso Total</span>
                     <?php else: ?>
-                      <span class="badge badge-light border text-dark font-weight-normal"><i class="fas fa-cubes mr-1 text-muted"></i><?php echo count($subEfectivos); ?> submódulos</span>
+                      <span class="badge role-pill-user"><i class="fas fa-cubes mr-1"></i><?php echo count($subEfectivos); ?> submódulos</span>
                     <?php endif; ?>
                   </td>
                   <td class="text-center align-middle">
                     <?php if ($activoR === 1): ?>
-                      <span class="badge badge-success">Activo</span>
+                      <span class="status-pill status-pill-completado"><i class="fas fa-check-circle"></i> Activo</span>
                     <?php else: ?>
-                      <span class="badge badge-danger">Inactivo</span>
+                      <span class="status-pill status-pill-cancelado"><i class="fas fa-times-circle"></i> Inactivo</span>
                     <?php endif; ?>
                   </td>
                   <td class="text-center align-middle">
                     <div class="btn-group btn-group-sm">
-                      <button type="button" class="btn btn-outline-primary" onclick="cargarEdicionRol(<?php echo $idR; ?>)">
+                      <button type="button" class="btn btn-outline-primary font-weight-bold px-2 py-1" onclick="cargarEdicionRol(<?php echo $idR; ?>)">
                         <i class="fas fa-edit mr-1"></i>Editar
                       </button>
                       <?php if (!$esProtegido): ?>
                         <?php if ($activoR === 1): ?>
-                          <button type="button" class="btn btn-outline-danger" onclick="confirmarCambioEstado(<?php echo $idR; ?>, 0, '<?php echo htmlspecialchars($nombreR, ENT_QUOTES); ?>')">
+                          <button type="button" class="btn btn-outline-danger font-weight-bold px-2 py-1 ml-1" onclick="confirmarCambioEstado(<?php echo $idR; ?>, 0, '<?php echo htmlspecialchars($nombreR, ENT_QUOTES); ?>')">
                             <i class="fas fa-ban mr-1"></i>Desactivar
                           </button>
                         <?php else: ?>
-                          <button type="button" class="btn btn-outline-success" onclick="confirmarCambioEstado(<?php echo $idR; ?>, 1, '<?php echo htmlspecialchars($nombreR, ENT_QUOTES); ?>')">
+                          <button type="button" class="btn btn-outline-success font-weight-bold px-2 py-1 ml-1" onclick="confirmarCambioEstado(<?php echo $idR; ?>, 1, '<?php echo htmlspecialchars($nombreR, ENT_QUOTES); ?>')">
                             <i class="fas fa-check mr-1"></i>Activar
                           </button>
                         <?php endif; ?>
                       <?php else: ?>
-                        <span class="badge badge-light text-muted border py-1 px-2"><i class="fas fa-lock mr-1"></i>Protegido</span>
+                        <span class="badge badge-light text-muted border py-1 px-2 ml-1"><i class="fas fa-lock mr-1"></i>Protegido</span>
                       <?php endif; ?>
                     </div>
                   </td>
@@ -356,12 +426,10 @@ include 'configuracion.php';
       </div>
       <!-- /.container-fluid -->
 
-      <!-- Sticky Footer -->
-      <footer class="sticky-footer bg-white shadow-sm border-top">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Concentrados El Gordito &copy; <?php echo date('Y'); ?></span>
-          </div>
+      <!-- Sticky Footer elegante en color negro -->
+      <footer class="sticky-footer bg-dark text-white mt-auto">
+        <div class="container-fluid text-center">
+          <span>Concentrados El Gordito &bull; Sistema de Gestión &copy; <?php echo date('Y'); ?></span>
         </div>
       </footer>
 

@@ -9,6 +9,7 @@ class PedidoProveedor{
     private $cantidadMP;
     private $monto;
     private $precioMP;
+    private $idEmpresa;
    
 
     public function PedidoProveedor(){
@@ -16,6 +17,14 @@ class PedidoProveedor{
     }
 
     //metodos set y get
+
+    public function getIdEmpresa(){
+        return $this->idEmpresa;
+    }
+
+    public function setIdEmpresa($idEmpresa){
+        $this->idEmpresa=$idEmpresa;
+    }
 
     public function getIdPedido(){
         return $this->idPedido;

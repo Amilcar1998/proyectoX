@@ -1,5 +1,6 @@
 <?php
-include '../db/conexion.php';
+require_once __DIR__ . '/../db/conexion.php';
+require_once __DIR__ . '/../controllers/vendor/autoload.php';
 
 use Mpdf\Mpdf;
 
@@ -8,7 +9,8 @@ class ReportePedidoProveedorModel extends Conexion {
         parent::__construct();
     }
 
-    public function getPedidosProveedor(): array {
+    public function getPedidosProveedor(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE (mp.idEmpresa = " . (int)$idEmpresa . " OR mp.idEmpresa = 1) " : "";
         $sql = "SELECT mp.NombreMP, i.Existencias,
                        SUM(dp.cantidad) AS Necesario,
                        i.Existencias - SUM(dp.cantidad) AS Disponible,
@@ -20,6 +22,7 @@ class ReportePedidoProveedorModel extends Conexion {
                 INNER JOIN inventario i ON mp.idMateriaPrima = i.idMateriaPrima
                 INNER JOIN detallereceta dr ON mp.idMateriaPrima = dr.idMateriaPrima
                 INNER JOIN detallepedido dp ON dr.IdReceta = dp.idReceta
+                $condicion
                 GROUP BY mp.idMateriaPrima, mp.NombreMP, i.Existencias
                 ORDER BY Comprar DESC";
         $res = $this->con->query($sql);

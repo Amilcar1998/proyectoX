@@ -3,8 +3,9 @@ require_once __DIR__ . '/sesiones.php';
 include '../models/ReportModel.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
+$idEmpresaFiltro = ($esSuperUsuario ?? false) ? 0 : (int)($_SESSION['idEmpresa'] ?? 1);
 $dataCli= new ReportModel();
-$dataClientes = $dataCli->dataClientes();
+$dataClientes = $dataCli->dataClientes($idEmpresaFiltro);
 
 $html='<!DOCTYPE html>
 <html lang="en">

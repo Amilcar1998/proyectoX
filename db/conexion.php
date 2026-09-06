@@ -1,5 +1,6 @@
 <?php
-   require_once 'parametros.php';
+   require_once __DIR__ . '/parametros.php';
+   require_once __DIR__ . '/../models/HelperUrl.php';
    if (!class_exists('Conexion')) {
        class Conexion{
           protected $con;

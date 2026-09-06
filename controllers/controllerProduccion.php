@@ -3,8 +3,11 @@ require_once __DIR__ . '/sesiones.php';
 require_once __DIR__ . '/../models/ModelProduccion.php';
 
 $prod = new ModelProduccion();
-$data = $prod->getProduccion();
 $correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? '');
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
+$idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
+
 $session = !empty($correo) ? $prod->getSessionEmp($correo) : [];
 $nombres = '';
 $idEmp = 1;
@@ -40,7 +43,7 @@ if (isset($_REQUEST['agregar'])) {
 
     if ($r == 1) {
         $p = new Produccion('', $fechaActual, 'activo', $_REQUEST['id'], $idEmp);
-        $prod->insertar($p);
+        $prod->insertar($p, $idEmpresaSesion);
         $msj = "Se ha pasado a producción exitosamente";
         $icon = "success";
         $prod->alterPedido($id);
@@ -54,6 +57,8 @@ if (isset($_REQUEST['agregar'])) {
 if (isset($_REQUEST['eliminar'])) {
     $p = new Produccion($_REQUEST['produccionID'], '', 'activo', "", $idEmp);
     $prod->eliminar($p);
+    $msj = 'Orden de producción eliminada correctamente';
+    $icon = 'success';
 }
 
 if (isset($_REQUEST['Pterminar'])) {
@@ -65,4 +70,5 @@ if (isset($_REQUEST['Pterminar'])) {
     $icon = 'success';
 }
 
+$data = $prod->getProduccion($idEmpresaFiltro);
 include __DIR__ . '/../views/vistaProduccion.php';

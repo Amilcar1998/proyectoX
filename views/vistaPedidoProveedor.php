@@ -140,6 +140,9 @@
                 <table class="table table-bordered datatable" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
+                      <?php if (!empty($esSuperUsuario)): ?>
+                        <th>Empresa</th>
+                      <?php endif; ?>
                       <th>Proveedor</th>
                       <th>Empleado</th>
                       <th>Materia Prima</th>
@@ -154,6 +157,9 @@
                   <?php if (!empty($tabla)): ?>
                     <?php foreach ($tabla as $fila): ?>
                       <tr>
+                        <?php if (!empty($esSuperUsuario)): ?>
+                          <td><span class="badge badge-primary px-2 py-1"><i class="fas fa-building mr-1"></i><?php echo htmlspecialchars($fila['nombreEmpresa'] ?? 'Concentrados El Gordito'); ?></span></td>
+                        <?php endif; ?>
                         <td><?php echo htmlspecialchars($fila['nombreProveedor'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($fila['empleado'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($fila['NombreMP'] ?? ''); ?></td>

@@ -91,6 +91,17 @@ if (!isset($_SESSION['idUsuario']) || (int)$_SESSION['idUsuario'] !== $idUsuario
     $_SESSION['idUsuario'] = $idUsuarioSesion;
 }
 
+// Resolución de Tenant (Aislamiento por Empresa)
+if (!isset($_SESSION['idEmpresa']) || !isset($_SESSION['esSuperUsuario'])) {
+    $obUserSesion = new UsuarioModel();
+    $idEmpresaUsuario = $obUserSesion->obtenerIdEmpresaPorUsername((string)$username);
+    $_SESSION['idEmpresa'] = $idEmpresaUsuario;
+
+    // Superusuario: cuenta amilcar199819@gmail.com o Admin de la plataforma matriz (idEmpresa 1)
+    $esSuper = ($username === 'amilcar199819@gmail.com' || ($idRol === 4 && $idEmpresaUsuario === 1));
+    $_SESSION['esSuperUsuario'] = $esSuper ? 1 : 0;
+}
+
 if (strtolower($controladorActual) === 'sesiones.php') {
     $rutaHome = $permisoModel->obtenerRutaHome($idRol);
     header("Location: $rutaHome");

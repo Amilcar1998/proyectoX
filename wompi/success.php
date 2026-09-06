@@ -176,8 +176,18 @@ if ($pago) {
         }
     }
 
-    // 5. Registrar pedido en el sistema para TODA compra aprobada (carrito O plan)
-    $debeCrarPedido = empty($metadatos['idPedidoCreado']) && $montoPagado > 0;
+    // Si el pago proviene de un pedido existente del portal de clientes, actualizar su estado a Pagado (idEstadoPedido=3)
+    if (!empty($metadatos['idPedido']) && (int)$metadatos['idPedido'] > 0) {
+        $pedidoCreadoId = (int)$metadatos['idPedido'];
+        $stmtUpPed = $conn->prepare("UPDATE pedido SET idEstadoPedido = 3 WHERE idPedido = ?");
+        if ($stmtUpPed) {
+            $stmtUpPed->bind_param("i", $pedidoCreadoId);
+            $stmtUpPed->execute();
+            $stmtUpPed->close();
+        }
+    }
+
+    $debeCrarPedido = empty($metadatos['idPedidoCreado']) && empty($metadatos['idPedido']) && $montoPagado > 0;
     if ($debeCrarPedido) {
         // A. Buscar o crear cliente en cliente
         $idCliente = 0;

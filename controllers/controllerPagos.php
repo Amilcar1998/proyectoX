@@ -34,9 +34,18 @@ if (!empty($correoUsuario)) {
     }
 }
 
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+
 if ($esAdmin) {
-    $pagos = $pagoModel->listarPagos(200, 0);
-    $estadisticas = $pagoModel->obtenerEstadisticasGlobales();
+    if ($idRolSesion === 4 || $idEmpresaSesion === 1) {
+        // Super Administrador de la plataforma ve global
+        $pagos = $pagoModel->listarPagos(200, 0);
+        $estadisticas = $pagoModel->obtenerEstadisticasGlobales();
+    } else {
+        // Administrador de Empresa ve únicamente los pagos de su empresa
+        $pagos = $pagoModel->listarPagosPorEmpresa($idEmpresaSesion, 200, 0);
+        $estadisticas = $pagoModel->obtenerEstadisticasPorEmpresa($idEmpresaSesion);
+    }
 } else {
     $idUsuario = obtenerIdUsuarioPorUsername($correoUsuario);
     $pagos = $pagoModel->obtenerPagosPorUsuario($idUsuario, 100, 0);

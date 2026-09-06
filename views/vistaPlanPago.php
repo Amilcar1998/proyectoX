@@ -11,8 +11,69 @@
     <title>💳 Planes de Pago</title>
 
     <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
     <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .card-custom {
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
+        .table thead th {
+            background: #0f172a;
+            color: #f8fafc;
+            font-weight: 600;
+            border: none;
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 14px 16px;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 13px 16px;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+
+        /* BADGES MODERNOS */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            white-space: nowrap;
+        }
+
+        .status-pill-completado {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status-pill-completado i { color: #059669; }
+
+        .status-pill-cancelado {
+            background-color: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fecdd3;
+        }
+        .status-pill-cancelado i { color: #e11d48; }
+    </style>
 
     <script src="../controllers/vendor/jquery/jquery.min.js"></script>
     <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -145,24 +206,26 @@
                                 <tbody>
                                     <?php foreach ($planes as $p): ?>
                                         <tr>
-                                            <td><?php echo $p['idPlanPago']; ?></td>
-                                            <td><?php echo htmlspecialchars($p['nombrePlan']); ?></td>
-                                            <td><?php echo htmlspecialchars($p['descripcion'] ?? ''); ?></td>
-                                            <td>USD <?php echo number_format($p['monto'], 2); ?></td>
-                                            <td><?php echo $p['duracion_dias']; ?> dias</td>
-                                            <td>
-                                                <span class="badge badge-<?php echo $p['activo'] ? 'success' : 'danger'; ?>">
-                                                    <?php echo $p['activo'] ? 'Activo' : 'Inactivo'; ?>
-                                                </span>
+                                            <td class="font-weight-bold"><span class="badge badge-light border px-2 py-1">#<?php echo $p['idPlanPago']; ?></span></td>
+                                            <td class="font-weight-bold text-dark"><?php echo htmlspecialchars($p['nombrePlan']); ?></td>
+                                            <td class="text-muted small"><?php echo htmlspecialchars($p['descripcion'] ?? ''); ?></td>
+                                            <td class="font-weight-bold text-success">$<?php echo number_format($p['monto'], 2); ?></td>
+                                            <td><span class="badge badge-light border px-2 py-1"><?php echo $p['duracion_dias']; ?> días</span></td>
+                                            <td class="text-center">
+                                                <?php if ($p['activo']): ?>
+                                                    <span class="status-pill status-pill-completado"><i class="fas fa-check-circle"></i> Activo</span>
+                                                <?php else: ?>
+                                                    <span class="status-pill status-pill-cancelado"><i class="fas fa-times-circle"></i> Inactivo</span>
+                                                <?php endif; ?>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 <?php if ($esAdmin): ?>
-                                                <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal<?php echo $p['idPlanPago']; ?>'>
-                                                    <i class='fas fa-edit'></i> Editar
+                                                <button class='btn btn-outline-primary btn-sm font-weight-bold px-2 py-1' data-toggle='modal' data-target='#editModal<?php echo $p['idPlanPago']; ?>'>
+                                                    <i class='fas fa-edit mr-1'></i> Editar
                                                 </button>
                                                 <?php else: ?>
-                                                <button class='btn btn-success btn-sm' onclick="comprarPlan(<?php echo $p['idPlanPago']; ?>)">
-                                                    <i class='fas fa-shopping-cart'></i> Comprar
+                                                <button class='btn btn-success btn-sm font-weight-bold px-3 py-1 shadow-sm' onclick="comprarPlan(<?php echo $p['idPlanPago']; ?>)">
+                                                    <i class='fas fa-shopping-cart mr-1'></i> Comprar
                                                 </button>
                                                 <?php endif; ?>
                                             </td>

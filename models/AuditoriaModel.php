@@ -67,11 +67,13 @@ if (!class_exists('AuditoriaModel')) {
 
         public function getUsuariosActivos()
         {
+            $this->limpiarSesionesExpiradas();
+
             $sql = "SELECT s.*, u.username, r.nombreRol
                     FROM sesiones_activas s
                     LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
                     LEFT JOIN rol r ON s.id_Rol = r.id_Rol
-                    WHERE s.activo = 1
+                    WHERE s.activo = 1 AND s.last_activity >= NOW() - INTERVAL 24 HOUR
                     ORDER BY s.last_activity DESC";
 
             $result = $this->con->query($sql);
@@ -152,13 +154,25 @@ if (!class_exists('AuditoriaModel')) {
 
         public function limpiarSesionesExpiradas(): bool
         {
+            // 1. Desactivar sesiones con inactividad superior a 24 horas
             $stmt = $this->con->prepare(
-                "UPDATE sesiones_activas SET activo = 0 WHERE last_activity < NOW() - INTERVAL 1 DAY AND activo = 1"
+                "UPDATE sesiones_activas SET activo = 0 WHERE last_activity < NOW() - INTERVAL 24 HOUR AND activo = 1"
             );
-            if (!$stmt) return false;
-            $result = $stmt->execute();
-            $stmt->close();
-            return $result;
+            if ($stmt) {
+                $stmt->execute();
+                $stmt->close();
+            }
+
+            // 2. Purgar registros obsoletos inactivos mayores a 7 días
+            $stmtClean = $this->con->prepare(
+                "DELETE FROM sesiones_activas WHERE last_activity < NOW() - INTERVAL 7 DAY AND activo = 0"
+            );
+            if ($stmtClean) {
+                $stmtClean->execute();
+                $stmtClean->close();
+            }
+
+            return true;
         }
 
         public function obtenerSesionActivaPorId(string $sessionId): ?array

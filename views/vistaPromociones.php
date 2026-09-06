@@ -42,6 +42,38 @@
             font-weight: 600;
             display: inline-block;
         }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            white-space: nowrap;
+        }
+        .status-pill-completado {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status-pill-cancelado {
+            background-color: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fecdd3;
+        }
+        .status-pill-pendiente {
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .status-pill-proceso {
+            background-color: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
         .price-current {
             font-size: 1.18rem;
             font-weight: 800;
@@ -339,13 +371,13 @@
                                                         </td>
                                                         <td>
                                                             <?php if ($estado === 'activa'): ?>
-                                                                <span class="badge badge-success px-2 py-1">Activa</span>
+                                                                <span class="status-pill status-pill-completado"><i class="fas fa-check-circle"></i> Activa</span>
                                                             <?php elseif ($estado === 'finalizada'): ?>
-                                                                <span class="badge badge-secondary px-2 py-1">Finalizada</span>
+                                                                <span class="status-pill status-pill-cancelado"><i class="fas fa-history"></i> Finalizada</span>
                                                             <?php elseif ($estado === 'cancelada'): ?>
-                                                                <span class="badge badge-warning px-2 py-1">Cancelada</span>
+                                                                <span class="status-pill status-pill-cancelado"><i class="fas fa-ban"></i> Cancelada</span>
                                                             <?php else: ?>
-                                                                <span class="badge badge-info px-2 py-1">Aplicada</span>
+                                                                <span class="status-pill status-pill-proceso"><i class="fas fa-check"></i> Aplicada</span>
                                                             <?php endif; ?>
                                                         </td>
                                                     </tr>

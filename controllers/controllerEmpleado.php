@@ -9,6 +9,9 @@ $auditoriaModel = new AuditoriaModel();
 $permisoModel = new PermisoModel();
 $correo = $_SESSION["s1"] ?? ($_SESSION['s2'] ?? '');
 
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
+
 // Endpoint AJAX para obtener los submódulos asignados a un usuario específico
 if (isset($_GET['accion']) && $_GET['accion'] === 'obtenerSubmodulosUsuario') {
     header('Content-Type: application/json');
@@ -27,7 +30,8 @@ if (isset($_POST["insertar"])) {
         'apellido' => trim($_POST['txtApellidos'] ?? ''),
         'genero' => $_POST['txtGenero'] ?? '',
         'idPuesto' => (int)($_POST['txtCargo'] ?? 2),
-        'idRol' => (int)($_POST['txtRol'] ?? 2)
+        'idRol' => (int)($_POST['txtRol'] ?? 2),
+        'idEmpresa' => $idEmpresaSesion
     ];
 
     $submodulosSeleccionados = isset($_POST['submodulos']) && is_array($_POST['submodulos']) ? $_POST['submodulos'] : [];
@@ -106,12 +110,14 @@ if (isset($_POST["eliminar"])) {
     }
 }
 
+$idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
 $session = $obEmp->getSessionEmp($correo);
-$datos = $obEmp->obtenerEmpleados();
+$datos = $obEmp->obtenerEmpleados($idEmpresaFiltro);
 $puesto = $obEmp->obtenerCargos();
 $rolesSistema = $obEmp->obtenerRolesSistema();
 $rolesJerarquia = $permisoModel->obtenerRolesConJerarquia();
 $catalogoSubmodulos = $permisoModel->obtenerCatalogoSubmodulosConModulo();
+$dominioEmpresa = $obEmp->obtenerDominioPorEmpresa($idEmpresaSesion);
 
 $nombres = '';
 foreach ($session as $key) {

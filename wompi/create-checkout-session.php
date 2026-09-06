@@ -9,14 +9,29 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start(); 
 }
 
+require_once __DIR__ . '/../models/EmpresaModel.php';
+
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-$wompiClientId = defined('WOMPI_PUBLIC_KEY') ? WOMPI_PUBLIC_KEY : '';
-$wompiClientSecret = defined('WOMPI_PRIVATE_KEY') ? WOMPI_PRIVATE_KEY : '';
+$empresaModel = new EmpresaModel();
+$idEmpresa = (int)($input['idEmpresa'] ?? 1);
+$slugTienda = trim((string)($input['tienda'] ?? ''));
+
+if (!empty($slugTienda)) {
+    $empresaData = $empresaModel->obtenerPorSlug($slugTienda);
+    if ($empresaData) {
+        $idEmpresa = (int)$empresaData['idEmpresa'];
+    }
+}
+
+$credenciales = $empresaModel->obtenerCredencialesWompi($idEmpresa);
+$wompiClientId = $credenciales['app_id'] ?? '';
+$wompiClientSecret = $credenciales['api_key'] ?? '';
+$nombreComercio = $credenciales['nombre_empresa'] ?? 'Concentrados El Gordito';
 
 if (empty($wompiClientId) || empty($wompiClientSecret)) {
     http_response_code(500);
-    echo json_encode(['error' => 'Credenciales de Wompi no configuradas en db/parametros.php.']);
+    echo json_encode(['error' => 'Este comercio no tiene configuradas credenciales de Wompi SV activas.']);
     exit();
 }
 
@@ -104,6 +119,13 @@ if ($planId > 0) {
     http_response_code(400);
     echo json_encode(['error' => 'No se proporcionaron productos ni planes válidos para procesar el pago.']);
     exit();
+}
+
+$idPedidoExistente = (int)($input['idPedido'] ?? 0);
+if ($idPedidoExistente > 0) {
+    $metadatos['idPedido'] = $idPedidoExistente;
+    $metadatos['idPedidoCreado'] = $idPedidoExistente;
+    $nombreProducto = 'Pago de Pedido #' . $idPedidoExistente . ' - Concentrados El Gordito';
 }
 
 if ($montoTotalUSD <= 0) {

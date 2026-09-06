@@ -7,7 +7,7 @@ class ModelDashboard extends Conexion {
         parent::__construct();
     }
 
-    public function obtenerResumen(): array {
+    public function obtenerResumen(int $idEmpresa = 0): array {
         $data = [
             'totalPedidos' => 0,
             'montoTotal' => 0,
@@ -19,29 +19,34 @@ class ModelDashboard extends Conexion {
             'montoPagosWompi' => 0.0
         ];
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM pedido");
+        $condP = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM pedido $condP");
         if ($res) {
             $data['totalPedidos'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
 
-        $res = $this->con->query("SELECT COALESCE(SUM(Monto),0) AS total, COUNT(*) AS countFacturas FROM factura");
+        $condF = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COALESCE(SUM(Monto),0) AS total, COUNT(*) AS countFacturas FROM factura $condF");
         if ($res && $r = $res->fetch_assoc()) {
             $data['montoTotal'] = (float)($r['total'] ?? 0);
             $data['montoFacturado'] = (float)($r['total'] ?? 0);
             $data['totalFacturas'] = (int)($r['countFacturas'] ?? 0);
         }
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 500");
+        $condI = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 500 $condI");
         if ($res) {
             $data['stockCritico'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM empleado");
+        $condE = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM empleado $condE");
         if ($res) {
             $data['totalEmpleados'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
 
-        $res = $this->con->query("SELECT COUNT(*) AS total, COALESCE(SUM(monto), 0) AS totalMonto FROM pagos WHERE estado = 'completado'");
+        $condW = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total, COALESCE(SUM(monto), 0) AS totalMonto FROM pagos WHERE estado = 'completado' $condW");
         if ($res && $rP = $res->fetch_assoc()) {
             $data['totalPagosWompi'] = (int)($rP['total'] ?? 0);
             $data['montoPagosWompi'] = (float)($rP['totalMonto'] ?? 0);
@@ -50,11 +55,11 @@ class ModelDashboard extends Conexion {
         return $data;
     }
 
-    public function getResumen(): array {
-        return $this->obtenerResumen();
+    public function getResumen(int $idEmpresa = 0): array {
+        return $this->obtenerResumen($idEmpresa);
     }
 
-    public function obtenerResumenEmpleado(string $correo): array {
+    public function obtenerResumenEmpleado(string $correo, int $idEmpresa = 0): array {
         $data = [
             'stockCritico' => 0,
             'totalMateriasPrimas' => 0,
@@ -62,12 +67,14 @@ class ModelDashboard extends Conexion {
             'pedidosActivos' => 0
         ];
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 500");
+        $condI = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM inventario WHERE Existencias < 500 $condI");
         if ($res) {
             $data['stockCritico'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM materiaprima");
+        $condM = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM materiaprima $condM");
         if ($res) {
             $data['totalMateriasPrimas'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
@@ -84,7 +91,8 @@ class ModelDashboard extends Conexion {
             $stmt->close();
         }
 
-        $res = $this->con->query("SELECT COUNT(*) AS total FROM pedido");
+        $condP = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa : "";
+        $res = $this->con->query("SELECT COUNT(*) AS total FROM pedido $condP");
         if ($res) {
             $data['pedidosActivos'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
@@ -179,10 +187,11 @@ class ModelDashboard extends Conexion {
         return $pagos;
     }
 
-    public function obtenerPromocionesActivas(): array {
-        $sql = "SELECT idReceta, nombreReceta, precio, precio_anterior, porcentaje_descuento, fecha_inicio_promo, fecha_fin_promo 
+    public function obtenerPromocionesActivas(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " AND (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $sql = "SELECT idReceta, nombreReceta, PrecioUnitario as precio, precio_anterior, porcentaje_descuento, fecha_inicio_promo, fecha_fin_promo 
                 FROM receta 
-                WHERE en_promocion = 1 AND (fecha_fin_promo IS NULL OR NOW() <= fecha_fin_promo)
+                WHERE en_promocion = 1 AND (fecha_fin_promo IS NULL OR NOW() <= fecha_fin_promo) $cond
                 ORDER BY idReceta DESC";
         $res = $this->con->query($sql);
         if (!$res) return [];
@@ -193,10 +202,11 @@ class ModelDashboard extends Conexion {
         return $promos;
     }
 
-    public function obtenerPedidosMensuales(): array {
+    public function obtenerPedidosMensuales(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
         $sql = "SELECT DATE_FORMAT(STR_TO_DATE(fechaPedido, '%d/%m/%Y'), '%Y-%m') AS mes, COUNT(*) AS cantidad
                 FROM pedido
-                WHERE fechaPedido REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'
+                WHERE fechaPedido REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$' $cond
                 GROUP BY mes
                 ORDER BY mes DESC
                 LIMIT 12";
@@ -209,14 +219,15 @@ class ModelDashboard extends Conexion {
         return $r;
     }
 
-    public function getPedidosMensuales(): array {
-        return $this->obtenerPedidosMensuales();
+    public function getPedidosMensuales(int $idEmpresa = 0): array {
+        return $this->obtenerPedidosMensuales($idEmpresa);
     }
 
-    public function obtenerMontoMensual(): array {
+    public function obtenerMontoMensual(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
         $sql = "SELECT DATE_FORMAT(STR_TO_DATE(Fecha, '%d/%m/%Y'), '%Y-%m') AS mes, COALESCE(SUM(Monto),0) AS monto
                 FROM factura
-                WHERE Fecha REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'
+                WHERE Fecha REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$' $cond
                 GROUP BY mes
                 ORDER BY mes DESC
                 LIMIT 12";
@@ -229,14 +240,16 @@ class ModelDashboard extends Conexion {
         return $r;
     }
 
-    public function getMontoMensual(): array {
-        return $this->obtenerMontoMensual();
+    public function getMontoMensual(int $idEmpresa = 0): array {
+        return $this->obtenerMontoMensual($idEmpresa);
     }
 
-    public function obtenerStockMateriasPrimas(): array {
+    public function obtenerStockMateriasPrimas(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " WHERE (i.idEmpresa = " . (int)$idEmpresa . " OR (i.idEmpresa IS NULL AND mp.idEmpresa = " . (int)$idEmpresa . ")) " : "";
         $sql = "SELECT mp.NombreMP, i.Existencias
                 FROM inventario i
                 INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
+                $cond
                 ORDER BY i.Existencias ASC
                 LIMIT 15";
         $res = $this->con->query($sql);
@@ -248,22 +261,26 @@ class ModelDashboard extends Conexion {
         return $r;
     }
 
-    public function getStockMateriasPrimas(): array {
-        return $this->obtenerStockMateriasPrimas();
+    public function getStockMateriasPrimas(int $idEmpresa = 0): array {
+        return $this->obtenerStockMateriasPrimas($idEmpresa);
     }
 
-    public function obtenerPedidosRecientes(): array {
+    public function obtenerPedidosRecientes(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " WHERE (p.idEmpresa = " . (int)$idEmpresa . ") " : "";
         $sql = "SELECT p.idPedido, c.NombreCliente,
                        CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado,
                        GROUP_CONCAT(DISTINCT r.nombreReceta SEPARATOR ', ') AS recetas,
-                       p.fechaPedido, SUM(dp.cantidad) AS cantidad
+                       p.fechaPedido, SUM(dp.cantidad) AS cantidad,
+                       COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa
                 FROM pedido p
                 INNER JOIN cliente c ON p.idCliente = c.idCliente
                 INNER JOIN detallepedido dp ON p.idPedido = dp.IdPedido
                 INNER JOIN receta r ON dp.idReceta = r.idReceta
-                INNER JOIN produccion pr ON p.idPedido = pr.idPedido
-                INNER JOIN empleado e ON pr.idEmpleado = e.idEmpleado
-                GROUP BY p.idPedido, c.NombreCliente, e.nombreEmp, e.apellido, p.fechaPedido
+                LEFT JOIN produccion pr ON p.idPedido = pr.idPedido
+                LEFT JOIN empleado e ON pr.idEmpleado = e.idEmpleado
+                LEFT JOIN empresas emp ON p.idEmpresa = emp.idEmpresa
+                $cond
+                GROUP BY p.idPedido, c.NombreCliente, e.nombreEmp, e.apellido, p.fechaPedido, emp.nombreEmpresa
                 ORDER BY p.fechaPedido DESC
                 LIMIT 10";
         $res = $this->con->query($sql);
@@ -275,15 +292,17 @@ class ModelDashboard extends Conexion {
         return $r;
     }
 
-    public function getPedidosRecientes(): array {
-        return $this->obtenerPedidosRecientes();
+    public function getPedidosRecientes(int $idEmpresa = 0): array {
+        return $this->obtenerPedidosRecientes($idEmpresa);
     }
 
-    public function obtenerProduccionPorEmpleado(): array {
+    public function obtenerProduccionPorEmpleado(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " WHERE (pr.idEmpresa = " . (int)$idEmpresa . " OR e.idEmpresa = " . (int)$idEmpresa . ") " : "";
         $sql = "SELECT CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado,
                        COUNT(*) AS totalProduccion
                 FROM produccion pr
                 INNER JOIN empleado e ON pr.idEmpleado = e.idEmpleado
+                $cond
                 GROUP BY e.idEmpleado
                 ORDER BY totalProduccion DESC
                 LIMIT 8";
@@ -296,8 +315,8 @@ class ModelDashboard extends Conexion {
         return $r;
     }
 
-    public function getProduccionPorEmpleado(): array {
-        return $this->obtenerProduccionPorEmpleado();
+    public function getProduccionPorEmpleado(int $idEmpresa = 0): array {
+        return $this->obtenerProduccionPorEmpleado($idEmpresa);
     }
 
     public function obtenerDatosUsuarioPorSesion(string $correo): array {

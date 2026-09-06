@@ -1,26 +1,38 @@
 <?php
-include "../db/conexion.php";
-include "../models/MateriaPrima.php";
+require_once __DIR__ . "/../db/conexion.php";
+require_once __DIR__ . "/../models/MateriaPrima.php";
 
 class ModelMateriaPrima extends Conexion {
     public function __construct() {
         parent::__construct();
     }
 
-    public function getTabla(): array {
-        $res = $this->con->query("select * from materiaPrima");
+    public function getTabla(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $res = $this->con->query("select * from materiaPrima $condicion ORDER BY idMateriaPrima ASC");
         $r = [];
-        while ($row = $res->fetch_assoc()) {
-            $r[] = $row;
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $r[] = $row;
+            }
         }
         return $r;
     }
 
-    public function insertar($obj): bool {
-        $stmt = $this->con->prepare("insert into materiaPrima (idMateriaPrima, NombreMP) values (?,?)");
+    public function obtenerTabla(int $idEmpresa = 0): array {
+        return $this->getTabla($idEmpresa);
+    }
+
+    public function listarTodos(int $idEmpresa = 0): array {
+        return $this->getTabla($idEmpresa);
+    }
+
+    public function insertar($obj, int $idEmpresa = 1): bool {
+        if ($idEmpresa <= 0) $idEmpresa = 1;
+        $stmt = $this->con->prepare("insert into materiaPrima (idMateriaPrima, NombreMP, idEmpresa) values (?,?,?)");
         $id = $obj->getIdMateriaPrima();
         $nombre = $obj->getNombreMP();
-        $stmt->bind_param("is", $id, $nombre);
+        $stmt->bind_param("isi", $id, $nombre, $idEmpresa);
         return $stmt->execute();
     }
 

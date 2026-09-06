@@ -1,6 +1,6 @@
 <?php
-include '../db/conexion.php';
-include '../controllers/vendor/autoload.php';
+require_once __DIR__ . '/../db/conexion.php';
+require_once __DIR__ . '/../controllers/vendor/autoload.php';
 
 use Mpdf\Mpdf;
 
@@ -9,7 +9,8 @@ class ReporteInventarioMP extends Conexion {
         parent::__construct();
     }
 
-    public function getInventario(): array {
+    public function getInventario(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE (mp.idEmpresa = " . (int)$idEmpresa . " OR mp.idEmpresa = 1) " : "";
         $sql = "SELECT mp.idMateriaPrima AS Codigo, mp.NombreMP AS Materia_Prima,
                        i.Existencias AS Existencias,
                        CASE WHEN i.Existencias <= 5 THEN 'CRITICO'
@@ -19,6 +20,7 @@ class ReporteInventarioMP extends Conexion {
                        END AS Estado_Inventario
                 FROM inventario i
                 INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima
+                $condicion
                 ORDER BY Estado_Inventario, Materia_Prima";
         $res = $this->con->query($sql);
         if (!$res) {
@@ -32,7 +34,11 @@ class ReporteInventarioMP extends Conexion {
         return $r;
     }
 
-    public function getInventarioEscaso(): array {
+    public function getInventarioEscaso(int $idEmpresa = 0): array {
+        $condicion = " WHERE i.Existencias <= 10 ";
+        if ($idEmpresa > 0) {
+            $condicion .= " AND (mp.idEmpresa = " . (int)$idEmpresa . " OR mp.idEmpresa = 1) ";
+        }
         $sql = "SELECT mp.idMateriaPrima AS Codigo, mp.NombreMP AS Materia_Prima,
                        i.Existencias AS Stock,
                        CASE WHEN i.Existencias <= 5 THEN 'URGENTE'
@@ -41,7 +47,7 @@ class ReporteInventarioMP extends Conexion {
                        END AS Estado
                 FROM inventario i
                 INNER JOIN materiaprima mp ON mp.idMateriaPrima = i.idMateriaPrima
-                WHERE i.Existencias <= 10
+                $condicion
                 ORDER BY i.Existencias ASC, mp.NombreMP ASC";
         $res = $this->con->query($sql);
         if (!$res) {

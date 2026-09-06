@@ -75,3 +75,9 @@ Al intervenir cualquier archivo del proyecto:
 1. ¿El archivo mezcla HTML con consultas SQL o lógica de sesión? $\rightarrow$ Extraer la consulta a un método de un Modelo en `models/`, el flujo a un Controlador en `controllers/`, y la interfaz a una Vista en `views/`.
 2. ¿El método está en inglés? $\rightarrow$ Renombrarlo al español respetando compatibilidad si es llamado por otras partes.
 3. ¿El método tiene más de 3 parámetros o supera las 30 líneas? $\rightarrow$ Refactorizar agrupando parámetros en un objeto/arreglo y extrayendo submétodos.
+
+---
+
+## 5. Documentación Obligatoria en Base de Datos (SQL COMMENT)
+Cada vez que se cree, altere o migre una tabla o columna en la base de datos, es **OBLIGATORIO** incluir la cláusula `COMMENT '...'` tanto a nivel de tabla como en **cada uno de los campos/columnas individuales**. Esto garantiza que el diccionario de datos y la documentación técnica del sistema permanezcan siempre actualizados y legibles para todo el equipo.
+

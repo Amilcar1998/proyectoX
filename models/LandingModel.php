@@ -234,49 +234,163 @@ if (!class_exists('LandingModel')) {
         }
 
         /**
-         * Retorna la información institucional completa de la empresa
+         * Retorna la información institucional completa de la empresa desde la base de datos
+         * @param string $slug Slug opcional de la empresa
          * @return array
          */
-        public function obtenerInformacionEmpresa(): array
+        public function obtenerInformacionEmpresa(string $slug = ''): array
         {
+            if (!empty($slug)) {
+                $stmtEmp = $this->con->prepare("SELECT * FROM empresas WHERE slug = ? AND activo = 1 LIMIT 1");
+                if ($stmtEmp) {
+                    $stmtEmp->bind_param("s", $slug);
+                    $stmtEmp->execute();
+                    $resEmp = $stmtEmp->get_result();
+                    if ($rowEmp = $resEmp->fetch_assoc()) {
+                        $stmtEmp->close();
+                        $wa = preg_replace('/[^0-9]/', '', (string)($rowEmp['whatsapp'] ?: '50370000000'));
+                        return [
+                            'idEmpresa' => (int)$rowEmp['idEmpresa'],
+                            'nombre' => (string)$rowEmp['nombreEmpresa'],
+                            'eslogan' => 'Nutrición Animal y Servicios Agropecuarios',
+                            'resumen' => 'Bienvenido a la sucursal y catálogo oficial de ' . $rowEmp['nombreEmpresa'] . ' en la plataforma Concentrados El Gordito.',
+                            'mision' => 'Proveer soluciones agropecuarias y alimentos concentrados de primera calidad con entrega oportuna.',
+                            'vision' => 'Ser el referente agropecuario de confianza para nuestros clientes en El Salvador.',
+                            'telefono' => (string)($rowEmp['telefono'] ?: '+503 2440-1234'),
+                            'telefono_movil' => (string)($rowEmp['whatsapp'] ?: '+503 7000-0000'),
+                            'whatsapp' => (string)($rowEmp['whatsapp'] ?: '+503 7000-0000'),
+                            'whatsapp_enlace' => "https://wa.me/{$wa}?text=Hola%20" . urlencode($rowEmp['nombreEmpresa']) . "%2C%20deseo%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos%20y%20precios",
+                            'correo' => (string)($rowEmp['correo'] ?: 'contacto@empresa.com'),
+                            'direccion' => (string)($rowEmp['direccion'] ?: 'El Salvador'),
+                            'horario' => 'Lunes a Viernes: 7:00 AM – 5:00 PM | Sábados: 7:00 AM – 12:00 MD',
+                            'logo' => (string)($rowEmp['logo'] ?: 'views/Recursos/logo.png'),
+                            'facebook' => 'https://facebook.com',
+                            'instagram' => 'https://instagram.com',
+                            'pilares' => [
+                                [
+                                    'titulo' => 'Materias Primas Seleccionadas',
+                                    'descripcion' => 'Granos, harinas y fórmulas certificadas para garantizar alta digestibilidad.',
+                                    'icono' => 'fas fa-seedling'
+                                ],
+                                [
+                                    'titulo' => 'Nutrición de Precisión',
+                                    'descripcion' => 'Formulaciones diseñadas para el máximo rendimiento de aves, cerdos y ganado.',
+                                    'icono' => 'fas fa-balance-scale'
+                                ],
+                                [
+                                    'titulo' => 'Atención Personalizada',
+                                    'descripcion' => 'Asesoría técnica y soporte comercial directo para tu granja.',
+                                    'icono' => 'fas fa-truck-moving'
+                                ]
+                            ]
+                        ];
+                    }
+                    $stmtEmp->close();
+                }
+            }
+
+            $consulta = "SELECT * FROM empresa_info ORDER BY idEmpresa ASC LIMIT 1";
+            $res = $this->con->query($consulta);
+            if ($res && $fila = $res->fetch_assoc()) {
+                $whatsappClean = preg_replace('/[^0-9]/', '', (string)$fila['whatsapp']);
+                if (empty($whatsappClean)) {
+                    $whatsappClean = '50378905678';
+                }
+
+                return [
+                    'idEmpresa' => (int)$fila['idEmpresa'],
+                    'nombre' => (string)$fila['nombre'],
+                    'eslogan' => (string)$fila['eslogan'],
+                    'resumen' => (string)$fila['resumen'],
+                    'mision' => (string)$fila['mision'],
+                    'vision' => (string)$fila['vision'],
+                    'telefono' => (string)$fila['telefono'],
+                    'telefono_movil' => (string)$fila['telefono_movil'],
+                    'whatsapp' => (string)$fila['whatsapp'],
+                    'whatsapp_enlace' => "https://wa.me/{$whatsappClean}?text=Hola%20Concentrados%20El%20Gordito%2C%20deseo%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos%20y%20precios",
+                    'correo' => (string)$fila['correo'],
+                    'direccion' => (string)$fila['direccion'],
+                    'horario' => (string)$fila['horario'],
+                    'logo' => (string)($fila['logo'] ?? 'views/Recursos/logo.png'),
+                    'facebook' => (string)($fila['facebook'] ?? 'https://facebook.com'),
+                    'instagram' => (string)($fila['instagram'] ?? 'https://instagram.com'),
+                    'pilares' => [
+                        [
+                            'titulo' => 'Materias Primas Seleccionadas',
+                            'descripcion' => 'Granos, harinas, vitaminas y minerales de pureza certificada para garantizar alta digestibilidad.',
+                            'icono' => 'fas fa-seedling'
+                        ],
+                        [
+                            'titulo' => 'Nutrición de Precisión',
+                            'descripcion' => 'Formulaciones exactas diseñadas para cada fase de crecimiento: inicio, engorde y finalización.',
+                            'icono' => 'fas fa-balance-scale'
+                        ],
+                        [
+                            'titulo' => 'Control de Calidad y Lotes',
+                            'descripcion' => 'Monitoreo constante en cada lote de producción con trazabilidad integral desde la recepción hasta el despacho.',
+                            'icono' => 'fas fa-microscope'
+                        ],
+                        [
+                            'titulo' => 'Distribución y Cobertura',
+                            'descripcion' => 'Atención ágil y cobertura de entrega en los 14 departamentos de El Salvador para granjas de todos los tamaños.',
+                            'icono' => 'fas fa-truck-moving'
+                        ]
+                    ]
+                ];
+            }
+
+            // Datos por defecto si aún no existen registros
             return [
                 'nombre' => 'Concentrados El Gordito',
                 'eslogan' => 'Nutrición Animal de Alto Rendimiento para el Campo Salvadoreño',
-                'resumen' => 'Somos una empresa salvadoreña dedicada a la elaboración y distribución de alimentos balanceados y concentrados de primera calidad para aves, ganado bovino y porcinos. Impulsamos la productividad agropecuaria con fórmulas de precisión e ingredientes rigurosamente seleccionados.',
-                'mision' => 'Proveer soluciones nutricionales balanceadas con los más altos estándares de calidad, materias primas de primera categoría y tecnología de molienda avanzada, maximizando el rendimiento, la salud y la rentabilidad de las granjas salvadoreñas.',
-                'vision' => 'Consolidarnos como la planta de concentrados líder y más confiable de El Salvador, reconocida por la excelencia de nuestras fórmulas, trazabilidad productiva y compromiso genuino con el desarrollo agropecuario.',
-                'pilares' => [
-                    [
-                        'titulo' => 'Materias Primas Seleccionadas',
-                        'descripcion' => 'Granos, harinas, vitaminas y minerales de pureza certificada para garantizar alta digestibilidad.',
-                        'icono' => 'fas fa-seedling'
-                    ],
-                    [
-                        'titulo' => 'Nutrición de Precisión',
-                        'descripcion' => 'Formulaciones exactas diseñadas para cada fase de crecimiento: inicio, engorde y finalización.',
-                        'icono' => 'fas fa-balance-scale'
-                    ],
-                    [
-                        'titulo' => 'Control de Calidad y Lotes',
-                        'descripcion' => 'Monitoreo constante en cada lote de producción con trazabilidad integral desde la recepción hasta el despacho.',
-                        'icono' => 'fas fa-microscope'
-                    ],
-                    [
-                        'titulo' => 'Distribución y Cobertura',
-                        'descripcion' => 'Atención ágil y cobertura de entrega en los 14 departamentos de El Salvador para granjas de todos los tamaños.',
-                        'icono' => 'fas fa-truck-moving'
-                    ]
-                ],
-                'contacto' => [
-                    'telefono' => '+503 2440-1234',
-                    'telefono_movil' => '+503 7890-5678',
-                    'whatsapp' => '+50378905678',
-                    'whatsapp_enlace' => 'https://wa.me/50378905678?text=Hola%20Concentrados%20El%20Gordito%2C%20deseo%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos%20y%20precios',
-                    'correo' => 'ventas@concentradoselgordito.com',
-                    'direccion' => 'Carretera Panamericana Km 65, El Salvador',
-                    'horario' => 'Lunes a Viernes: 7:00 AM – 5:00 PM | Sábados: 7:00 AM – 12:00 MD'
-                ]
+                'resumen' => 'Somos una empresa salvadoreña dedicada a la elaboración y distribución de alimentos balanceados y concentrados de primera calidad para aves, ganado bovino y porcinos.',
+                'mision' => 'Proveer soluciones nutricionales balanceadas con los más altos estándares de calidad.',
+                'vision' => 'Consolidarnos como la planta de concentrados líder y más confiable de El Salvador.',
+                'telefono' => '+503 2440-1234',
+                'telefono_movil' => '+503 7890-5678',
+                'whatsapp' => '+50378905678',
+                'whatsapp_enlace' => 'https://wa.me/50378905678',
+                'correo' => 'contacto@concentradoselgordito.com',
+                'direccion' => 'Carretera Panamericana Km 65, El Salvador',
+                'horario' => 'Lunes a Viernes: 7:00 AM – 5:00 PM | Sábados: 7:00 AM – 12:00 MD'
             ];
+        }
+
+        /**
+         * Actualiza la información institucional de la empresa
+         * @param array $datos
+         * @return bool
+         */
+        public function actualizarInformacionEmpresa(array $datos): bool
+        {
+            $stmt = $this->con->prepare("
+                UPDATE empresa_info 
+                SET nombre = ?, eslogan = ?, resumen = ?, mision = ?, vision = ?, 
+                    telefono = ?, telefono_movil = ?, whatsapp = ?, correo = ?, 
+                    direccion = ?, horario = ? 
+                WHERE idEmpresa = 1
+            ");
+            if (!$stmt) {
+                return false;
+            }
+
+            $stmt->bind_param(
+                "sssssssssss",
+                $datos['nombre'],
+                $datos['eslogan'],
+                $datos['resumen'],
+                $datos['mision'],
+                $datos['vision'],
+                $datos['telefono'],
+                $datos['telefono_movil'],
+                $datos['whatsapp'],
+                $datos['correo'],
+                $datos['direccion'],
+                $datos['horario']
+            );
+            $exito = $stmt->execute();
+            $stmt->close();
+            return $exito;
         }
     }
 }

@@ -61,16 +61,20 @@ if (!class_exists('PromocionModel')) {
 
         /**
          * Lista todas las recetas con sus ingredientes, estado de precio y promoción
+         * @param int $idEmpresa
          * @return array
          */
-        public function listarRecetas(): array
+        public function listarRecetas(int $idEmpresa = 0): array
         {
             $this->actualizarPromocionesExpiradas();
 
+            $condicion = ($idEmpresa > 0) ? " WHERE (r.idEmpresa = " . (int)$idEmpresa . ") " : "";
+
             $consulta = "
-                SELECT r.idReceta, r.nombreReceta, r.PrecioUnitario, 
+                SELECT r.idReceta, r.idEmpresa, r.nombreReceta, r.PrecioUnitario, 
                        r.precio_base_regular, r.precio_anterior, r.en_promocion, 
                        r.porcentaje_descuento, r.fecha_inicio_promo, r.fecha_fin_promo,
+                       COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa,
                        CASE 
                            WHEN r.en_promocion = 1 AND (r.fecha_inicio_promo IS NULL OR NOW() >= r.fecha_inicio_promo) AND (r.fecha_fin_promo IS NULL OR NOW() <= r.fecha_fin_promo) THEN 1 
                            ELSE 0 
@@ -80,7 +84,9 @@ if (!class_exists('PromocionModel')) {
                 FROM receta r
                 LEFT JOIN detallereceta dr ON r.idReceta = dr.IdReceta
                 LEFT JOIN materiaprima mp ON dr.idMateriaPrima = mp.idMateriaPrima
-                GROUP BY r.idReceta, r.nombreReceta, r.PrecioUnitario, r.precio_base_regular, r.precio_anterior, r.en_promocion, r.porcentaje_descuento, r.fecha_inicio_promo, r.fecha_fin_promo
+                LEFT JOIN empresas emp ON r.idEmpresa = emp.idEmpresa
+                $condicion
+                GROUP BY r.idReceta, r.idEmpresa, r.nombreReceta, r.PrecioUnitario, r.precio_base_regular, r.precio_anterior, r.en_promocion, r.porcentaje_descuento, r.fecha_inicio_promo, r.fecha_fin_promo, emp.nombreEmpresa
                 ORDER BY r.idReceta ASC
             ";
             $resultado = $this->con->query($consulta);
@@ -167,9 +173,10 @@ if (!class_exists('PromocionModel')) {
         /**
          * Obtiene la promoción activa actual en el sistema si existe
          * @param int|null $excluirIdReceta Si se especifica, excluye esta receta
+         * @param int $idEmpresa
          * @return array|null
          */
-        public function obtenerPromocionActiva(?int $excluirIdReceta = null): ?array
+        public function obtenerPromocionActiva(?int $excluirIdReceta = null, int $idEmpresa = 0): ?array
         {
             $this->actualizarPromocionesExpiradas();
 
@@ -182,6 +189,9 @@ if (!class_exists('PromocionModel')) {
                   AND (r.fecha_inicio_promo IS NULL OR NOW() >= r.fecha_inicio_promo)
                   AND (r.fecha_fin_promo IS NULL OR NOW() <= r.fecha_fin_promo)
             ";
+            if ($idEmpresa > 0) {
+                $sql .= " AND r.idEmpresa = " . (int)$idEmpresa;
+            }
             if ($excluirIdReceta !== null) {
                 $sql .= " AND r.idReceta != " . (int)$excluirIdReceta;
             }
@@ -196,7 +206,7 @@ if (!class_exists('PromocionModel')) {
 
         /**
          * Crea o actualiza una promoción temporal con fecha de inicio y fin
-         * Garantiza que solo exista UNA única promoción activa en todo el sistema
+         * Garantiza que solo exista UNA única promoción activa por empresa
          * @param int $idReceta
          * @param array $datosPromocion
          * @param string $usuario
@@ -209,6 +219,7 @@ if (!class_exists('PromocionModel')) {
                 return false;
             }
 
+            $idEmpresaReceta = (int)($receta['idEmpresa'] ?? 1);
             $precioOferta = (float)($datosPromocion['precio_oferta'] ?? 0);
             $precioRegular = (float)($datosPromocion['precio_regular'] ?: ($receta['precio_base_regular'] ?: $receta['PrecioUnitario']));
             $fechaInicio = !empty($datosPromocion['fecha_inicio']) ? $datosPromocion['fecha_inicio'] : date('Y-m-d H:i:s');
@@ -221,11 +232,11 @@ if (!class_exists('PromocionModel')) {
 
             $porcentaje = (int)round((($precioRegular - $precioOferta) / $precioRegular) * 100);
 
-            // Regla de Negocio: Cancelar cualquier otra promoción activa en el sistema
+            // Regla de Negocio: Cancelar cualquier otra promoción activa en la misma empresa
             $resOtras = $this->con->query("
                 SELECT idReceta, precio_base_regular, precio_anterior, PrecioUnitario 
                 FROM receta 
-                WHERE en_promocion = 1 AND idReceta != $idReceta
+                WHERE en_promocion = 1 AND idReceta != $idReceta AND idEmpresa = $idEmpresaReceta
             ");
             if ($resOtras) {
                 while ($otra = $resOtras->fetch_assoc()) {
@@ -342,14 +353,18 @@ if (!class_exists('PromocionModel')) {
         /**
          * Obtiene el historial de nivelaciones y promociones
          * @param int $limite
+         * @param int $idEmpresa
          * @return array
          */
-        public function obtenerHistorial(int $limite = 50): array
+        public function obtenerHistorial(int $limite = 50, int $idEmpresa = 0): array
         {
+            $condicion = ($idEmpresa > 0) ? " WHERE (r.idEmpresa = " . (int)$idEmpresa . ") " : "";
             $consulta = "
-                SELECT h.*, r.nombreReceta 
+                SELECT h.*, r.nombreReceta, COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') as nombreEmpresa
                 FROM historico_precios_promociones h
                 LEFT JOIN receta r ON h.idReceta = r.idReceta
+                LEFT JOIN empresas emp ON r.idEmpresa = emp.idEmpresa
+                $condicion
                 ORDER BY h.creado_en DESC, h.idHistorico DESC
                 LIMIT ?
             ";
@@ -364,8 +379,75 @@ if (!class_exists('PromocionModel')) {
                     $historial[] = $fila;
                 }
             }
-            $stmt->close();
+
             return $historial;
+        }
+
+        /**
+         * Realiza un ajuste masivo de precios porcentual sobre todas las recetas
+         * @param float $porcentaje
+         * @param string $tipoOperacion 'aumentar' o 'disminuir'
+         * @param string $usuario
+         * @param int $idEmpresa
+         * @return bool
+         */
+        public function ajustarPreciosMasivo(float $porcentaje, string $tipoOperacion = 'aumentar', string $usuario = 'admin', int $idEmpresa = 0): bool
+        {
+            if ($porcentaje <= 0) {
+                return false;
+            }
+
+            $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa : "";
+            $res = $this->con->query("SELECT idReceta, PrecioUnitario, precio_base_regular, precio_anterior FROM receta $condicion");
+            if (!$res) {
+                return false;
+            }
+
+            $signo = ($tipoOperacion === 'aumentar') ? '+' : '-';
+            $motivo = "Ajuste masivo de precios ({$signo}{$porcentaje}%)";
+
+            while ($fila = $res->fetch_assoc()) {
+                $id = (int)$fila['idReceta'];
+                $precioBase = (float)($fila['precio_base_regular'] ?: ($fila['PrecioUnitario'] ?: 1.00));
+
+                if ($tipoOperacion === 'disminuir') {
+                    $nuevoPrecio = max(0.01, round($precioBase * (1 - ($porcentaje / 100)), 2));
+                } else {
+                    $nuevoPrecio = round($precioBase * (1 + ($porcentaje / 100)), 2);
+                }
+
+                // Actualizar receta
+                $stmt = $this->con->prepare("
+                    UPDATE receta 
+                    SET PrecioUnitario = ?, 
+                        precio_base_regular = ?, 
+                        precio_anterior = ?, 
+                        en_promocion = 0, 
+                        porcentaje_descuento = 0, 
+                        fecha_inicio_promo = NULL, 
+                        fecha_fin_promo = NULL 
+                    WHERE idReceta = ?
+                ");
+                if ($stmt) {
+                    $stmt->bind_param("dddi", $nuevoPrecio, $nuevoPrecio, $precioBase, $id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                // Registrar en histórico
+                $stmtHist = $this->con->prepare("
+                    INSERT INTO historico_precios_promociones 
+                    (idReceta, tipo_cambio, precio_anterior, precio_nuevo, porcentaje_descuento, motivo, usuario, estado) 
+                    VALUES (?, 'nivelacion', ?, ?, 0, ?, ?, 'aplicada')
+                ");
+                if ($stmtHist) {
+                    $stmtHist->bind_param("iddss", $id, $precioBase, $nuevoPrecio, $motivo, $usuario);
+                    $stmtHist->execute();
+                    $stmtHist->close();
+                }
+            }
+
+            return true;
         }
     }
 }

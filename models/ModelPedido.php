@@ -13,17 +13,27 @@ public function __construct()
         return $this->obtenerPedidos();
     }
 
-    public function obtenerPedidos(): array
+    public function obtenerPedidos(int $idEmpresa = 0): array
     {
-        $sql = "SELECT idPedido, fechaPedido, NombreCliente, ApellidosCliente, estadoPedido.nombreEstado 
+        $condicion = "";
+        if ($idEmpresa > 0) {
+            $condicion = " WHERE pedido.idEmpresa = " . (int)$idEmpresa . " ";
+        }
+        $sql = "SELECT pedido.idPedido, pedido.fechaPedido, pedido.idEmpresa, cliente.NombreCliente, cliente.ApellidosCliente, cliente.telefono, 
+                       estadoPedido.idEstadoPedido, estadoPedido.nombreEstado,
+                       COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa
                 FROM pedido 
                 INNER JOIN cliente ON pedido.idCliente = cliente.idCliente 
                 INNER JOIN estadoPedido ON pedido.idEstadoPedido = estadoPedido.idEstadoPedido 
-                WHERE pedido.idEstadoPedido = 1";
+                LEFT JOIN empresas emp ON pedido.idEmpresa = emp.idEmpresa
+                $condicion
+                ORDER BY pedido.idPedido DESC";
         $res = $this->con->query($sql);
         $r = [];
-        while ($row = $res->fetch_assoc()) {
-            $r[] = $row;
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $r[] = $row;
+            }
         }
         return $r;
     }
@@ -61,7 +71,8 @@ public function __construct()
     public function obtenerDetallePedido(int $idPedido): array
     {
         $stmt = $this->con->prepare(
-            "SELECT dp.idDetallePedido, dp.cantidad, dp.idReceta, dp.IdPedido, r.nombreReceta, r.PrecioUnitario 
+            "SELECT dp.idDetallePedido, dp.cantidad, dp.idReceta, dp.IdPedido, r.nombreReceta, r.PrecioUnitario,
+                    (dp.cantidad * COALESCE(r.PrecioUnitario, 0)) as subtotal
              FROM detallePedido dp 
              INNER JOIN receta r ON dp.idReceta = r.idReceta 
              WHERE dp.IdPedido = ?"
@@ -107,7 +118,7 @@ public function __construct()
     public function obtenerRecetaPorPedido(int $idPedido): array
     {
         $stmt = $this->con->prepare(
-            "SELECT dr.idDetalleReceta, dr.cantidaSa, dr.fechaSa, mp.NombreMP, r.nombreReceta, dp.IdPedido 
+            "SELECT dr.idDetalleReceta, dr.cantidaSa, dr.fechaSa, mp.NombreMP, r.nombreReceta, dp.IdPedido, dp.cantidad as cantidadPedida
              FROM detallereceta dr 
              INNER JOIN materiaPrima mp ON dr.idMateriaPrima = mp.idMateriaPrima 
              INNER JOIN receta r ON dr.IdReceta = r.idReceta 
@@ -124,5 +135,43 @@ public function __construct()
         }
         $stmt->close();
         return $r;
+    }
+
+    public function obtenerDetalleCompleto(int $idPedido): array
+    {
+        $stmt = $this->con->prepare(
+            "SELECT p.idPedido, p.fechaPedido, p.idCliente, p.idEstadoPedido, ep.nombreEstado,
+                    c.NombreCliente, c.apellidosCliente, c.telefono, c.edad, c.genero,
+                    u.username as correoCliente
+             FROM pedido p
+             INNER JOIN cliente c ON p.idCliente = c.idCliente
+             INNER JOIN estadoPedido ep ON p.idEstadoPedido = ep.idEstadoPedido
+             LEFT JOIN usuarios u ON c.idUsuario = u.idUsuario
+             WHERE p.idPedido = ?
+             LIMIT 1"
+        );
+        if (!$stmt) return [];
+        $stmt->bind_param("i", $idPedido);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $infoPedido = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$infoPedido) return [];
+
+        $items = $this->obtenerDetallePedido($idPedido);
+        $recetas = $this->obtenerRecetaPorPedido($idPedido);
+
+        $total = 0.0;
+        foreach ($items as $item) {
+            $total += (float)($item['subtotal'] ?? 0);
+        }
+
+        return [
+            'pedido' => $infoPedido,
+            'items' => $items,
+            'recetas' => $recetas,
+            'total' => round($total, 2)
+        ];
     }
 }

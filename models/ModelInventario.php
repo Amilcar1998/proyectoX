@@ -1,13 +1,14 @@
 <?php
-include '../db/conexion.php';
-include '../models/Inventario.php';
+require_once __DIR__ . "/../db/conexion.php";
+require_once __DIR__ . "/../models/Inventario.php";
 
 class ModelInventario extends Conexion{
     public function __construct(){
         parent::__construct();
     }
-    public function getTabla(): array {
-        $res = $this->con->query("SELECT i.idInventario, i.idMateriaPrima, mp.NombreMP, i.Existencias FROM inventario i INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima");
+    public function getTabla(int $idEmpresa = 0): array {
+        $condicion = ($idEmpresa > 0) ? " WHERE (i.idEmpresa = " . (int)$idEmpresa . " OR (i.idEmpresa IS NULL AND mp.idEmpresa = " . (int)$idEmpresa . ")) " : "";
+        $res = $this->con->query("SELECT i.idInventario, i.idEmpresa, i.idMateriaPrima, mp.NombreMP, i.Existencias, COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa FROM inventario i INNER JOIN materiaprima mp ON i.idMateriaPrima = mp.idMateriaPrima LEFT JOIN empresas emp ON i.idEmpresa = emp.idEmpresa $condicion ORDER BY i.idInventario ASC");
         if (!$res) {
             return [];
         }
@@ -17,16 +18,22 @@ class ModelInventario extends Conexion{
         }
         return $r;
     }
-    public function getInventario(){
-        return $this->getTabla();
+    public function obtenerTabla(int $idEmpresa = 0): array {
+        return $this->getTabla($idEmpresa);
     }
-    public function InsertarInventario($inv){
-         $a="";
+    public function listarTodos(int $idEmpresa = 0): array {
+        return $this->getTabla($idEmpresa);
+    }
+    public function getInventario(int $idEmpresa = 0){
+        return $this->getTabla($idEmpresa);
+    }
+    public function InsertarInventario($inv, int $idEmpresa = 1){
          $b=$inv->getIdMateriaPrima();
          $c=$inv->getExistencias();
          $d=$inv->getIdDetalleCompra();
-         $res=$this->con->prepare("INSERT INTO inventario (idInventario, idMateriaPrima, Existencias, idDetalleCompra) VALUES (?,?,?,?)");
-         $res->bind_param('iisi',$a,$b,$c,$d);
+         if ($idEmpresa <= 0) $idEmpresa = 1;
+         $res=$this->con->prepare("INSERT INTO inventario (idMateriaPrima, Existencias, idDetalleCompra, idEmpresa) VALUES (?,?,?,?)");
+         $res->bind_param('isii',$b,$c,$d,$idEmpresa);
          return $res->execute();
      }
      public function setInventario($inv){
@@ -66,11 +73,14 @@ class ModelInventario extends Conexion{
           return $r;
       }
 
-      public function getMateriasPrimas(): array {
-          $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima");
+      public function getMateriasPrimas(int $idEmpresa = 0): array {
+          $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+          $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima $condicion ORDER BY NombreMP ASC");
           $r = [];
-          while ($row = $res->fetch_assoc()) {
-              $r[] = $row;
+          if ($res) {
+              while ($row = $res->fetch_assoc()) {
+                  $r[] = $row;
+              }
           }
           return $r;
       }

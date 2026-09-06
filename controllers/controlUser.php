@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $auditoria->cerrarOtrasSesionesDeUsuario($idUsuario, $sesionId);
 
             $_SESSION['id_Rol'] = $rol;
+            $_SESSION['idEmpresa'] = $obUser->obtenerIdEmpresaPorUsername($login);
 
             if ($rol === 1 || $rol === 4) {
                 $_SESSION['s1'] = $login;

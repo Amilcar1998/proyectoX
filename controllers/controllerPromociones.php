@@ -93,8 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $esGerenteOAdmin) {
         $tipoOperacion = $_POST['tipoOperacion'] ?? 'aumentar';
 
         if ($porcentaje > 0) {
-            $modeloPromocion->ajustarPreciosMasivo($porcentaje, $tipoOperacion);
-            $mensaje = "Ajuste masivo del {$porcentaje}% aplicado exitosamente a todas las fórmulas.";
+            $idEmpresaAjuste = ($esSuperUsuario ?? false) ? 0 : (int)($_SESSION['idEmpresa'] ?? 1);
+            $modeloPromocion->ajustarPreciosMasivo($porcentaje, $tipoOperacion, $usuarioActual, $idEmpresaAjuste);
+            $mensaje = "Ajuste masivo del {$porcentaje}% aplicado exitosamente a las fórmulas.";
             $tipoMensaje = "success";
             logAccionAuditoria('crud', 'promociones', "Ajuste masivo ($tipoOperacion {$porcentaje}%)");
         }
@@ -108,10 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $esGerenteOAdmin) {
     }
 }
 
-// Obtener recetas, la promoción activa actual y el historial completo
-$listaRecetas = $modeloPromocion->listarRecetas();
-$promocionActivaActual = $modeloPromocion->obtenerPromocionActiva();
-$historialPrecios = $modeloPromocion->obtenerHistorial(35);
+$idEmpresaFiltro = ($esSuperUsuario ?? false) ? 0 : (int)($_SESSION['idEmpresa'] ?? 1);
+
+// Obtener recetas, la promoción activa actual y el historial completo filtrados por empresa
+$listaRecetas = $modeloPromocion->listarRecetas($idEmpresaFiltro);
+$promocionActivaActual = $modeloPromocion->obtenerPromocionActiva(null, $idEmpresaFiltro);
+$historialPrecios = $modeloPromocion->obtenerHistorial(35, $idEmpresaFiltro);
 
 // Cargar la vista
 require_once __DIR__ . '/../views/vistaPromociones.php';

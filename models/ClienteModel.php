@@ -11,51 +11,60 @@ if (!class_exists('ClienteModel')) {
             parent::__construct();
         }
 
-        function getAddUs($u){
+        function getAddUs($u, int $idEmpresa = 1){
             $a = "";
             $b = $u->getUsername();
             $c = $u->getPass();
             $d = $u->getIdRol();
             $debe = 1;
-            $para = $this->con->prepare("INSERT INTO usuarios(idUsuario,username,pass,id_Rol,debe_cambiar_pass) VALUES(?,?,?,?,?)");
-            $para->bind_param('ssssi', $a, $b, $c, $d, $debe);
+            if ($idEmpresa <= 0) $idEmpresa = 1;
+            $para = $this->con->prepare("INSERT INTO usuarios(idUsuario,username,pass,id_Rol,idEmpresa,debe_cambiar_pass) VALUES(?,?,?,?,?,?)");
+            $para->bind_param('sssiii', $a, $b, $c, $d, $idEmpresa, $debe);
             $para->execute();
             $para->close();
         }
 
-        function getCliente(){
-            $res = $this->con->query("SELECT c.idCliente, c.NombreCliente, c.apellidosCliente, c.telefono, c.edad, c.genero, c.idUsuario, u.username FROM cliente c INNER JOIN usuarios u ON c.idUsuario=u.idUsuario");
+        function getCliente(int $idEmpresa = 0){
+            $condicion = ($idEmpresa > 0) ? " WHERE (c.idEmpresa = " . (int)$idEmpresa . " OR u.idEmpresa = " . (int)$idEmpresa . ") " : "";
+            $res = $this->con->query("SELECT c.idCliente, c.NombreCliente, c.apellidosCliente, c.telefono, c.edad, c.genero, c.idUsuario, u.username FROM cliente c INNER JOIN usuarios u ON c.idUsuario=u.idUsuario $condicion ORDER BY c.idCliente ASC");
             $r = array();
-            while($row = $res->fetch_assoc()) {
-                $e = new Cliente($row["idCliente"],$row["NombreCliente"],$row["apellidosCliente"],$row["telefono"],$row["edad"],$row["genero"],$row["idUsuario"],$row["username"]);
-                $r[] = $e;
+            if ($res) {
+                while($row = $res->fetch_assoc()) {
+                    $e = new Cliente($row["idCliente"],$row["NombreCliente"],$row["apellidosCliente"],$row["telefono"],$row["edad"],$row["genero"],$row["idUsuario"],$row["username"]);
+                    $r[] = $e;
+                }
             }
             return $r;
         }
 
         function getSessionEmp($correo = null){
             if ($correo === null) {
-                $correo = $_SESSION["s1"] ?? '';
+                $correo = $_SESSION["s1"] ?? ($_SESSION['s2'] ?? '');
             }
             $correo = $this->con->real_escape_string($correo);
             $res = $this->con->query("SELECT nombreEmp,apellido FROM empleado INNER JOIN usuarios ON empleado.idUsuario=usuarios.idUsuario WHERE username='$correo'");
             $r = array();
-            while($row = $res->fetch_assoc()) {
-                $r[] = $row;
+            if ($res) {
+                while($row = $res->fetch_assoc()) {
+                    $r[] = $row;
+                }
             }
             return $r;
         }
 
-        function getUser(){
-            $res = $this->con->query("SELECT * FROM usuarios WHERE id_Rol ='2'");
+        function getUser(int $idEmpresa = 0){
+            $condicion = ($idEmpresa > 0) ? " AND (idEmpresa = " . (int)$idEmpresa . ") " : "";
+            $res = $this->con->query("SELECT * FROM usuarios WHERE id_Rol ='2' $condicion");
             $r = array();
-            while($row = $res->fetch_assoc()) {
-                $r[] = $row;
+            if ($res) {
+                while($row = $res->fetch_assoc()) {
+                    $r[] = $row;
+                }
             }
             return $r;
         }
 
-        function agregarCliente($e){
+        function agregarCliente($e, int $idEmpresa = 1){
             $a = "";
             $b = $e->getNombreCi();
             $c = $e->getApellidos();
@@ -63,8 +72,9 @@ if (!class_exists('ClienteModel')) {
             $f = $e->getEdad();
             $g = $e->getGenero();
             $h = $e->getUsuarioC();
-            $res = $this->con->prepare("INSERT INTO cliente(idCliente,NombreCliente,apellidosCliente,telefono,edad,genero,idUsuario) VALUES(?,?,?,?,?,?,?)");
-            $res->bind_param("ssssssi", $a, $b, $c, $d, $f, $g, $h);
+            if ($idEmpresa <= 0) $idEmpresa = 1;
+            $res = $this->con->prepare("INSERT INTO cliente(idCliente,NombreCliente,apellidosCliente,telefono,edad,genero,idUsuario,idEmpresa) VALUES(?,?,?,?,?,?,?,?)");
+            $res->bind_param("ssssssii", $a, $b, $c, $d, $f, $g, $h, $idEmpresa);
             $res->execute();
             $res->close();
         }

@@ -6,9 +6,12 @@ include 'sesiones.php';
 $pedidoProv = new ModelPedidoProveedor();
 
 $pedidoDTO = new PedidoProveedor();
-$tabla = $pedidoProv->getTabla();
 
-$correo = $_SESSION['s1'] ?? '';
+$correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? '');
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
+$idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
+
 $session = $pedidoProv->getSessionEmp($correo);
 
 $nombres = '';
@@ -25,8 +28,8 @@ if(isset($_REQUEST["btnGuardar"])){
     $pedip->setCantidadMP($_REQUEST["txtCan"]);
     $pedip->setMonto($_REQUEST["txtMon"]);
     $pedip->setPrecioMP($_REQUEST["txtPre"]);
-    $pedidoProv->insertar($pedip);
-    $tabla = $pedidoProv->getTabla();
+    $pedip->setIdEmpresa($idEmpresaSesion);
+    $pedidoProv->insertar($pedip, $idEmpresaSesion);
 }else if(isset($_REQUEST["btnModificar"])){
     $pedip = new PedidoProveedor();
     $pedip->setIdPedido($_REQUEST["txtIdPe"]);
@@ -38,15 +41,14 @@ if(isset($_REQUEST["btnGuardar"])){
     $pedip->setMonto($_REQUEST["txtMon"]);
     $pedip->setPrecioMP($_REQUEST["txtPre"]);
     $pedidoProv->modificar($pedip);
-    $tabla = $pedidoProv->getTabla();
 }else if(isset($_REQUEST["btnEliminar"])){
     $pedidoProv->eliminar($_REQUEST["txtIdPe"]);
-    $tabla = $pedidoProv->getTabla();
 }
 
-$proveedores = $pedidoProv->getProveedores();
-$empleados = $pedidoProv->getEmpleados();
-$materiasPrimas = $pedidoProv->getMateriasPrimas();
+$tabla = $pedidoProv->getTabla($idEmpresaFiltro);
+$proveedores = $pedidoProv->getProveedores($idEmpresaFiltro);
+$empleados = $pedidoProv->getEmpleados($idEmpresaFiltro);
+$materiasPrimas = $pedidoProv->getMateriasPrimas($idEmpresaFiltro);
 
 include '../views/vistaPedidoProveedor.php';
 ?>

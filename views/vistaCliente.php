@@ -13,11 +13,44 @@
 
   <!-- Custom fonts for this template-->
   <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Page level plugin CSS-->
   <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
   <!-- Custom styles for this template-->
   <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f1f5f9;
+    }
+
+    .card-custom {
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+
+    .table thead th {
+      background: #0f172a;
+      color: #f8fafc;
+      font-weight: 600;
+      border: none;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 14px 16px;
+    }
+
+    .table tbody td {
+      vertical-align: middle;
+      padding: 13px 16px;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 
 <body id="page-top">
@@ -33,21 +66,21 @@
 
     <div id="content-wrapper">
 
-      <div class="container-fluid">
-        <ol class="breadcrumb">
+      <div class="container-fluid py-4">
+        <ol class="breadcrumb bg-white shadow-sm rounded-lg mb-4 py-2 px-3 border">
           <li class="breadcrumb-item">
-            <a href="controllerDashboard.php">Dashboard</a>
+            <a href="controllerDashboard.php" class="text-secondary"><i class="fas fa-home"></i> Inicio</a>
           </li>
-          <li class="breadcrumb-item active">Clientes</li>
+          <li class="breadcrumb-item active text-dark font-weight-bold"><i class="fas fa-users mr-1"></i> Clientes</li>
         </ol>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="mb-0"><i class="fas fa-users text-primary mr-2"></i>Gestión de Clientes</h2>
+          <h4 class="m-0 font-weight-bold text-dark"><i class="fas fa-users text-primary mr-2"></i>Directorio de Clientes</h4>
           <div>
-            <button type="button" class="btn btn-primary Nagregar" data-toggle="modal" data-target="#modalCliente" onclick="limpiarCliente()">
+            <button type="button" class="btn btn-primary font-weight-bold px-3 shadow-sm Nagregar" data-toggle="modal" data-target="#modalCliente" onclick="limpiarCliente()">
               <i class="fas fa-plus mr-1"></i>Agregar Cliente
             </button>
-            <a href="repoClientes.php" class="btn btn-success ml-2">
+            <a href="repoClientes.php" class="btn btn-outline-secondary font-weight-bold ml-2">
               <i class="fas fa-print mr-1"></i>Imprimir
             </a>
           </div>
@@ -124,36 +157,59 @@
         </div>
 
         <!-- Tabla Clientes -->
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fas fa-table mr-1"></i> Listado de Clientes Registrados
+        <div class="card card-custom mb-4">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-address-book text-primary mr-2"></i>Listado de Clientes Registrados</h6>
+            <span class="badge badge-light border text-dark px-3 py-2 font-weight-bold"><?= !empty($Rcliente) ? count($Rcliente) : 0 ?> Clientes</span>
           </div>
-          <div class="card-body">
+          <div class="card-body p-4">
             <div class="table-responsive">
-              <table class="table table-bordered datatable" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-custom table-hover datatable" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>Nombre</th>
-                    <th>Apellidos</th>
+                    <th>Nombre y Apellidos</th>
                     <th>Teléfono</th>
                     <th>Edad</th> 
                     <th>Género</th>
-                    <th>Usuario</th> 
-                    <th>Acciones</th> 
+                    <th>Usuario Asociado</th> 
+                    <th class="text-center" style="width: 110px;">Acciones</th> 
                   </tr>
                 </thead>
                 <tbody>
                   <?php if (!empty($Rcliente)): ?>
-                    <?php foreach ($Rcliente as $e): ?>
+                    <?php foreach ($Rcliente as $e): 
+                      $nombreCompleto = trim($e->getNombreCi() . ' ' . $e->getApellidos());
+                      $genero = $e->getGenero();
+                      $user = $e->getUsername();
+                    ?>
                       <tr>
-                        <td><?php echo htmlspecialchars($e->getNombreCi()); ?></td>
-                        <td><?php echo htmlspecialchars($e->getApellidos()); ?></td>
-                        <td><?php echo htmlspecialchars($e->getTelefono()); ?></td>
-                        <td><?php echo htmlspecialchars($e->getEdad()); ?></td>
-                        <td><?php echo htmlspecialchars($e->getGenero()); ?></td>
-                        <td><?php echo htmlspecialchars($e->getUsername()); ?></td>
+                        <td class="font-weight-bold text-dark">
+                          <i class="fas fa-user-circle text-secondary mr-2"></i><?php echo htmlspecialchars($nombreCompleto); ?>
+                        </td>
                         <td>
-                          <button type="button" class="btn btn-warning btn-sm cargar" data-toggle="modal" data-target="#modalCliente" onclick='cargarCliente("<?php echo htmlspecialchars($e->getIdCliente(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getNombreCi(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getApellidos(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getTelefono(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getEdad(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getGenero(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getUsuarioC(), ENT_QUOTES); ?>")'>
+                          <?php if ($e->getTelefono()): ?>
+                            <a href="tel:<?= htmlspecialchars($e->getTelefono()) ?>" class="text-primary font-weight-bold"><i class="fas fa-phone-alt text-success mr-1"></i><?php echo htmlspecialchars($e->getTelefono()); ?></a>
+                          <?php else: ?>
+                            <span class="text-muted">-</span>
+                          <?php endif; ?>
+                        </td>
+                        <td><span class="badge badge-light border px-2 py-1"><?php echo htmlspecialchars($e->getEdad() ?: 'N/A'); ?></span></td>
+                        <td>
+                          <?php if (strtolower($genero) === 'hombre' || strtolower($genero) === 'm'): ?>
+                            <span class="text-muted"><i class="fas fa-mars mr-1 text-primary"></i>Hombre</span>
+                          <?php else: ?>
+                            <span class="text-muted"><i class="fas fa-venus mr-1 text-danger"></i>Mujer</span>
+                          <?php endif; ?>
+                        </td>
+                        <td>
+                          <?php if ($user): ?>
+                            <code class="text-primary"><?php echo htmlspecialchars($user); ?></code>
+                          <?php else: ?>
+                            <span class="text-muted small">Sin cuenta</span>
+                          <?php endif; ?>
+                        </td>
+                        <td class="text-center">
+                          <button type="button" class="btn btn-outline-primary btn-sm font-weight-bold px-2 py-1 cargar" data-toggle="modal" data-target="#modalCliente" onclick='cargarCliente("<?php echo htmlspecialchars($e->getIdCliente(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getNombreCi(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getApellidos(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getTelefono(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getEdad(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getGenero(), ENT_QUOTES); ?>", "<?php echo htmlspecialchars($e->getUsuarioC(), ENT_QUOTES); ?>")'>
                             <i class="fas fa-edit mr-1"></i>Editar
                           </button>
                         </td>
@@ -164,7 +220,9 @@
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Actualizado el <?php echo date('d/m/Y \a \l\a\s H:i'); ?></div>
+          <div class="card-footer bg-white small text-muted border-top">
+            <i class="fas fa-clock mr-1"></i>Actualizado el <?php echo date('d/m/Y \a \l\a\s H:i'); ?>
+          </div>
         </div>
       </div>
       <!-- /.container-fluid -->

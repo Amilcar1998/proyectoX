@@ -318,20 +318,43 @@ echo $cli;
                       <tfoot>
                         <tr class="table-success font-weight-bold">
                           <td colspan="3" class="text-right">TOTAL ESTIMADO DEL PEDIDO:</td>
-                          <td class="text-right text-success" style="font-size: 16px;">$<?php echo number_format($granTotal, 2); ?></td>
+                          <td class="text-right text-success" style="font-size: 17px;">$<?php echo number_format($granTotal, 2); ?></td>
                           <td></td>
                         </tr>
                       </tfoot>
                     </table>
                   </div>
+
+                  <!-- BOTONES DE ACCIÓN: SEGUIR AGREGANDO O PAGAR -->
+                  <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top">
+                    <div class="mb-2 mb-md-0">
+                      <a href="#pills-productos" onclick="$('#tab-productos').tab('show');" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 mb-1">
+                        <i class="fas fa-cart-plus mr-1"></i>Seguir Agregando Productos
+                      </a>
+                      <button class="btn btn-success btn-sm font-weight-bold mb-1" data-toggle="modal" data-target="#modalAgregarProducto">
+                        <i class="fas fa-plus mr-1"></i>Agregar por Modal
+                      </button>
+                    </div>
+                    <?php if ($granTotal > 0): ?>
+                      <div>
+                        <button type="button" class="btn btn-primary font-weight-bold shadow px-4 py-2" onclick="pagarPedido(<?php echo $idPedidoActual; ?>, <?php echo $granTotal; ?>)">
+                          <i class="fas fa-credit-card mr-2"></i>Pagar Pedido Ahora ($<?php echo number_format($granTotal, 2); ?> USD)
+                        </button>
+                      </div>
+                    <?php endif; ?>
+                  </div>
+
                 <?php else: ?>
                   <div class="alert alert-info mb-0 text-center py-4">
                     <i class="fas fa-box-open fa-2x d-block mb-2 text-info"></i>
                     <h6 class="font-weight-bold mb-1">Este pedido aún no tiene productos agregados.</h6>
                     <p class="small text-muted mb-3">Puedes agregar productos directamente desde el <strong>Catálogo</strong> o desde el botón de abajo.</p>
-                    <button class="btn btn-success font-weight-bold shadow-sm" data-toggle="modal" data-target="#modalAgregarProducto">
+                    <button class="btn btn-success font-weight-bold shadow-sm mr-2" data-toggle="modal" data-target="#modalAgregarProducto">
                       <i class="fas fa-plus mr-1"></i>Agregar Producto Ahora
                     </button>
+                    <a href="#pills-productos" onclick="$('#tab-productos').tab('show');" class="btn btn-primary font-weight-bold shadow-sm">
+                      <i class="fas fa-boxes mr-1"></i>Ir al Catálogo
+                    </a>
                   </div>
                 <?php endif; ?>
               </div>
@@ -614,6 +637,64 @@ echo $cli;
       $('#tab-pedidos').tab('show');
     <?php endif; ?>
   });
+
+  function pagarPedido(idPedido, montoTotal) {
+    if (!idPedido || montoTotal <= 0) {
+      Swal.fire('Atención', 'El pedido no cuenta con un monto válido para pagar.', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: '💳 Pagar Pedido #' + idPedido,
+      html: '<p>Total a pagar: <strong class="text-success" style="font-size: 18px;">$' + parseFloat(montoTotal).toFixed(2) + ' USD</strong></p><p class="small text-muted">Serás redirigido a la pasarela segura de pago de Wompi El Salvador.</p>',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-lock mr-1"></i> Ir a Pagar con Wompi',
+      cancelButtonText: 'Seguir Comprando',
+      confirmButtonColor: '#2563eb',
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        const payload = {
+          idPedido: idPedido,
+          nombre: <?php echo json_encode($nombres); ?>,
+          correo: <?php echo json_encode($correo); ?>,
+          items: <?php echo json_encode(array_map(function($i) {
+            $cant = max(1, (int)($i['cantidad'] ?? 1));
+            $tot = (float)($i['total_producto'] ?? 0);
+            return [
+              'id' => (int)($i['idReceta'] ?? 1),
+              'nombre' => (string)($i['nombreReceta'] ?? 'Producto'),
+              'precio' => $tot / $cant,
+              'cantidad' => $cant
+            ];
+          }, $detalleRes)); ?>
+        };
+
+        return fetch('../wompi/create-checkout-session.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(json => { throw new Error(json.error || 'Error al crear la sesión de pago'); });
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            throw new Error(data.error || 'No se recibió la URL de pago.');
+          }
+        })
+        .catch(error => {
+          Swal.showValidationMessage('Error: ' + error.message);
+        });
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
+  }
 </script>
 
 <?php if (!empty($msj) && !empty($icon)): ?>

@@ -5,8 +5,11 @@ include 'sesiones.php';
 
 $dao = new ModelInventario();
 
-$tabla = $dao->getTabla();
-$correo = $_SESSION['s1'] ?? '';
+$correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? '');
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
+$idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
+
 $session = [];
 $nombres = '';
 
@@ -17,16 +20,13 @@ if ($correo) {
     }
 }
 
-$materiasPrimas = $dao->getMateriasPrimas();
-
 if (isset($_REQUEST["btnGuardar"])) {
     $obj = new Inventario();
     $obj->setIdInventario($_REQUEST["txtId"] ?? '');
     $obj->setIdMateriaPrima($_REQUEST["txtIdMateriaPrima"] ?? '');
     $obj->setExistencias($_REQUEST["txtExistencias"] ?? '');
     $obj->setIdDetalleCompra($_REQUEST["txtDetalleCompra"] ?? '');
-    $dao->InsertarInventario($obj);
-    $tabla = $dao->getTabla();
+    $dao->InsertarInventario($obj, $idEmpresaSesion);
 } else if (isset($_REQUEST["btnModificar"])) {
     $obj = new Inventario();
     $obj->setIdInventario($_REQUEST["txtId"] ?? '');
@@ -34,11 +34,12 @@ if (isset($_REQUEST["btnGuardar"])) {
     $obj->setExistencias($_REQUEST["txtExistencias"] ?? '');
     $obj->setIdDetalleCompra($_REQUEST["txtDetalleCompra"] ?? '');
     $dao->setInventario($obj);
-    $tabla = $dao->getTabla();
 } else if (isset($_REQUEST["btnEliminar"])) {
     $dao->eliminar($_REQUEST["txtId"] ?? 0);
-    $tabla = $dao->getTabla();
 }
+
+$tabla = $dao->getTabla($idEmpresaFiltro);
+$materiasPrimas = $dao->getMateriasPrimas($idEmpresaFiltro);
 
 include '../views/vistaInventario.php';
 ?>

@@ -89,6 +89,78 @@ if (!class_exists('PagoModel')) {
         }
 
         /**
+         * Lista los pagos correspondientes a una empresa específica
+         */
+        public function listarPagosPorEmpresa(int $idEmpresa, int $limite = 100, int $offset = 0): array
+        {
+            $stmt = $this->con->prepare(
+                "SELECT p.*, pp.nombrePlan, u.username
+                 FROM pagos p
+                 LEFT JOIN plan_pago pp ON p.idPlanPago = pp.idPlanPago
+                 LEFT JOIN usuarios u ON p.idUsuario = u.idUsuario
+                 WHERE p.idEmpresa = ?
+                 ORDER BY p.idPago DESC
+                 LIMIT ? OFFSET ?"
+            );
+            if (!$stmt) {
+                return [];
+            }
+            $stmt->bind_param("iii", $idEmpresa, $limite, $offset);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $pagos = [];
+            while ($row = $result->fetch_assoc()) {
+                $pagos[] = $this->procesarFilaPago($row);
+            }
+            $stmt->close();
+            return $pagos;
+        }
+
+        /**
+         * Estadísticas de pagos para una empresa específica
+         */
+        public function obtenerEstadisticasPorEmpresa(int $idEmpresa): array
+        {
+            $stmt = $this->con->prepare(
+                "SELECT 
+                    COUNT(*) AS totalTransacciones,
+                    COALESCE(SUM(CASE WHEN estado = 'completado' THEN monto ELSE 0 END), 0) AS totalRecaudado,
+                    COALESCE(SUM(CASE WHEN estado = 'completado' THEN 1 ELSE 0 END), 0) AS totalCompletados,
+                    COALESCE(SUM(CASE WHEN estado = 'pendiente' THEN 1 ELSE 0 END), 0) AS totalPendientes,
+                    COALESCE(SUM(CASE WHEN estado = 'fallido' THEN 1 ELSE 0 END), 0) AS totalFallidos,
+                    COALESCE(AVG(CASE WHEN estado = 'completado' THEN monto ELSE NULL END), 0) AS ticketPromedio
+                FROM pagos
+                WHERE idEmpresa = ?"
+            );
+            if (!$stmt) {
+                return [
+                    'totalTransacciones' => 0, 'totalRecaudado' => 0.0, 'totalCompletados' => 0,
+                    'totalPendientes' => 0, 'totalFallidos' => 0, 'ticketPromedio' => 0.0
+                ];
+            }
+            $stmt->bind_param("i", $idEmpresa);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $row = $res->fetch_assoc();
+            $stmt->close();
+
+            if ($row) {
+                return [
+                    'totalTransacciones' => (int)$row['totalTransacciones'],
+                    'totalRecaudado' => (float)$row['totalRecaudado'],
+                    'totalCompletados' => (int)$row['totalCompletados'],
+                    'totalPendientes' => (int)$row['totalPendientes'],
+                    'totalFallidos' => (int)$row['totalFallidos'],
+                    'ticketPromedio' => (float)$row['ticketPromedio']
+                ];
+            }
+            return [
+                'totalTransacciones' => 0, 'totalRecaudado' => 0.0, 'totalCompletados' => 0,
+                'totalPendientes' => 0, 'totalFallidos' => 0, 'ticketPromedio' => 0.0
+            ];
+        }
+
+        /**
          * Estadísticas globales de pagos para el dashboard y módulo
          */
         public function obtenerEstadisticasGlobales(): array

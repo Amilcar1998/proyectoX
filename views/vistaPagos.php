@@ -14,25 +14,40 @@
 
     <style>
         .badge-completado {
-            background-color: #10b981;
-            color: #ffffff;
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
             font-size: 0.82rem;
-            padding: 5px 10px;
-            border-radius: 6px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         .badge-pendiente {
-            background-color: #f59e0b;
-            color: #ffffff;
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
             font-size: 0.82rem;
-            padding: 5px 10px;
-            border-radius: 6px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         .badge-fallido {
-            background-color: #ef4444;
-            color: #ffffff;
+            background-color: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fecdd3;
             font-size: 0.82rem;
-            padding: 5px 10px;
-            border-radius: 6px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         .badge-wompi {
             background-color: #4f46e5;
@@ -406,11 +421,11 @@
 
             $('#modalHeaderSub').html(`Pago <strong>#${p.idPago}</strong> • Ref: <span class="font-monospace text-warning">${p.referencia || '-'}</span> • Fecha: ${p.fecha_hora}`);
 
-            let estadoBadge = `<span class="badge badge-success px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-check-circle mr-1"></i>Aprobado por Wompi</span>`;
+            let estadoBadge = `<span class="badge badge-completado px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-check-circle mr-1"></i>Aprobado por Wompi</span>`;
             if (p.estado === 'pendiente') {
-                estadoBadge = `<span class="badge badge-warning px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-clock mr-1"></i>Pendiente</span>`;
+                estadoBadge = `<span class="badge badge-pendiente px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-clock mr-1"></i>Pendiente</span>`;
             } else if (p.estado === 'fallido') {
-                estadoBadge = `<span class="badge badge-danger px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-times-circle mr-1"></i>Fallido / Declinado</span>`;
+                estadoBadge = `<span class="badge badge-fallido px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-times-circle mr-1"></i>Fallido / Declinado</span>`;
             }
 
             // Desglose de productos o plan

@@ -38,6 +38,39 @@ if (!class_exists('UsuarioModel')) {
             return $fila ? ((int)$fila['debe_cambiar_pass'] === 1) : false;
         }
 
+        public function obtenerIdEmpresaPorUsername(string $usuario): int
+        {
+            $stmt = $this->con->prepare("SELECT idUsuario, idEmpresa FROM usuarios WHERE username = ? LIMIT 1");
+            if (!$stmt) return 1;
+            $stmt->bind_param("s", $usuario);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+            $fila = $resultado->fetch_assoc();
+            $stmt->close();
+
+            if ($fila) {
+                if (!empty($fila['idEmpresa']) && (int)$fila['idEmpresa'] > 0) {
+                    return (int)$fila['idEmpresa'];
+                }
+                $idUsuario = (int)$fila['idUsuario'];
+
+                // Buscar si es dueño de alguna empresa
+                $stmtEmp = $this->con->prepare("SELECT idEmpresa FROM empresas WHERE idUsuarioDueno = ? LIMIT 1");
+                if ($stmtEmp) {
+                    $stmtEmp->bind_param("i", $idUsuario);
+                    $stmtEmp->execute();
+                    $resEmp = $stmtEmp->get_result();
+                    if ($rowEmp = $resEmp->fetch_assoc()) {
+                        $stmtEmp->close();
+                        return (int)$rowEmp['idEmpresa'];
+                    }
+                    $stmtEmp->close();
+                }
+            }
+
+            return 1;
+        }
+
         public function cambiarClaveObligatoria(string $usuario, string $claveActual, string $nuevaClave): array
         {
             if (strlen($nuevaClave) < 6) {
@@ -98,7 +131,8 @@ if (!class_exists('UsuarioModel')) {
             $stmtIns->bind_param("sss", $correo, $token, $expiracion);
             $stmtIns->execute();
 
-            $enlace = "http://localhost/ProyectoX/reset_password.php?token=" . urlencode($token);
+            $urlBase = $this->obtenerUrlBase();
+            $enlace = $urlBase . "/reset_password.php?token=" . urlencode($token);
             $enviado = $this->enviarCorreoRecuperacion($correo, $enlace);
 
             return [
@@ -170,21 +204,37 @@ if (!class_exists('UsuarioModel')) {
 
         private function enviarCorreoRecuperacion(string $correo, string $enlace): bool
         {
-            $asunto = "Recuperación de contraseña - Concentrados El Gordito";
-            $cuerpo = "<html><body style='font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;'>"
-                . "<div style='max-width:600px;margin:0 auto;background:white;padding:30px;border-radius:10px;'>"
-                . "<h2 style='color:#1e3a8a;'>Recuperación de contraseña</h2>"
-                . "<p>Hola, haz clic en el siguiente enlace para restablecer tu contraseña:</p>"
-                . "<a href='$enlace' style='display:inline-block;padding:14px 28px;background:#7c3aed;color:white;text-decoration:none;border-radius:8px;font-weight:600;'>Restablecer contraseña</a>"
-                . "<p style='margin-top:20px;color:#666;'>El enlace expira en 1 hora.</p>"
-                . "</div></body></html>";
+            require_once __DIR__ . '/ServicioCorreo.php';
+            $servicioCorreo = new ServicioCorreo();
+            return $servicioCorreo->enviarRecuperacionClave($correo, $enlace);
+        }
 
-            $cabeceras = "MIME-Version: 1.0\r\n"
-                . "Content-type: text/html; charset=utf-8\r\n"
-                . "From: Concentrados El Gordito <admin@localhost>\r\n"
-                . "Reply-To: admin@localhost\r\n";
+        private function obtenerUrlBase(): string
+        {
+            $protocolo = 'http';
+            if (
+                (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+                (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+                (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on') ||
+                (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+            ) {
+                $protocolo = 'https';
+            }
 
-            return (bool)@mail($correo, $asunto, $cuerpo, $cabeceras);
+            $host = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? 'localhost');
+            
+            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+            $dirScript = str_replace('\\', '/', dirname($scriptName));
+            
+            if (preg_match('#/(controllers|views|wompi|models|api|scratch)$#i', $dirScript)) {
+                $dirBase = dirname($dirScript);
+            } else {
+                $dirBase = $dirScript;
+            }
+            
+            $dirBase = rtrim(str_replace('\\', '/', $dirBase), '/');
+            
+            return $protocolo . '://' . $host . ($dirBase !== '' && $dirBase !== '.' ? $dirBase : '');
         }
     }
 }
