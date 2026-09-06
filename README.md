@@ -1,310 +1,257 @@
-# 🐾 Concentrados El Gordito
+# 🐾 Concentrados El Gordito — Plataforma SaaS Multi-Empresa
 
-**Sistema de Gestión para Planta de Concentrados**
+**Sistema de Gestión Empresarial y Producción Agropecuaria Multi-Tenant**
 
-Sistema web de gestión empresarial para la producción y comercialización de alimentos concentrados para animales (aves, ganado y mascotas). Incluye módulos completos de producción, inventario, facturación, ventas, gestión de usuarios y auditoría.
+Plataforma web integral estructurada bajo el patrón arquitectónico **100% MVC (Modelo - Vista - Controlador)** para la administración, producción, inventario, ventas y facturación de alimentos concentrados para animales (avícola, porcino, ganadero y mascotas), con soporte **Multi-Empresa aislado**, pasarela de pagos integrada (**Wompi SV**) y control de acceso jerárquico granular.
 
 ---
 
 ## 📋 Tabla de Contenidos
 
-- [Características Principales](#-características-principales)
-- [Tecnologías](#-tecnologías)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Requisitos](#-requisitos)
-- [Instalación](#-instalación)
-- [Configuración Base de Datos](#-configuración-base-de-datos)
-- [Roles de Usuario](#-roles-de-usuario)
-- [Módulos del Sistema](#-módulos-del-sistema)
-- [Sistema de Auditoría](#-sistema-de-auditoría)
-- [Integración Stripe](#-integración-stripe)
-- [Arquitectura](#-arquitectura)
+- [✨ Características Principales](#-características-principales)
+- [🏢 Arquitectura Multi-Empresa (Multi-Tenant)](#-arquitectura-multi-empresa-multi-tenant)
+- [🛡️ Jerarquía de Roles y Seguridad](#️-jerarquía-de-roles-y-seguridad)
+- [🏛️ Arquitectura MVC y Reglas del Proyecto](#️-arquitectura-mvc-y-reglas-del-proyecto)
+- [📁 Estructura del Proyecto y Recursos](#-estructura-del-proyecto-y-recursos)
+- [🛠 Tecnologías Utilizadas](#-tecnologías-utilizadas)
+- [🚀 Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
+- [🗄️ Diccionario y Base de Datos](#️-diccionario-y-base-de-datos)
+- [🔑 Cuentas y Accesos Preconfigurados](#-cuentas-y-accesos-preconfigurados)
+- [🔍 Auditoría y Reportes en PDF](#-auditoría-y-reportes-en-pdf)
 
 ---
 
 ## ✨ Características Principales
 
-| Módulo | Capacidades |
-|--------|-------------|
-| **Dashboard** | KPIs en tiempo real, gráficos de pedidos mensuales, stock de materias primas, producción por empleado, facturación, pedidos recientes |
-| **Empleados** | CRUD completo, vinculación a cuentas de usuario, asociación a puestos de trabajo |
-| **Clientes** | CRUD de clientes, portal de autoservicio para pedidos individuales |
-| **Usuarios** | Gestión de cuentas de acceso con roles (Gerente, Empleado, Cliente) |
-| **Proveedores** | CRUD de proveedores de materias primas |
-| **Pedidos a Proveedor** | Órdenes de compra de insumos con seguimiento |
-| **Pedidos (Clientes)** | Gestión de pedidos de clientes, items por receta, cambios de estado |
-| **Producción** | Registro de lotes de producción, fechas, estados, trazabilidad por empleado |
-| **Inventario** | Control de existencias, detección de stock bajo, histórico de compras |
-| **Materia Prima** | Catálogo de ingredientes y concentrados |
-| **Facturación** | Facturas a proveedores, detalles de compra (cantidad, precio unitario) |
-| **Planes de Pago** | Catálogo de planes con integración Stripe para pagos en línea |
-| **Reportes** | Generación de reportes con mPDF/FPDI |
-| **Auditoría** | Registro de accesos, sesiones activas, historial de actividades |
-| **Recuperación de Cuenta** | Recuperación de contraseña por correo electrónico con token temporal |
+| Módulo | Capacidades y Funcionalidades |
+| :--- | :--- |
+| **🏢 Administración de Empresas** | Gestión completa de empresas suscritas, configuración de logo, teléfono, NIT, comisiones, generación de catálogo público por token seguro (`cat_key`) y asignación de dueños/gerentes. |
+| **📊 Dashboard Gerencial** | KPIs en tiempo real (Ventas del mes, pedidos pendientes, stock crítico, producción mensual), gráficos estadísticos interactivos y trazabilidad de pedidos por empresa. |
+| **📦 Pedidos de Clientes** | Registro y control de órdenes de compra, cálculo automático de materias primas por fórmula/receta, ficha modal detallada y actualización de estados en tiempo real. |
+| **🛒 Catálogo y Pasarela Wompi** | Landing page moderna con carrito de compras y pasarela de pago en línea (**Wompi El Salvador**) para compras directas de concentrados con confirmación automática. |
+| **🏭 Producción y Fórmulas** | Registro de lotes de producción vinculados a empleados responsables, control de mezclas y consumo proporcional de materia prima. |
+| **📦 Inventario y Materia Prima** | Existencias en tiempo real, alertas de stock mínimo y crítico, histórico de compras y kardex por almacén de empresa. |
+| **🚚 Pedidos a Proveedor y Facturas** | Solicitud y recepción de insumos a proveedores, registro de facturas de compra y costos unitarios. |
+| **🏷️ Promociones y Precios** | Descuentos temporales con vigencia programada, cancelación automática por vencimiento y nivelación masiva de precios porcentual. |
+| **🛡️ Roles y Permisos Granulares** | Asignación de permisos individuales sobre 17 submódulos con herencia de roles y control de acceso estricto. |
+| **📑 Reportes Oficiales en PDF** | Generación de reportes profesionales en formato PDF (Inventario, mezclas, pedidos, proveedores, empleados) con **mPDF**. |
+| **🕵️ Auditoría y Sesiones Activas** | Registro de inicio/cierre de sesión, cambios CRUD, control de sesiones únicas concurrentes y purga automática. |
 
 ---
 
-## 🛠 Tecnologías
+## 🏢 Arquitectura Multi-Empresa (Multi-Tenant)
 
-| Componente | Tecnología |
-|-----------|-----------|
-| **Backend** | PHP 7.4+ |
-| **Base de Datos** | MariaDB / MySQL |
-| **ORM/Driver** | mysqli (prepared statements) |
-| **Frontend** | Bootstrap 5, jQuery 3.6, Font Awesome 6 |
-| **Tema UI** | SB-Admin 2 |
-| **PDF** | mPDF + FPDI |
-| **Pagos** | Stripe (Checkout Sessions) |
-| **Alertas** | SweetAlert2 |
-| **Tablas** | DataTables (con paginación y scroll interno) |
+El sistema opera bajo un modelo **Multi-Tenant con aislamiento a nivel de base de datos** mediante la columna `idEmpresa`:
+
+1. **Aislamiento Total de Datos**:
+   - Cada empresa (Gerente, Administrador, Empleados) opera de forma 100% aislada. No se mezclan pedidos, inventarios, facturas, clientes ni reportes entre compañías.
+2. **Generación Dinámica de Correos Corporativos**:
+   - Al registrar un nuevo empleado o administrador en una empresa, el sistema genera automáticamente su usuario y correo utilizando el **dominio oficial de la empresa** (ej. `juan.perez@santaelena.com`, `maria.lopez@avicolasanjose.sv`, `carlos.gomez@gordito.com`).
+3. **Rol Superusuario Global**:
+   - El Superusuario (`amilcar199819@gmail.com`) dispone de visión global y control centralizado, visualizando la procedencia de cada registro mediante insignias de compañía.
+4. **Catálogos Públicos Independientes**:
+   - Cada empresa cuenta con un enlace público único generado con un token de acceso seguro (`landing.php?empresa=ID&cat_key=TOKEN`) para exhibir sus productos a sus clientes.
 
 ---
 
-## 📁 Estructura del Proyecto
+## 🛡️ Jerarquía de Roles y Seguridad
+
+```mermaid
+graph TD
+    SU["Superusuario (Acceso Global y Administración SaaS)"] --> G["Gerente de Empresa (Gestión Total de su Compañía)"]
+    G --> A["Administrador (Operaciones y Configuración)"]
+    A --> E["Empleado Operativo (Producción, Almacén, Ventas)"]
+    E --> C["Cliente (Portal de Autoservicio y Pedidos)"]
+```
+
+- **Control de Sesiones Únicas**: El sistema invalida sesiones previas si el mismo usuario inicia sesión desde otro dispositivo o navegador.
+- **Cambio de Contraseña Temporal Obligatorio**: Los nuevos usuarios creados con claves temporales son redirigidos forzosamente a una vista de cambio de clave segura antes de acceder a las funciones del sistema.
+- **Protección contra Inyecciones SQL**: Todas las consultas a base de datos utilizan sentencias preparadas (`prepared statements`) mediante `mysqli`.
+
+---
+
+## 🏛️ Arquitectura MVC y Reglas del Proyecto
+
+Este repositorio cumple estrictamente con las directrices de calidad y diseño de software definidas en [`AGENTS.md`](file:///c:/xampp/htdocs/proyectoX/AGENTS.md) y [`GEMINI.md`](file:///c:/xampp/htdocs/proyectoX/GEMINI.md):
+
+1. **Arquitectura 100% MVC**:
+   - **Controladores (`controllers/`)**: Orquestan el flujo, limpian peticiones (`$_POST`, `$_GET`, JSON) e invocan a los modelos. Prohibido ejecutar SQL directo en controladores.
+   - **Modelos (`models/`)**: Encapsulan la lógica de negocio y persistencia usando la clase `Conexion`. Retornan estructuras limpias (arrays, objetos, booleanos). Prohibido imprimir HTML.
+   - **Vistas (`views/`)**: Responsables exclusivas de la presentación visual consumiendo los datos expuestos por el controlador. Prohibido instanciar conexiones a base de datos dentro de las vistas.
+2. **Nomenclatura 100% en Español**:
+   - Todos los métodos, funciones y clases siguen nomenclatura en español (`obtenerPorId()`, `guardar()`, `listarTodos()`, `actualizar()`, `eliminar()`).
+3. **Métodos Cortos y con Pocos Parámetros**:
+   - Métodos concisos de responsabilidad única (10-25 líneas), con máximo 2 a 3 parámetros agrupados en arreglos o entidades.
+4. **Documentación Obligatoria en Base de Datos (SQL COMMENT)**:
+   - Toda tabla y columna en la base de datos contiene obligatoriamente su descripción técnica mediante la cláusula `COMMENT '...'`.
+
+---
+
+## 📁 Estructura del Proyecto y Recursos
+
+La estructura del proyecto ha sido saneada y centralizada:
 
 ```
 proyectoX/
-├── controllers/                 # Lógica de controladores (MVC)
-│   ├── Sesiones.php            # Guardián de autenticación global
-│   ├── controlUser.php         # Login y validación
-│   ├── controllerDashboard.php # Dashboard gerencial
-│   ├── controllerEmpleado.php  # Gestión de empleados
-│   ├── controllerCliente.php   # Gestión de clientes
-│   ├── controllerUsuarios.php  # Gestión de cuentas de usuario
-│   ├── controllerProveedor.php # Gestión de proveedores
-│   ├── controllerPedidos.php   # Pedidos de clientes
+├── config/                      # Archivos de configuración (correo, integraciones)
+│   └── correo.php               # Parámetros SMTP y API de correo
+│
+├── controllers/                 # Controladores del sistema (MVC)
+│   ├── controllerDashboard.php  # Dashboard y analíticas
+│   ├── controllerPedidos.php    # Gestión de pedidos de clientes
+│   ├── controllerEmpleado.php   # CRUD de empleados y generación de credenciales
+│   ├── controllerConfiguracionNegocio.php # Administración SaaS de empresas
 │   ├── controllerProduccion.php # Lotes de producción
-│   ├── controllerInventario.php # Control de inventario
-│   ├── controllerFactura.php   # Facturación
-│   ├── controllerPlanPago.php  # Planes de pago (Stripe)
-│   ├── controllerReportes.php  # Reportes del sistema
-│   └── repo*.php               # Controladores de reportes individuales
+│   ├── controllerInventario.php # Control de inventarios
+│   ├── controllerPromociones.php # Campañas de descuento y precios
+│   ├── sesiones.php             # Middleware guardián de autenticación y permisos
+│   │
+│   ├── vendor/                  # RECURSOS FRONTEND CENTRALIZADOS
+│   │   ├── bootstrap/           # Framework Bootstrap 4
+│   │   ├── fontawesome-free/    # Iconografía Font Awesome 6
+│   │   ├── datatables/          # Plugins y estilos DataTables
+│   │   ├── jquery/              # jQuery Core
+│   │   ├── jquery-easing/       # Animaciones de transición
+│   │   ├── sb-admin.css         # Estilos del tema SB Admin
+│   │   ├── sweetalert2.all.min.js # Alertas interactivas
+│   │   └── autoload.php         # Autoload de dependencias backend
+│   └── js/                      # Scripts JS propios del sistema
 │
-├── models/                     # Capa de datos y entidades
-│   ├── conexion.php            # Conexión singleton a MySQL
-│   ├── AuditoriaModel.php      # Modelo de auditoría
-│   ├── AuditoriaHelper.php     # Helpers para logging
-│   ├── PlanPagoModel.php       # Modelo de planes de pago
-│   ├── Entity classes:         # Entidades (Usuario, Empleado, Cliente, etc.)
-│   └── Model classes:          # DAOs (UsuarioModel, ModelPedido, etc.)
+├── models/                      # Capa de datos y lógica de negocio (MVC)
+│   ├── EmpresaModel.php         # Gestión multi-tenant y dominios
+│   ├── ModelPedido.php          # Pedidos de clientes
+│   ├── ModelPedidoProveedorMVC.php # Pedidos de compra a proveedores
+│   ├── ModelFactura.php         # Facturas de materias primas
+│   ├── ModelProduccion.php      # Lotes de producción
+│   ├── ModelInventario.php      # Existencias y stock
+│   ├── PromocionModel.php       # Reglas de precios y descuentos
+│   ├── PermisoModel.php         # Matriz de permisos y submódulos
+│   ├── AuditoriaModel.php       # Logs y sesiones activas
+│   └── ServicioCorreo.php       # Envío de notificaciones y recuperación
 │
-├── views/                      # Vistas y plantillas
-│   ├── configuracion.php       # Navbar, menú lateral, layout base
-│   ├── login.php               # Login + recuperación de contraseña
-│   ├── vista*.php              # Vistas por módulo (19 vistas)
-│   └── js/                     # Recursos JS propios
-│       ├── demo/datatables-demo.js # Config DataTables global
-│       └── translations.js       # Traducciones centralizadas
+├── views/                       # Vistas de presentación (HTML5 / PHP)
+│   ├── configuracion.php        # Layout base, navbar y menú lateral dinámico
+│   ├── vistaDashboard.php       # Panel de control principal
+│   ├── vistaPedidos.php         # Listado y detalle de pedidos
+│   ├── vistaConfiguracionNegocio.php # Panel y modal de empresas
+│   ├── vistaEmpleado.php        # Administración de personal
+│   ├── vistaPromociones.php     # Gestión de precios y promociones
+│   ├── landing.php              # Catálogo público y tienda en línea
+│   └── login.php                # Inicio de sesión con fondo dinámico
 │
-├── db/                         # Scripts de base de datos
-│   ├── parametros.php          # Credenciales DB (host, user, pass)
-│   ├── conexion.php            # Clase de conexión
-│   ├── concentrados.sql        # Schema principal + datos iniciales
-│   ├── auditoria.sql           # Tablas de auditoría y sesiones
-│   └── seed_data.sql           # Datos de prueba
+├── db/                          # Scripts SQL y migraciones
+│   ├── conexion.php             # Conexión Singleton a MySQL
+│   ├── multitenant_empresas.sql # Estructura multi-tenant y tablas de empresas
+│   ├── diccionario_datos_completo.sql # Diccionario con COMMENT en todas las tablas
+│   └── permisos.sql             # Matriz de roles y submódulos
 │
-├── stripe/                     # Integración Stripe
+├── vendor/                      # DEPENDENCIAS COMPOSER (Backend / mPDF)
+│   └── autoload.php
+│
+├── wompi/                       # Pasarela de pagos Wompi El Salvador
 │   ├── create-checkout-session.php
-│   ├── success.php
-│   ├── cancel.php
-│   └── webhook.php
+│   └── success.php
 │
-├── vendor/                     # Composer (mPDF, PSR)
-├── mpdf/                       # Librería mPDF
-├── index.php                   # Landing page pública
-├── reset_password.php          # Enrutador delegado a controllerRecuperarClave.php
-└── composer.json
+├── AGENTS.md                    # Reglas estrictas de arquitectura y desarrollo
+├── GEMINI.md                    # Reglas de desarrollo para el asistente
+└── README.md                    # Documentación técnica general
 ```
 
----
-
-## 📋 Requisitos
-
-- **PHP**: 7.4 o superior
-- **MySQL**: 5.7+ o MariaDB 10.4+
-- **Servidor Web**: Apache (XAMPP recomendado)
-- **Extensiones PHP**: mysqli, curl (para Stripe), mbstring
-- **Composer** (opcional, para dependencias vendor)
+> [!NOTE]
+> **Saneamiento de Recursos**: La carpeta huérfana `views/vendor/` fue eliminada y todas las vistas han sido redirigidas para consumir los recursos estáticos de forma unificada desde `controllers/vendor/` y las librerías PHP desde `vendor/`.
 
 ---
 
-## 🚀 Instalación
+## 🛠 Tecnologías Utilizadas
 
-### 1. Clonar el repositorio
+- **Lenguaje Principal**: PHP 7.4 / 8.x
+- **Motor de Base de Datos**: MySQL 5.7+ / MariaDB 10.4+
+- **Estilos y Maquetación**: CSS3, Bootstrap 4, SB-Admin, Paleta HSL y Glassmorphism
+- **JavaScript**: Vanilla JS, jQuery 3.6, SweetAlert2, DataTables, Chart.js
+- **Generación de Documentos**: mPDF 8.x
+- **Pasarela de Pago**: Wompi API REST (El Salvador)
+- **Servicio de Correo**: SMTP / Resend API / PHPMailer
+
+---
+
+## 🚀 Instalación y Puesta en Marcha
+
+### 1. Clonar el repositorio en tu servidor local (XAMPP / Apache)
 
 ```bash
-git clone <url-del-repositorio> proyectoX
+cd c:/xampp/htdocs/
+git clone https://github.com/Amilcar1998/proyectoX.git
 cd proyectoX
 ```
 
-### 2. Configurar la base de datos
+### 2. Importar la Base de Datos
+
+En tu cliente MySQL o phpMyAdmin:
 
 ```sql
--- En phpMyAdmin o línea de comandos:
-mysql -u root -p
-CREATE DATABASE IF NOT EXISTS concentrados CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE concentrados;
+CREATE DATABASE IF NOT EXISTS elgordito_bd CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE elgordito_bd;
 
--- Importar schema principal
-SOURCE db/concentrados.sql;
-
--- Importar tablas de auditoría
-SOURCE db/auditoria.sql;
+-- Importar estructura y datos iniciales
+SOURCE db/multitenant_empresas.sql;
+SOURCE db/permisos.sql;
+SOURCE db/diccionario_datos_completo.sql;
 ```
 
-### 3. Configurar credenciales
+### 3. Verificar Parámetros de Conexión
 
-Editar `db/parametros.php`:
+Revisa el archivo [`db/parametros.php`](file:///c:/xampp/htdocs/proyectoX/db/parametros.php) o [`db/conexion.php`](file:///c:/xampp/htdocs/proyectoX/db/conexion.php):
 
 ```php
-<?php
-if (!defined('SERVER')) {
-    define("SERVER","localhost");
-    define("USER","root");
-    define("PASSWORD",""); // Cambiar si tienes contraseña
-    define("BASE","concentrados");
-    define("CHAR","utf8mb4");
-}
-
-// Stripe (opcional - para pagos en línea)
-define("STRIPE_SECRET_KEY", "sk_test_tu_clave_secreta");
-define("STRIPE_PUBLISHABLE_KEY", "pk_test_tu_clave_publica");
-define("STRIPE_WEBHOOK_SECRET", "whsec_tu_webhook_secret");
+define("SERVER", "localhost");
+define("USER", "root");
+define("PASSWORD", "");
+define("BASE", "elgordito_bd");
+define("CHAR", "utf8mb4");
 ```
 
-### 4. Acceder a la aplicación
+### 4. Abrir en el Navegador
 
-```
-http://localhost/proyectoX/          # Landing page
-http://localhost/proyectoX/views/login.php  # Login
-```
-
----
-
-## 👤 Roles de Usuario
-
-| Rol | ID | Descripción | Acceso |
-|-----|-----|-------------|--------|
-| Gerente | 3 | Administrador del sistema | Acceso total a todos los módulos |
-| Empleado | 1 | Personal operativo | Producción, inventario, pedidos |
-| Cliente | 2 | Cliente registrado | Portal de pedidos individuales |
-| Cliente Individual | — | Acceso self-service | Portal individual para pedidos |
+- **Portal Principal / Login**: `http://localhost/proyectoX/controllers/controlUser.php` (o `http://localhost/proyectoX/views/login.php`)
+- **Catálogo Público de Ventas**: `http://localhost/proyectoX/controllers/controllerLanding.php`
+- **Dashboard**: `http://localhost/proyectoX/controllers/controllerDashboard.php`
 
 ---
 
-## 🔐 Módulos del Sistema
+## 🗄️ Diccionario y Base de Datos
 
-### Dashboard
-- Indicadores clave: total pedidos, facturación, stock bajo, empleados
-- Gráficos: pedidos mensuales, stock de materias primas, producción por empleado, facturación
-- Tabla de pedidos recientes con paginación
+El sistema consta de **31 tablas** documentadas con cláusulas `COMMENT` en cada campo:
 
-### Producción
-- Registro de lotes de producción
-- Estados: No trabajado → En proceso → Terminado
-- Vinculación a pedidos y empleados
-- Trazabilidad completa
-
-### Inventario
-- Control de existencias por materia prima
-- Alertas de stock bajo
-- Histórico de compras con precios
-
-### Pedidos
-- Flujo: Cliente → Pedido → Producción → Entrega
-- Estados: No trabajado / En proceso / Terminado
-- Desglose por receta y materias primas
-
-### Facturación
-- Emisión de facturas a proveedores
-- Detalle de compras con cantidad y precio unitario
-- Integridad referencial
-
-### Auditoría (Nuevo)
-- Tabla `auditoria`: login, logout, acceso a vistas, CRUD, errores
-- Tabla `sesiones_activas`: sesiones en vivo con última actividad
-- Tabla `plan_pago`: catálogo de planes de pago
-- Tabla `usuario_plan_pago`: historial de compras de planes
+| Grupo | Tablas |
+| :--- | :--- |
+| **Empresas y Multi-Tenant** | `empresas`, `empresa_configuracion`, `plan_pago`, `usuario_plan_pago` |
+| **Seguridad y Usuarios** | `usuarios`, `rol`, `permisos_usuario_submodulo`, `recuperacion_pass`, `sesiones_activas`, `auditoria` |
+| **Operaciones y Personal** | `empleado`, `puesto`, `cliente`, `proveedor` |
+| **Catálogo y Producción** | `receta`, `materiaprima`, `detallereceta`, `produccion`, `inventario` |
+| **Ventas y Facturación** | `pedido`, `detallepedido`, `estadopedido`, `factura`, `detallecompra`, `salidas`, `historico_precios_promociones` |
 
 ---
 
-## 🔍 Sistema de Auditoría
+## 🔑 Cuentas y Accesos Preconfigurados
 
-El sistema registra automáticamente:
-
-| Evento | Tabla | Campos |
-|--------|-------|--------|
-| Inicio de sesión | `auditoria` | usuario, IP, user-agent, fecha_hora |
-| Cierre de sesión | `auditoria` | usuario, IP, módulo |
-| Acceso a módulo | `auditoria` | usuario, módulo, descripción |
-| CRUD | `auditoria` | tipo_evento, módulo, descripción |
-
-**Vistas de reporte de auditoría:**
-- `reporteSesionesActivas.php` — Usuarios conectados en tiempo real
-- `reporteAuditoria.php` — Historial filtrado por fecha
-- `reporteActividadModulos.php` — Uso de módulos del sistema
+| Rol / Empresa | Usuario / Correo | Contraseña | Alcance |
+| :--- | :--- | :--- | :--- |
+| **Superusuario** | `amilcar199819@gmail.com` | *(Clave registrada)* | Acceso total global, panel SaaS multi-empresa. |
+| **Gerente (Empresa 1)** | `gerente@gordito.com` | `admin123` *(o clave asignada)* | Gestión completa de Concentrados El Gordito. |
+| **Gerente (Empresa 2)** | `carlos.mendoza@santaelena.com` | `admin123` | Gestión de Agropecuaria Santa Elena. |
+| **Gerente (Empresa 3)** | `elena.flores@avicolasanjose.sv` | `admin123` | Gestión de Avícola San José. |
 
 ---
 
-## 💳 Integración Stripe
+## 🔍 Auditoría y Reportes en PDF
 
-Para habilitar pagos en línea:
-
-1. Crear cuenta en [Stripe Dashboard](https://dashboard.stripe.com/)
-2. Obtener las llaves desde **Developers > API Keys**
-3. Configurar en `db/parametros.php`
-4. Configurar Webhook en Stripe Dashboard apuntando a:
-   ```
-   https://tu-dominio/stripe/webhook.php
-   ```
-5. El evento a escuchar es `checkout.session.completed`
+El sistema ofrece monitoreo continuo accesible desde el panel de reportes:
+- **Auditoría de Actividades**: `controllers/reporteAuditoria.php`
+- **Monitoreo de Sesiones Activas**: `controllers/reporteSesionesActivas.php`
+- **Reporte de Inventario General / Escaso**: `controllers/reporteInventarioGeneral.php`, `controllers/reporteInventarioEscaso.php`
+- **Reporte de Mezclas de Producción**: `controllers/reporteMezclas.php`
+- **Reporte de Pedidos y Proveedores**: `controllers/reportePedidos.php`, `controllers/reportePedidoProveedor.php`
 
 ---
 
-## 🗄 Base de Datos
-
-### Tablas Principales
-
-| Tabla | Descripción |
-|-------|-------------|
-| `usuarios` | Cuentas de acceso al sistema |
-| `rol` | Roles: Gerente, Empleado, Cliente |
-| `empleado` | Datos de empleados |
-| `cliente` | Datos de clientes |
-| `proveedor` | Datos de proveedores |
-| `puesto` | Puestos laborales |
-| `materiaprima` | Materias primas / ingredientes |
-| `receta` | Recetas de concentrados |
-| `pedido` | Pedidos de clientes |
-| `produccion` | Lotes de producción |
-| `inventario` | Control de existencias |
-| `factura` | Facturas a proveedores |
-| `detallecompra` | Detalle de compras |
-| `estadopedido` | Estados de pedido |
-| `detallepedido` | Items de pedido |
-| `detallereceta` | Consumo de materias por receta |
-| `salidas` | Salidas de producción |
-| `recuperacion_pass` | Tokens de recuperación de contraseña |
-| `auditoria` | Log de auditoría |
-| `sesiones_activas` | Sesiones activas |
-| `plan_pago` | Planes de pago |
-| `usuario_plan_pago` | Compras de planes por usuario |
-
----
-
-## 🧹 Notas de Mantenimiento
-
-- **Passwords**: Se usa `sha1()` en el proyecto original. Considerar migrar a `password_hash()` / `password_verify()` de PHP.
-- **Sesiones**: Las claves de sesión son `s1` (empleado/gerente), `s2` (cliente), `c1` (cliente individual).
-- **Formato de fechas**: El sistema maneja `DATETIME` en base de datos y formatea a `d/m/Y` para visualización.
-- **Variables de sesión**: `$_SESSION['s1']`, `$_SESSION['s2']`, `$_SESSION['c1']` almacenan el username/correo.
-
----
-
-## 📄 Licencia
-
-Sistema propiedad de **Concentrados El Gordito**. Todos los derechos reservados.
-
----
-
-**Desarrollado con** 💙 para la gestión eficiente de concentrados animales.
+© **2026 Concentrados El Gordito** — Todos los derechos reservados.
