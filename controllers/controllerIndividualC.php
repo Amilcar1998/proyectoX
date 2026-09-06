@@ -9,35 +9,42 @@ $cliente = $cli->obtenerClientePorCorreo($correo);
 $idCliente = (int)($cliente['idCliente'] ?? 0);
 $idUsuario = (int)($cliente['idUsuario'] ?? 0);
 $nombres = trim(($cliente['NombreCliente'] ?? 'Cliente') . ' ' . ($cliente['apellidosCliente'] ?? ''));
-$fechaActual = date('Y-m-d');
+$fechaActual = date('d/m/Y');
 
 $suscripcion = $cli->obtenerSuscripcionUsuario($idUsuario);
 $misPagos = ($idUsuario > 0) ? $cli->obtenerPagosPorUsuario($idUsuario) : [];
 
 $msj = '';
 $icon = '';
-$pedidoSeleccionado = null;
 $idPedidoActual = null;
 $detalleRes = [];
 $materiaPrimaRes = [];
 $mostrarModalAgregar = false;
 
-// 1. Crear nuevo pedido
-if (isset($_POST['crear_pedido']) || isset($_REQUEST['pedidos'])) {
+// Función auxiliar para asegurar que el cliente existe
+$asegurarCliente = function() use ($cli, &$idCliente, &$idUsuario, $correo) {
     if ($idCliente <= 0 && !empty($correo)) {
-        $cliente = $cli->obtenerClientePorCorreo($correo);
-        $idCliente = (int)($cliente['idCliente'] ?? 0);
-        $idUsuario = (int)($cliente['idUsuario'] ?? 0);
+        $c = $cli->obtenerClientePorCorreo($correo);
+        $idCliente = (int)($c['idCliente'] ?? 0);
+        $idUsuario = (int)($c['idUsuario'] ?? 0);
     }
+    return $idCliente;
+};
 
+// 1. Crear nuevo pedido explícitamente
+if (isset($_POST['crear_pedido']) || isset($_REQUEST['pedidos'])) {
+    $asegurarCliente();
     if ($idCliente > 0) {
         $idNuevoPedido = $cli->crearPedido($fechaActual, $idCliente, 1);
         if ($idNuevoPedido > 0) {
             $idPedidoActual = $idNuevoPedido;
             $detalleRes = $cli->obtenerDetalleProductosPedido($idPedidoActual);
             $mostrarModalAgregar = true;
-            $msj = "Pedido #$idNuevoPedido creado con éxito. Selecciona los productos que deseas incluir.";
+            $msj = "Pedido #$idNuevoPedido iniciado con éxito. Selecciona los productos que deseas añadir.";
             $icon = 'success';
+        } else {
+            $msj = "No se pudo crear el pedido en la base de datos.";
+            $icon = 'error';
         }
     } else {
         $msj = "No se pudo identificar la cuenta del cliente.";
@@ -45,15 +52,18 @@ if (isset($_POST['crear_pedido']) || isset($_REQUEST['pedidos'])) {
     }
 }
 
-// 2. Agregar producto al pedido actual
-if (isset($_POST['agregar_producto']) || isset($_REQUEST['agregarP']) || isset($_REQUEST['agregarReceta']) || isset($_REQUEST['agregar'])) {
+// 2. Agregar producto (desde el modal o desde el catálogo directo)
+if (isset($_POST['agregar_producto']) || isset($_POST['agregar_desde_catalogo']) || isset($_REQUEST['agregarP']) || isset($_REQUEST['agregarReceta']) || isset($_REQUEST['agregar'])) {
+    $asegurarCliente();
+    
+    $idReceta = (int)($_POST['id_receta'] ?? ($_POST['producto'] ?? ($_REQUEST['producto'] ?? 0)));
+    $cantidad = (int)($_POST['cantidad'] ?? ($_POST['txtcantidad'] ?? ($_REQUEST['txtcantidad'] ?? 1)));
     $idPedidoDestino = (int)($_POST['id_pedido'] ?? ($_REQUEST['pedido'] ?? 0));
-    $idReceta = (int)($_POST['producto'] ?? ($_REQUEST['producto'] ?? 0));
-    $cantidad = (int)($_POST['txtcantidad'] ?? ($_REQUEST['txtcantidad'] ?? 1));
 
+    // Si no se especificó pedido o el ID es 0, buscar el último pedido pendiente o crear uno nuevo
     if ($idPedidoDestino <= 0 && $idCliente > 0) {
         $ultimos = $cli->obtenerUltimoPedidoCliente($idCliente);
-        if (!empty($ultimos)) {
+        if (!empty($ultimos) && (int)($ultimos[0]['idEstadoPedido'] ?? 0) === 1) {
             $idPedidoDestino = (int)$ultimos[0]['idPedido'];
         } else {
             $idPedidoDestino = $cli->crearPedido($fechaActual, $idCliente, 1);
@@ -61,40 +71,18 @@ if (isset($_POST['agregar_producto']) || isset($_REQUEST['agregarP']) || isset($
     }
 
     if ($idPedidoDestino > 0 && $idReceta > 0 && $cantidad > 0) {
-        $cli->agregarDetallePedido($cantidad, $idReceta, $idPedidoDestino);
-        $idPedidoActual = $idPedidoDestino;
-        $detalleRes = $cli->obtenerDetalleProductosPedido($idPedidoActual);
-        $msj = "Producto agregado al pedido #$idPedidoDestino correctamente.";
-        $icon = 'success';
-    } else {
-        $msj = "Verifica los datos del producto y la cantidad.";
-        $icon = 'warning';
-    }
-}
-
-// 2.1 Agregar producto directamente desde el Catálogo de Productos
-if (isset($_POST['agregar_desde_catalogo'])) {
-    $idReceta = (int)($_POST['id_receta'] ?? 0);
-    $cantidad = (int)($_POST['cantidad'] ?? 1);
-    $idPedidoDestino = (int)($_POST['id_pedido'] ?? ($idPedidoActual ?? 0));
-
-    if ($idPedidoDestino <= 0 && $idCliente > 0) {
-        $ultimos = $cli->obtenerUltimoPedidoCliente($idCliente);
-        if (!empty($ultimos)) {
-            $idPedidoDestino = (int)$ultimos[0]['idPedido'];
+        $agregado = $cli->agregarDetallePedido($cantidad, $idReceta, $idPedidoDestino);
+        if ($agregado) {
+            $idPedidoActual = $idPedidoDestino;
+            $detalleRes = $cli->obtenerDetalleProductosPedido($idPedidoActual);
+            $msj = "¡Producto añadido con éxito al pedido #$idPedidoDestino!";
+            $icon = 'success';
         } else {
-            $idPedidoDestino = $cli->crearPedido($fechaActual, $idCliente, 1);
+            $msj = "Ocurrió un error al guardar el producto en el pedido.";
+            $icon = 'error';
         }
-    }
-
-    if ($idPedidoDestino > 0 && $idReceta > 0 && $cantidad > 0) {
-        $cli->agregarDetallePedido($cantidad, $idReceta, $idPedidoDestino);
-        $idPedidoActual = $idPedidoDestino;
-        $detalleRes = $cli->obtenerDetalleProductosPedido($idPedidoActual);
-        $msj = "¡Producto añadido con éxito al pedido #$idPedidoDestino!";
-        $icon = 'success';
     } else {
-        $msj = "No se pudo agregar el producto seleccionado.";
+        $msj = "Por favor selecciona un producto válido y una cantidad mayor a cero.";
         $icon = 'warning';
     }
 }
