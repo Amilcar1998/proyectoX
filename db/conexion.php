@@ -5,7 +5,8 @@
        class Conexion{
           protected $con;
           function __construct(){
-             $this->con=new mysqli(SERVER,USER,PASSWORD,BASE);
+             $puerto = defined('PORT') ? PORT : 3306;
+             $this->con = new mysqli(SERVER, USER, PASSWORD, BASE, $puerto);
              if ($this->con->connect_error) {
                 throw new mysqli_sql_exception("Connection failed: " . $this->con->connect_error);
              }
