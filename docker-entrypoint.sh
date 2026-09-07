@@ -18,12 +18,11 @@ PORT="${PORT:-80}"
 sed -i "s/Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:[0-9]*>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 
-# Pasar todas las variables de entorno del contenedor a Apache y PHP
+# Pasar variables de entorno válidas del contenedor a Apache y PHP
 > /etc/apache2/conf-enabled/railway-env.conf
 env | while IFS='=' read -r key val; do
-    if [ -n "$key" ]; then
+    if echo "$key" | grep -qE '^[a-zA-Z_][a-zA-Z0-9_]*$'; then
         echo "PassEnv $key" >> /etc/apache2/conf-enabled/railway-env.conf
-        echo "export $key=\"\$$key\"" >> /etc/apache2/envvars
     fi
 done
 
