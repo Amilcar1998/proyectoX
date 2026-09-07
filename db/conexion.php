@@ -1,6 +1,24 @@
 <?php
-   require_once __DIR__ . '/parametros.php';
-   require_once __DIR__ . '/../models/HelperUrl.php';
+    if (file_exists(__DIR__ . '/parametros.php')) {
+        require_once __DIR__ . '/parametros.php';
+    } else {
+        date_default_timezone_set('America/El_Salvador');
+        if (!defined('SERVER')) {
+            $server   = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: getenv('SERVER') ?: "localhost";
+            $user     = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: getenv('USER') ?: "root";
+            $password = getenv('MYSQLPASSWORD') ?: getenv('DB_PASSWORD') ?: getenv('PASSWORD') ?: "";
+            $database = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: getenv('BASE') ?: "concentrados";
+            $port     = (int)(getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: 3306);
+
+            define("SERVER", $server);
+            define("USER", $user);
+            define("PASSWORD", $password);
+            define("BASE", $database);
+            define("PORT", $port);
+            define("CHAR", "utf8mb4");
+        }
+    }
+    require_once __DIR__ . '/../models/HelperUrl.php';
    if (!class_exists('Conexion')) {
        class Conexion{
           protected $con;

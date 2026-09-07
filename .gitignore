@@ -1,6 +1,3 @@
-# Archivos sensibles - NO subir a GitHub
-db/parametros.php
-
 # Dependencias
 vendor/
 composer.lock
