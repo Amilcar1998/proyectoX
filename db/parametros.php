@@ -1,20 +1,20 @@
 <?php
 date_default_timezone_set('America/El_Salvador');
 if (!defined('SERVER')) {
-    $mysqlUrl = getenv('MYSQL_URL') ?: getenv('DATABASE_URL') ?: '';
+    $mysqlUrl = getenv('MYSQL_PRIVATE_URL') ?: getenv('MYSQL_URL') ?: getenv('DATABASE_URL') ?: '';
     if (!empty($mysqlUrl)) {
         $parsed = parse_url($mysqlUrl);
         $server   = $parsed['host'] ?? '127.0.0.1';
         $user     = $parsed['user'] ?? 'root';
         $password = $parsed['pass'] ?? '';
-        $database = isset($parsed['path']) ? ltrim($parsed['path'], '/') : 'concentrados';
+        $database = isset($parsed['path']) && ltrim($parsed['path'], '/') !== '' ? ltrim($parsed['path'], '/') : (getenv('MYSQLDATABASE') ?: 'railway');
         $port     = isset($parsed['port']) ? (int)$parsed['port'] : 3306;
     } else {
-        $server   = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: getenv('SERVER') ?: "127.0.0.1";
-        $user     = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: getenv('USER') ?: "root";
-        $password = getenv('MYSQLPASSWORD') ?: getenv('DB_PASSWORD') ?: getenv('PASSWORD') ?: "";
-        $database = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: getenv('BASE') ?: "concentrados";
-        $port     = (int)(getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: 3306);
+        $server   = getenv('MYSQLHOST') ?: getenv('MYSQL_HOST') ?: getenv('DB_HOST') ?: getenv('SERVER') ?: "127.0.0.1";
+        $user     = getenv('MYSQLUSER') ?: getenv('MYSQL_USER') ?: getenv('DB_USER') ?: getenv('USER') ?: "root";
+        $password = getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: getenv('DB_PASSWORD') ?: getenv('PASSWORD') ?: "";
+        $database = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: getenv('DB_NAME') ?: getenv('BASE') ?: "railway";
+        $port     = (int)(getenv('MYSQLPORT') ?: getenv('MYSQL_PORT') ?: getenv('DB_PORT') ?: 3306);
     }
 
     define("SERVER", $server);
