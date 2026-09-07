@@ -1,4 +1,7 @@
 <?php
+if (file_exists(__DIR__ . '/env_runtime.php')) {
+    require_once __DIR__ . '/env_runtime.php';
+}
 date_default_timezone_set('America/El_Salvador');
 
 if (!function_exists('obtenerParametroEnv')) {
