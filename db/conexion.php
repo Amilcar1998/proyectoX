@@ -22,15 +22,16 @@
    if (!class_exists('Conexion')) {
        class Conexion{
           protected $con;
-          function __construct(){
-             $puerto = defined('PORT') ? PORT : 3306;
-             $this->con = new mysqli(SERVER, USER, PASSWORD, BASE, $puerto);
-             if ($this->con->connect_error) {
-                throw new mysqli_sql_exception("Connection failed: " . $this->con->connect_error);
-             }
-             $this->con->set_charset(CHAR);
-             $this->con->query("SET time_zone = '-06:00'");
-          }
+           function __construct(){
+              $puerto = defined('PORT') ? PORT : 3306;
+              mysqli_report(MYSQLI_REPORT_OFF);
+              $this->con = @new mysqli(SERVER, USER, PASSWORD, BASE, $puerto);
+              if ($this->con->connect_errno) {
+                 throw new Exception("Error al conectar a MySQL en [" . SERVER . ":" . $puerto . "] usuario [" . USER . "] base [" . BASE . "]: " . $this->con->connect_error . ". Por favor verifica las variables de entorno de MySQL en Railway.");
+              }
+              $this->con->set_charset(CHAR);
+              $this->con->query("SET time_zone = '-06:00'");
+           }
           public function obtenerConexion(): mysqli {
              return $this->con;
           }

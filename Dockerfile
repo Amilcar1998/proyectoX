@@ -13,9 +13,10 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configurar Apache básico
+# Configurar Apache básico y variables de entorno para PHP
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
-    && sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+    && sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
+    && echo 'variables_order = "EGPCS"' > /usr/local/etc/php/conf.d/docker-php-env.ini
 
 WORKDIR /var/www/html
 
