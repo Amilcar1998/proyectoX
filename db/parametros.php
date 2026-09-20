@@ -20,38 +20,24 @@ if (!function_exists('obtenerParametroEnv')) {
     }
 }
 
+// ==============================================================================
+// CONFIGURACIÓN DE BASE DE DATOS (Aiven / Remoto / Local)
+// ==============================================================================
 if (!defined('SERVER')) {
-    $mysqlUrl = obtenerParametroEnv('MYSQL_PRIVATE_URL') 
-             ?: obtenerParametroEnv('MYSQL_URL') 
-             ?: obtenerParametroEnv('DATABASE_URL');
-
+    $mysqlUrl = obtenerParametroEnv('MYSQL_URL') ?: obtenerParametroEnv('DATABASE_URL');
     if (!empty($mysqlUrl)) {
         $parsed = parse_url($mysqlUrl);
-        $server   = $parsed['host'] ?? '127.0.0.1';
-        $user     = $parsed['user'] ?? 'root';
+        $server   = $parsed['host'] ?? 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com';
+        $user     = $parsed['user'] ?? 'avnadmin';
         $password = $parsed['pass'] ?? '';
-        $database = isset($parsed['path']) && ltrim($parsed['path'], '/') !== '' ? ltrim($parsed['path'], '/') : obtenerParametroEnv('MYSQLDATABASE', 'railway');
-        $port     = isset($parsed['port']) ? (int)$parsed['port'] : 3306;
+        $database = isset($parsed['path']) && ltrim($parsed['path'], '/') !== '' ? ltrim($parsed['path'], '/') : 'defaultdb';
+        $port     = isset($parsed['port']) ? (int)$parsed['port'] : 24364;
     } else {
-        $server   = obtenerParametroEnv('MYSQLHOST') 
-                 ?: obtenerParametroEnv('MYSQL_HOST') 
-                 ?: obtenerParametroEnv('DB_HOST') 
-                 ?: obtenerParametroEnv('SERVER', '127.0.0.1');
-        $user     = obtenerParametroEnv('MYSQLUSER') 
-                 ?: obtenerParametroEnv('MYSQL_USER') 
-                 ?: obtenerParametroEnv('DB_USER') 
-                 ?: obtenerParametroEnv('USER', 'root');
-        $password = obtenerParametroEnv('MYSQLPASSWORD') 
-                 ?: obtenerParametroEnv('MYSQL_PASSWORD') 
-                 ?: obtenerParametroEnv('DB_PASSWORD') 
-                 ?: obtenerParametroEnv('PASSWORD', '');
-        $database = obtenerParametroEnv('MYSQLDATABASE') 
-                 ?: obtenerParametroEnv('MYSQL_DATABASE') 
-                 ?: obtenerParametroEnv('DB_NAME') 
-                 ?: obtenerParametroEnv('BASE', 'railway');
-        $port     = (int)(obtenerParametroEnv('MYSQLPORT') 
-                 ?: obtenerParametroEnv('MYSQL_PORT') 
-                 ?: obtenerParametroEnv('DB_PORT', '3306'));
+        $server   = obtenerParametroEnv('MYSQLHOST') ?: obtenerParametroEnv('MYSQL_HOST') ?: obtenerParametroEnv('DB_HOST', 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com');
+        $user     = obtenerParametroEnv('MYSQLUSER') ?: obtenerParametroEnv('MYSQL_USER') ?: obtenerParametroEnv('DB_USER', 'avnadmin');
+        $password = obtenerParametroEnv('MYSQLPASSWORD') ?: obtenerParametroEnv('MYSQL_PASSWORD') ?: obtenerParametroEnv('DB_PASSWORD', '');
+        $database = obtenerParametroEnv('MYSQLDATABASE') ?: obtenerParametroEnv('MYSQL_DATABASE') ?: obtenerParametroEnv('DB_NAME', 'defaultdb');
+        $port     = (int)(obtenerParametroEnv('MYSQLPORT') ?: obtenerParametroEnv('MYSQL_PORT') ?: obtenerParametroEnv('DB_PORT', '24364'));
     }
 
     define("SERVER", $server);
@@ -60,6 +46,7 @@ if (!defined('SERVER')) {
     define("BASE", $database);
     define("PORT", $port);
     define("CHAR", "utf8mb4");
+    define("MYSQL_SSL", true);
 }
 
 // Wompi - credenciales leídas de variables de entorno o sandbox

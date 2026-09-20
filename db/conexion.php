@@ -23,13 +23,24 @@
        class Conexion{
           protected $con;
            function __construct(){
-              $puerto = defined('PORT') ? PORT : 3306;
+              $puerto = defined('PORT') ? (int)PORT : 3306;
               mysqli_report(MYSQLI_REPORT_OFF);
-              $this->con = @new mysqli(SERVER, USER, PASSWORD, BASE, $puerto);
-              if ($this->con->connect_errno) {
-                 throw new Exception("Error al conectar a MySQL en [" . SERVER . ":" . $puerto . "] usuario [" . USER . "] base [" . BASE . "]: " . $this->con->connect_error . ". Por favor verifica las variables de entorno de MySQL en Railway.");
+              $this->con = mysqli_init();
+              
+              // Soporte para conexiones SSL (requerido por Aiven, Azure, AWS, etc.)
+              $usarSsl = defined('MYSQL_SSL') ? MYSQL_SSL : (defined('SERVER') && SERVER !== 'localhost' && SERVER !== '127.0.0.1');
+              $flags = 0;
+              if ($usarSsl) {
+                  $caCert = defined('MYSQL_SSL_CA') ? MYSQL_SSL_CA : null;
+                  $this->con->ssl_set(null, null, $caCert, null, null);
+                  $flags = MYSQLI_CLIENT_SSL;
               }
-              $this->con->set_charset(CHAR);
+
+              $conectado = @$this->con->real_connect(SERVER, USER, PASSWORD, BASE, $puerto, null, $flags);
+              if (!$conectado || $this->con->connect_errno) {
+                  throw new Exception("Error al conectar a MySQL en [" . SERVER . ":" . $puerto . "] usuario [" . USER . "] base [" . BASE . "]: " . $this->con->connect_error);
+              }
+              $this->con->set_charset(defined('CHAR') ? CHAR : 'utf8mb4');
               $this->con->query("SET time_zone = '-06:00'");
            }
           public function obtenerConexion(): mysqli {
