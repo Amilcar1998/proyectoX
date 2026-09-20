@@ -1,8 +1,11 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if(isset($_REQUEST["c"])) {
 	session_destroy();
 	header("Location:controlUser.php");
+	exit();
 }
 elseif(isset($_SESSION["s1"])){
 	
@@ -18,6 +21,7 @@ elseif(isset($_SESSION["s1"])){
 
 else{
 	header("Location:controlUser.php");
+	exit();
 }
 
  ?>
