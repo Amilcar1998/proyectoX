@@ -36,16 +36,17 @@ $html.="<div class='table-responsive'><table class='table table-striped datatabl
                     ."<th>Cargo</th>"
                     ."<th>Usuario</th>"                                        
                ."</tr></thead><tbody>";
-                foreach ($dataEmpleado as $fila){
-                            $html.= "<tr>"
-                        ."<td nowrap='nowrap'>".$fila["idEmpleado"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["nombreEmp"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["apellido"]."</td>"                        
-                        ."<td nowrap='nowrap'>".$fila["genero"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["nombrePuesto"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["username"]."</td>"
-                    ."</tr>";
-        }$html.="</tbody></table></div>";
+        foreach ($dataEmpleado as $fila) {
+            $html .= "<tr>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["idEmpleado"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["nombreEmp"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["apellido"] ?? '')) . "</td>"                        
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["genero"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["nombrePuesto"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["username"] ?? '')) . "</td>"
+            . "</tr>";
+        }
+        $html .= "</tbody></table></div>";
     
 
 $html.='</main>

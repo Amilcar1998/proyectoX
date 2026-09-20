@@ -37,17 +37,20 @@ $html.="<div class='table-responsive'><table class='table table-striped datatabl
                     ."<th>genero</th>"
                     ."<th>Usuario</th>"                                        
                ."</tr></thead><tbody>";
-                foreach ($dataClientes as $fila){
-                            $html.= "<tr>"
-                        ."<td nowrap='nowrap'>".$fila["idCliente"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["nombreCliente"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["apellidosCliente"]."</td>"                        
-                        ."<td nowrap='nowrap'>".$fila["telefono"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["edad"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["genero"]."</td>"
-                        ."<td nowrap='nowrap'>".$fila["username"]."</td>"
-                    ."</tr>";
-        }$html.="</tbody></table></div>";
+        foreach ($dataClientes as $fila) {
+            $nombre = $fila["NombreCliente"] ?? $fila["nombreCliente"] ?? '';
+            $apellidos = $fila["apellidosCliente"] ?? '';
+            $html .= "<tr>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["idCliente"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)$nombre) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)$apellidos) . "</td>"                        
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["telefono"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["edad"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["genero"] ?? '')) . "</td>"
+                . "<td nowrap='nowrap'>" . htmlspecialchars((string)($fila["username"] ?? '')) . "</td>"
+            . "</tr>";
+        }
+        $html .= "</tbody></table></div>";
     
 
 $html.='</main>

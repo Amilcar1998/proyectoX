@@ -20,7 +20,7 @@ class ReportModel extends Conexion {
 
     public function dataClientes(int $idEmpresa = 0): array {
         $condicion = ($idEmpresa > 0) ? " WHERE (cliente.idEmpresa = " . (int)$idEmpresa . ") " : "";
-        $res = $this->con->query("select idCliente,NombreCliente,apellidosCliente,telefono,edad,genero,username from cliente inner join usuarios on cliente.idUsuario=usuarios.idUsuario $condicion ORDER BY idCliente ASC");
+        $res = $this->con->query("SELECT idCliente, NombreCliente, NombreCliente AS nombreCliente, apellidosCliente, telefono, edad, genero, username FROM cliente INNER JOIN usuarios ON cliente.idUsuario=usuarios.idUsuario $condicion ORDER BY idCliente ASC");
         $r = [];
         if ($res) {
             while ($row = $res->fetch_assoc()) {
