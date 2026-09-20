@@ -35,7 +35,7 @@ if (!defined('SERVER')) {
     } else {
         $server   = obtenerParametroEnv('MYSQLHOST') ?: obtenerParametroEnv('MYSQL_HOST') ?: obtenerParametroEnv('DB_HOST', 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com');
         $user     = obtenerParametroEnv('MYSQLUSER') ?: obtenerParametroEnv('MYSQL_USER') ?: obtenerParametroEnv('DB_USER', 'avnadmin');
-        $password = obtenerParametroEnv('MYSQLPASSWORD') ?: obtenerParametroEnv('MYSQL_PASSWORD') ?: obtenerParametroEnv('DB_PASSWORD', '');
+        $password = obtenerParametroEnv('MYSQLPASSWORD') ?: obtenerParametroEnv('MYSQL_PASSWORD') ?: obtenerParametroEnv('DB_PASSWORD') ?: obtenerParametroEnv('DB_PASS') ?: obtenerParametroEnv('MYSQL_PASS') ?: obtenerParametroEnv('PASSWORD', '');
         $database = obtenerParametroEnv('MYSQLDATABASE') ?: obtenerParametroEnv('MYSQL_DATABASE') ?: obtenerParametroEnv('DB_NAME', 'defaultdb');
         $port     = (int)(obtenerParametroEnv('MYSQLPORT') ?: obtenerParametroEnv('MYSQL_PORT') ?: obtenerParametroEnv('DB_PORT', '24364'));
     }
