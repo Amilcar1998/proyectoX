@@ -115,9 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = $resultado['mensaje'];
         } else {
             $successMsg = $resultado['mensaje'];
-            if (!empty($resultado['enlace']) && empty($resultado['enviado'])) {
+            if (!empty($resultado['enlace'])) {
                 $enlace = htmlspecialchars($resultado['enlace']);
-                $resetLinkHtml = "<a href='$enlace' target='_blank' style='color:#1e40af;font-weight:bold;word-break:break-all;'>$enlace</a>";
+                $resetLinkHtml = "<div style='margin-top:8px;'><strong>Enlace directo de recuperación:</strong><br><a href='$enlace' style='color:#1e40af;font-weight:bold;word-break:break-all;text-decoration:underline;'>$enlace</a></div>";
             }
         }
     }
