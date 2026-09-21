@@ -270,5 +270,48 @@ if (!class_exists('PagoModel')) {
             $stmt->close();
             return $r;
         }
+
+        /**
+         * Registra y procesa el reembolso de un pago
+         */
+        public function reembolsarPago(int $idPago, string $motivo = '', string $usuarioAdmin = ''): bool
+        {
+            $pago = $this->obtenerPagoPorId($idPago);
+            if (!$pago) {
+                return false;
+            }
+
+            $meta = $pago['metadatos_array'] ?? [];
+            $meta['reembolso'] = [
+                'fecha' => date('Y-m-d H:i:s'),
+                'motivo' => $motivo ?: 'Reembolso solicitado y autorizado por gerencia',
+                'autorizado_por' => $usuarioAdmin ?: 'Administrador',
+                'ip' => class_exists('AuditoriaModel') ? AuditoriaModel::obtenerIpCliente() : ($_SERVER['REMOTE_ADDR'] ?? '')
+            ];
+            $nuevoMetaJson = json_encode($meta);
+
+            $stmt = $this->con->prepare(
+                "UPDATE pagos SET estado = 'reembolsado', metadata = ? WHERE idPago = ?"
+            );
+            if (!$stmt) {
+                return false;
+            }
+            $stmt->bind_param("si", $nuevoMetaJson, $idPago);
+            $ok = $stmt->execute();
+            $stmt->close();
+
+            // Si tiene pedido asociado, actualizar a Cancelado (idEstadoPedido = 4)
+            if ($ok && !empty($pago['idPedidoCreado'])) {
+                $idPedido = (int)$pago['idPedidoCreado'];
+                $stmtPed = $this->con->prepare("UPDATE pedido SET idEstadoPedido = 4 WHERE idPedido = ?");
+                if ($stmtPed) {
+                    $stmtPed->bind_param("i", $idPedido);
+                    $stmtPed->execute();
+                    $stmtPed->close();
+                }
+            }
+
+            return $ok;
+        }
     }
 }

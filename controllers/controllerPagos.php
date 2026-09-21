@@ -20,6 +20,33 @@ if (isset($_GET['accion']) && $_GET['accion'] === 'obtenerDetalle') {
     exit();
 }
 
+// Endpoint AJAX / POST: Procesar Reembolso
+if (isset($_POST['accion']) && $_POST['accion'] === 'reembolsar') {
+    header('Content-Type: application/json');
+    $idRolSesion = (int)($_SESSION['id_Rol'] ?? 0);
+    $esAdmin = ($idRolSesion === 1 || $idRolSesion === 4 || isset($_SESSION['s1']));
+    
+    if (!$esAdmin) {
+        http_response_code(403);
+        echo json_encode(['status' => 'error', 'mensaje' => 'No tienes permisos de administrador para realizar reembolsos.']);
+        exit();
+    }
+
+    $idPago = (int)($_POST['idPago'] ?? 0);
+    $motivo = trim((string)($_POST['motivo'] ?? ''));
+    $usuarioAdmin = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? 'Administrador');
+
+    $exito = $pagoModel->reembolsarPago($idPago, $motivo, $usuarioAdmin);
+    if ($exito) {
+        logAccionAuditoria('reembolso', 'pagos', "Reembolso procesado para el pago #$idPago. Motivo: $motivo", $usuarioAdmin);
+        echo json_encode(['status' => 'success', 'mensaje' => "El pago #$idPago ha sido marcado como reembolsado correctamente."]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'mensaje' => 'No se pudo procesar el reembolso. Verifica el identificador del pago.']);
+    }
+    exit();
+}
+
 $idRolSesion = (int)($_SESSION['id_Rol'] ?? 0);
 $esAdmin = ($idRolSesion === 1 || $idRolSesion === 4 || isset($_SESSION['s1']));
 

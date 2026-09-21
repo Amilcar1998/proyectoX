@@ -49,6 +49,18 @@
             align-items: center;
             gap: 5px;
         }
+        .badge-reembolsado {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
         .badge-wompi {
             background-color: #4f46e5;
             color: #ffffff;
@@ -260,6 +272,8 @@
                                                 <span class="badge badge-completado"><i class="fas fa-check-circle mr-1"></i>Aprobado</span>
                                             <?php elseif ($p['estado'] === 'pendiente'): ?>
                                                 <span class="badge badge-pendiente"><i class="fas fa-clock mr-1"></i>Pendiente</span>
+                                            <?php elseif ($p['estado'] === 'reembolsado'): ?>
+                                                <span class="badge badge-reembolsado"><i class="fas fa-undo mr-1"></i>Reembolsado</span>
                                             <?php else: ?>
                                                 <span class="badge badge-fallido"><i class="fas fa-times-circle mr-1"></i><?php echo ucfirst($p['estado']); ?></span>
                                             <?php endif; ?>
@@ -287,12 +301,21 @@
                                                 <span class="text-muted small">-</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="white-space: nowrap;">
                                             <button type="button" class="btn btn-sm btn-primary py-1 px-2 btn-ver-detalle" 
                                                     data-id="<?php echo $p['idPago']; ?>" 
                                                     title="Ver toda la información devuelta por Wompi">
-                                                <i class="fas fa-eye mr-1"></i>Detalle Wompi
+                                                <i class="fas fa-eye mr-1"></i>Detalle
                                             </button>
+                                            <?php if ($esAdmin && $p['estado'] === 'completado'): ?>
+                                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 ml-1 btn-reembolsar"
+                                                        data-id="<?php echo $p['idPago']; ?>"
+                                                        data-monto="<?php echo number_format((float)$p['monto'], 2); ?>"
+                                                        data-cliente="<?php echo htmlspecialchars($p['nombreCliente']); ?>"
+                                                        title="Procesar reembolso de este pago">
+                                                    <i class="fas fa-undo mr-1"></i>Reembolsar
+                                                </button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -681,6 +704,80 @@
                 ventana.close();
             }, 500);
         }
+
+        // Manejador de evento para Reembolsar Pago
+        $(document).on('click', '.btn-reembolsar', function() {
+            const idPago = $(this).data('id');
+            const monto = $(this).data('monto');
+            const cliente = $(this).data('cliente');
+
+            Swal.fire({
+                title: '¿Reembolsar Pago #' + idPago + '?',
+                html: `
+                    <p class="text-muted small">Vas a procesar el reembolso de la transacción por <strong>$${monto} USD</strong> perteneciente a <strong>${cliente}</strong>.</p>
+                    <div class="text-left mt-3">
+                        <label class="font-weight-bold text-dark small mb-1">Motivo del reembolso (obligatorio):</label>
+                        <textarea id="swalMotivoReembolso" class="form-control" rows="3" placeholder="Ej: Cancelación de pedido solicitada por cliente / duplicidad de cobro"></textarea>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-undo mr-1"></i> Confirmar Reembolso',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const motivo = document.getElementById('swalMotivoReembolso').value.trim();
+                    if (!motivo) {
+                        Swal.showValidationMessage('Por favor ingresa un motivo para el reembolso.');
+                        return false;
+                    }
+                    return motivo;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Procesando reembolso...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: 'controllerPagos.php',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            accion: 'reembolsar',
+                            idPago: idPago,
+                            motivo: result.value
+                        },
+                        success: function(resp) {
+                            if (resp.status === 'success') {
+                                Swal.fire({
+                                    title: '¡Reembolso Procesado!',
+                                    text: resp.mensaje,
+                                    icon: 'success',
+                                    confirmButtonColor: '#16a34a'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error', resp.mensaje || 'No se pudo procesar el reembolso.', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            let msg = 'Error en el servidor al procesar la solicitud.';
+                            try {
+                                const errJson = JSON.parse(xhr.responseText);
+                                if (errJson.mensaje) msg = errJson.mensaje;
+                            } catch(e) {}
+                            Swal.fire('Error', msg, 'error');
+                        }
+                    });
+                }
+            });
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
