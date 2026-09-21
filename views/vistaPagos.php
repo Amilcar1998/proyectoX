@@ -441,10 +441,13 @@
             });
         });
 
+        let ultimoPagoData = null;
+
         function renderizarDetallePago(p) {
+            ultimoPagoData = p;
             const meta = p.metadatos_array || {};
             const wompiRetorno = meta.wompi_retorno || {};
-            const items = meta.items || [];
+            const items = meta.items || (p.items_comprados || []);
             ultimoJsonCargado = JSON.stringify(p, null, 2);
 
             $('#modalHeaderSub').html(`Pago <strong>#${p.idPago}</strong> • Ref: <span class="font-monospace text-warning">${p.referencia || '-'}</span> • Fecha: ${p.fecha_hora}`);
@@ -452,6 +455,8 @@
             let estadoBadge = `<span class="badge badge-completado px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-check-circle mr-1"></i>Aprobado por Wompi</span>`;
             if (p.estado === 'pendiente') {
                 estadoBadge = `<span class="badge badge-pendiente px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-clock mr-1"></i>Pendiente</span>`;
+            } else if (p.estado === 'reembolsado') {
+                estadoBadge = `<span class="badge badge-reembolsado px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-undo mr-1"></i>Reembolsado</span>`;
             } else if (p.estado === 'fallido') {
                 estadoBadge = `<span class="badge badge-fallido px-3 py-2 text-uppercase font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-times-circle mr-1"></i>Fallido / Declinado</span>`;
             }
@@ -474,9 +479,9 @@
                 `;
                 let totalSuma = 0;
                 items.forEach(it => {
-                    const cant = it.cantidad || 1;
+                    const cant = parseInt(it.cantidad || 1);
                     const prec = parseFloat(it.precio || 0);
-                    const sub = cant * prec;
+                    const sub = parseFloat(it.subtotal || (cant * prec));
                     totalSuma += sub;
                     htmlProductos += `
                         <tr>
@@ -524,7 +529,7 @@
             const idTxnMostrar = wompiRetorno.idTransaccion || p.idTransaccionWompi || 'Aprobado en Wompi SV';
             const idEnlaceMostrar = wompiRetorno.idEnlace || p.idEnlaceWompi || '-';
             const codAuthMostrar = wompiRetorno.codigoAutorizacion || 'Transacción Aprobada';
-            const formaPagoMostrar = wompiRetorno.formaPago || 'Tarjeta Débito / Crédito';
+            const formaPagoMostrar = wompiRetorno.formaPago || (p.metodo_pago || 'Tarjeta Débito / Crédito');
 
             const html = `
                 <!-- Fila Superior: 4 Métricas Clave del Pago -->
@@ -552,97 +557,6 @@
                     </div>
                     <div class="col-md-3 mb-2">
                         <div class="bg-white p-3 rounded shadow-sm border-left-warning h-100" style="border-left: 4px solid #f59e0b;">
-                            <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Forma de Pago</div>
-                            <div class="h6 font-weight-bold text-dark mb-0 mt-1"><i class="fas fa-credit-card text-primary mr-1"></i>${formaPagoMostrar}</div>
-                            <div class="small text-muted">Wompi El Salvador</div>
-                        </div>
-                    </div>
-                </div>
-
-        let ultimoPagoData = null;
-
-        function renderizarModalDetalle(data) {
-            ultimoPagoData = data;
-            const p = data.pago || {};
-            const payload = data.payloadWompi || {};
-            const items = data.items || [];
-            const idTxnMostrar = data.idTransaccion || (p.idTransaccionWompi || 'No devuelto en consulta directa');
-            const idEnlaceMostrar = data.idEnlace || (p.idEnlaceWompi || 'No asociado a enlace permanente');
-            const formaPagoMostrar = data.formaPago || (p.metodo_pago || 'Wompi SV');
-            ultimoJsonCargado = JSON.stringify(data, null, 2);
-
-            let htmlProductos = '';
-            if (items.length > 0) {
-                htmlProductos = `
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Producto</th>
-                                    <th class="text-center">Cant.</th>
-                                    <th class="text-right">Precio</th>
-                                    <th class="text-right">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                items.forEach((it, idx) => {
-                    const cant = parseInt(it.cantidad || 1);
-                    const prec = parseFloat(it.precio || 0).toFixed(2);
-                    const sub = parseFloat(it.subtotal || (cant * prec)).toFixed(2);
-                    htmlProductos += `
-                        <tr>
-                            <td class="text-center text-muted small">${idx + 1}</td>
-                            <td class="font-weight-bold text-dark">${it.nombre || 'Concentrado'}</td>
-                            <td class="text-center font-weight-bold">${cant}</td>
-                            <td class="text-right text-muted">$${prec}</td>
-                            <td class="text-right font-weight-bold text-success">$${sub}</td>
-                        </tr>
-                    `;
-                });
-                htmlProductos += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            } else {
-                htmlProductos = `
-                    <div class="p-3 bg-light rounded text-center text-muted">
-                        <i class="fas fa-tag mr-1 text-primary"></i>
-                        Concepto: <strong>${p.nombrePlan || (p.descripcion || 'Pago de Concentrados y Servicios')}</strong>
-                    </div>
-                `;
-            }
-
-            let estadoBadgeHtml = '';
-            if (p.estado === 'completado') {
-                estadoBadgeHtml = '<span class="badge badge-completado px-3 py-2" style="font-size: 14px;"><i class="fas fa-check-circle mr-1"></i>Pago Aprobado con Éxito</span>';
-            } else if (p.estado === 'reembolsado') {
-                estadoBadgeHtml = '<span class="badge badge-reembolsado px-3 py-2" style="font-size: 14px;"><i class="fas fa-undo mr-1"></i>Transacción Reembolsada</span>';
-            } else {
-                estadoBadgeHtml = `<span class="badge badge-secondary px-3 py-2" style="font-size: 14px;">${p.estado || 'Procesado'}</span>`;
-            }
-
-            const html = `
-                <!-- Encabezado Resumen del Pago -->
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-2 mb-md-0">
-                        <div class="summary-pill-card text-center">
-                            <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Monto de la Transacción</div>
-                            <div class="h3 font-weight-bold text-success mb-0">$${parseFloat(p.monto || 0).toFixed(2)} <span class="small text-dark font-weight-normal">${p.moneda || 'USD'}</span></div>
-                            <div class="small text-muted mt-1">Sin cargos ocultos</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-2 mb-md-0">
-                        <div class="summary-pill-card text-center">
-                            <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Estado de Confirmación</div>
-                            <div class="mt-1">${estadoBadgeHtml}</div>
-                            <div class="small text-muted mt-1">${p.fecha_hora}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="summary-pill-card text-center">
                             <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Forma de Pago</div>
                             <div class="h6 font-weight-bold text-dark mb-0 mt-1"><i class="fas fa-credit-card text-primary mr-1"></i>${formaPagoMostrar}</div>
                             <div class="small text-muted">Wompi El Salvador</div>
