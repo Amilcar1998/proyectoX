@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($rol > 0) {
             $idUsuario = obtenerIdUsuarioPorUsername($login);
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+            $ip = AuditoriaModel::obtenerIpCliente();
             $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
             // Cerrar sesiones anteriores en BD para este usuario

@@ -204,7 +204,7 @@ if ($enlaceHttpCode >= 200 && $enlaceHttpCode < 300 && !empty($enlaceData['urlEn
              VALUES (?, ?, ?, 'USD', 'wompi', 'pendiente', ?, ?, NOW(), ?, ?, ?)"
         );
         if ($stmtP) {
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+            $ip = AuditoriaModel::obtenerIpCliente();
             $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
             $desc = 'Wompi SV Enlace: ' . ($enlaceData['idEnlace'] ?? '');
             $metaJson = json_encode($metadatos);

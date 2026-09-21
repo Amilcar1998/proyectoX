@@ -90,7 +90,7 @@ if ($pago) {
         'parametros_post_completos' => $_POST,
         'query_string_raw' => $_SERVER['QUERY_STRING'] ?? '',
         'fecha_retorno' => date('Y-m-d H:i:s'),
-        'ip_retorno' => $_SERVER['REMOTE_ADDR'] ?? '',
+        'ip_retorno' => class_exists('AuditoriaModel') ? AuditoriaModel::obtenerIpCliente() : ($_SERVER['REMOTE_ADDR'] ?? ''),
         'user_agent_retorno' => $_SERVER['HTTP_USER_AGENT'] ?? ''
     ];
 

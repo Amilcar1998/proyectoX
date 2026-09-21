@@ -56,7 +56,7 @@ $stmtPago = $conn->prepare(
 );
 $idPago = 0;
 if ($stmtPago) {
-    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+    $ipAddress = class_exists('AuditoriaModel') ? AuditoriaModel::obtenerIpCliente() : ($_SERVER['REMOTE_ADDR'] ?? null);
     $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
     $stmtPago->bind_param("iidssssss", $idUsuario, $idPlanPago, $amount, $currency, $estado, $reference, $obs, $ipAddress, $userAgent, $meta);
     $stmtPago->execute();

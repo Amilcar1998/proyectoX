@@ -9,9 +9,35 @@ if (!class_exists('AuditoriaModel')) {
             parent::__construct();
         }
 
-        public function log($idUsuario, $username, $tipoEvento, $modulo = null, $descripcion = null)
+        public static function obtenerIpCliente(): string
         {
-            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+            $encabezados = [
+                'HTTP_CF_CONNECTING_IP',     // Cloudflare
+                'HTTP_X_FORWARDED_FOR',     // Proxies / Load Balancers / Railway
+                'HTTP_X_REAL_IP',           // Nginx / Ingress
+                'HTTP_CLIENT_IP',           // Client IP
+                'HTTP_FORWARDED',           // RFC 7239
+                'REMOTE_ADDR'               // Fallback directo
+            ];
+
+            foreach ($encabezados as $encabezado) {
+                if (!empty($_SERVER[$encabezado])) {
+                    $listaIps = explode(',', (string)$_SERVER[$encabezado]);
+                    foreach ($listaIps as $ipRaw) {
+                        $ip = trim($ipRaw);
+                        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                            return $ip;
+                        }
+                    }
+                }
+            }
+
+            return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        }
+
+        public function log($idUsuario, $username, $tipoEvento, $modulo = null, $descripcion = null, $ipPersonalizada = null)
+        {
+            $ipAddress = !empty($ipPersonalizada) ? $ipPersonalizada : self::obtenerIpCliente();
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
             $stmt = $this->con->prepare(
@@ -101,8 +127,15 @@ if (!class_exists('AuditoriaModel')) {
             return $r;
         }
 
-        public function registrarSesionActiva($sessionId, $idUsuario, $username, $idRol, $nombreUsuario, $ipAddress, $userAgent)
+        public function registrarSesionActiva($sessionId, $idUsuario, $username, $idRol, $nombreUsuario, $ipAddress = null, $userAgent = null)
         {
+            if (empty($ipAddress)) {
+                $ipAddress = self::obtenerIpCliente();
+            }
+            if (empty($userAgent)) {
+                $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Desconocido';
+            }
+
             $stmt = $this->con->prepare(
                 "INSERT INTO sesiones_activas (session_id, idUsuario, username, id_Rol, nombre_usuario, login_time, last_activity, ip_address, user_agent, activo)
                  VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, 1)

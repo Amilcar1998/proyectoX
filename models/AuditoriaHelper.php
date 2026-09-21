@@ -20,10 +20,17 @@ if (!function_exists('obtenerIdUsuarioPorUsername')) {
     }
 }
 
-if (!function_exists('registrarActividadSesion')) {
-    function registrarActividadSesion($sessionId, $idUsuario, $username, $idRol, $nombreUsuario)
+if (!function_exists('obtenerIpCliente')) {
+    function obtenerIpCliente(): string
     {
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        return AuditoriaModel::obtenerIpCliente();
+    }
+}
+
+if (!function_exists('registrarActividadSesion')) {
+    function registrarActividadSesion($sessionId, $idUsuario, $username, $idRol, $nombreUsuario, $ipAddress = null)
+    {
+        $ipAddress = !empty($ipAddress) ? $ipAddress : AuditoriaModel::obtenerIpCliente();
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
         if ((int)$idUsuario <= 0 && !empty($username)) {
