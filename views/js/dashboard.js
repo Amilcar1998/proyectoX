@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // 3. Gráfica de Producción por Empleado
   const chartProduccionElem = document.getElementById('chartProduccion');
   if (chartProduccionElem && Array.isArray(data.produccionEmpleado) && data.produccionEmpleado.length > 0) {
-    const empLabels = data.produccionEmpleado.map(item => item.empleado);
-    const empData = data.produccionEmpleado.map(item => item.totalProduccion);
+    const empLabels = data.produccionEmpleado.map(item => item.empleado || ((item.nombreEmp || '') + ' ' + (item.apellido || '')).trim());
+    const empData = data.produccionEmpleado.map(item => parseFloat(item.totalProduccion || item.total_kilos || 0));
 
     new Chart(chartProduccionElem, {
       type: 'doughnut',

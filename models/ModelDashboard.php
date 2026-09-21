@@ -302,7 +302,11 @@ class ModelDashboard extends Conexion {
 
     public function obtenerProduccionPorEmpleado(int $idEmpresa = 0): array {
         $cond = ($idEmpresa > 0) ? " WHERE (pr.idEmpresa = " . (int)$idEmpresa . " OR e.idEmpresa = " . (int)$idEmpresa . ") " : "";
-        $sql = "SELECT e.nombreEmp, e.apellido, SUM(dp.cantidad) AS total_kilos
+        $sql = "SELECT CONCAT(e.nombreEmp, ' ', COALESCE(e.apellido, '')) AS empleado,
+                       e.nombreEmp, 
+                       e.apellido, 
+                       COALESCE(SUM(dp.cantidad), 0) AS totalProduccion,
+                       COALESCE(SUM(dp.cantidad), 0) AS total_kilos
                 FROM produccion pr
                 INNER JOIN empleado e ON pr.idEmpleado = e.idEmpleado
                 INNER JOIN pedido p ON pr.idPedido = p.idPedido
