@@ -47,6 +47,20 @@ if ($idRol === 1) {
     $badgeRolClass = 'badge-danger';
 }
 
+require_once __DIR__ . '/../models/ServicioCorreo.php';
+$servicioCorreoCheck = new ServicioCorreo();
+$estadoLimiteCorreo = $servicioCorreoCheck->obtenerEstadoLimite();
+$alertaCorreoHtml = '';
+if (!empty($estadoLimiteCorreo['alerta'])) {
+    $enviadosCount = $estadoLimiteCorreo['enviados'];
+    $limiteCount = $estadoLimiteCorreo['limite'];
+    $restantesCount = $estadoLimiteCorreo['restantes'];
+    $alertaCorreoHtml = "<div class='bg-danger text-white py-1 px-3 text-center font-weight-bold d-flex align-items-center justify-content-center' style='font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1000;'>
+      <i class='fas fa-exclamation-triangle mr-2 text-warning'></i>
+      <span><strong>Aviso de Cuota de Correos:</strong> El servicio de mensajería está por llegar a su límite mensual ({$enviadosCount}/{$limiteCount} enviados. Restan solo <strong>{$restantesCount}</strong> correos).</span>
+    </div>";
+}
+
 $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 
    <a class='navbar-brand mr-1' href='{$brandHome}'><i class='fas fa-seedling text-success mr-2'></i>Concentrados El Gordito</a>
@@ -69,6 +83,7 @@ $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
     </ul>
 
   </nav>
+  {$alertaCorreoHtml}
   <style>
     html {
       min-height: 100%;
@@ -102,6 +117,45 @@ $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
       overflow-x: hidden !important;
       scrollbar-width: thin;
       scrollbar-color: #64748b #1e293b;
+      transition: width 0.2s ease, min-width 0.2s ease;
+    }
+    .sidebar.toggled {
+      width: 80px !important;
+      min-width: 80px !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
+    .sidebar.toggled .nav-item {
+      text-align: center;
+      width: 80px;
+    }
+    .sidebar.toggled .nav-item .nav-link {
+      text-align: center;
+      padding: 0.75rem 0.25rem !important;
+      width: 80px !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar.toggled .nav-item .nav-link span {
+      font-size: 0.65rem !important;
+      display: block !important;
+      line-height: 1.1;
+      margin-top: 4px;
+      white-space: normal;
+      text-align: center;
+      word-break: break-word;
+    }
+    .sidebar.toggled .nav-item .nav-link i.fa-fw {
+      font-size: 1.15rem;
+      margin-right: 0 !important;
+    }
+    .sidebar.toggled .nav-item .nav-link .fa-chevron-down {
+      display: none !important;
+    }
+    .sidebar.toggled .collapse {
+      display: none !important;
     }
     .sidebar::-webkit-scrollbar {
       width: 6px;
@@ -124,6 +178,26 @@ $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
       width: calc(100% - 235px);
       min-width: 0;
       background-color: #f1f5f9;
+      transition: width 0.2s ease;
+    }
+    body.sidebar-toggled #content-wrapper {
+      width: calc(100% - 80px);
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+      }
+      .sidebar.toggled {
+        width: 235px !important;
+        min-width: 235px !important;
+        position: fixed !important;
+        z-index: 1050;
+      }
+      #content-wrapper, body.sidebar-toggled #content-wrapper {
+        width: 100% !important;
+      }
     }
     .container-fluid {
       flex: 1 0 auto;

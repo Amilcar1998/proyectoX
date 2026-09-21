@@ -65,14 +65,139 @@ class ServicioCorreo
         if ($metodo === 'resend') {
             $resultado = $this->enviarConResend($destinatario, $asunto, $cuerpoHtml, $nombreDestinatario);
             if ($resultado) {
+                $this->registrarEnvio($destinatario, $asunto, 'resend', 'enviado');
+                $this->verificarYNotificarLimite();
                 return true;
             }
             // Si falla Resend y hay SMTP configurado, intentar respaldo SMTP
             $this->registroDepuracion[] = "Resend API falló. Intentando envío de respaldo vía SMTP...";
-            return $this->enviarConSmtp($destinatario, $asunto, $cuerpoHtml, $nombreDestinatario);
+            $resultadoSmtp = $this->enviarConSmtp($destinatario, $asunto, $cuerpoHtml, $nombreDestinatario);
+            if ($resultadoSmtp) {
+                $this->registrarEnvio($destinatario, $asunto, 'smtp', 'enviado');
+                $this->verificarYNotificarLimite();
+                return true;
+            }
+            $this->registrarEnvio($destinatario, $asunto, 'resend', 'fallido');
+            return false;
         }
 
-        return $this->enviarConSmtp($destinatario, $asunto, $cuerpoHtml, $nombreDestinatario);
+        $resultado = $this->enviarConSmtp($destinatario, $asunto, $cuerpoHtml, $nombreDestinatario);
+        if ($resultado) {
+            $this->registrarEnvio($destinatario, $asunto, 'smtp', 'enviado');
+            $this->verificarYNotificarLimite();
+            return true;
+        }
+        $this->registrarEnvio($destinatario, $asunto, 'smtp', 'fallido');
+        return false;
+    }
+
+    public function obtenerConexion(): ?mysqli
+    {
+        try {
+            require_once __DIR__ . '/../db/conexion.php';
+            if (class_exists('Conexion')) {
+                $conObj = new Conexion();
+                return $conObj->obtenerConexion();
+            }
+        } catch (Exception $e) {
+            $this->registroDepuracion[] = "Error BD: " . $e->getMessage();
+        }
+        return null;
+    }
+
+    public function registrarEnvio(string $destinatario, string $asunto, string $metodo, string $estado): void
+    {
+        $con = $this->obtenerConexion();
+        if (!$con) return;
+
+        try {
+            $stmt = $con->prepare("INSERT INTO registro_correos (destinatario, asunto, metodo, estado, fecha_envio) VALUES (?, ?, ?, ?, NOW())");
+            if ($stmt) {
+                $stmt->bind_param("ssss", $destinatario, $asunto, $metodo, $estado);
+                $stmt->execute();
+                $stmt->close();
+            }
+        } catch (Exception $e) {
+            $this->registroDepuracion[] = "Error al registrar correo en BD: " . $e->getMessage();
+        }
+    }
+
+    public function obtenerTotalEnviadosMes(): int
+    {
+        $con = $this->obtenerConexion();
+        if (!$con) return 0;
+
+        try {
+            $sql = "SELECT COUNT(*) AS total FROM registro_correos WHERE MONTH(fecha_envio) = MONTH(CURRENT_DATE()) AND YEAR(fecha_envio) = YEAR(CURRENT_DATE()) AND estado = 'enviado'";
+            $res = $con->query($sql);
+            if ($res && $fila = $res->fetch_assoc()) {
+                return (int)$fila['total'];
+            }
+        } catch (Exception $e) {
+            $this->registroDepuracion[] = "Error al contar correos: " . $e->getMessage();
+        }
+        return 0;
+    }
+
+    public function obtenerLimiteMensual(): int
+    {
+        $limiteEnv = getenv('LIMITE_MENSUAL_CORREOS') ?: ($_ENV['LIMITE_MENSUAL_CORREOS'] ?? ($_SERVER['LIMITE_MENSUAL_CORREOS'] ?? '3000'));
+        return (int)$limiteEnv > 0 ? (int)$limiteEnv : 3000;
+    }
+
+    public function obtenerCorreosRestantes(): int
+    {
+        $limite = $this->obtenerLimiteMensual();
+        $enviados = $this->obtenerTotalEnviadosMes();
+        return max(0, $limite - $enviados);
+    }
+
+    public function obtenerEstadoLimite(): array
+    {
+        $limite = $this->obtenerLimiteMensual();
+        $enviados = $this->obtenerTotalEnviadosMes();
+        $restantes = max(0, $limite - $enviados);
+        $alerta = ($restantes <= 50);
+
+        return [
+            'alerta' => $alerta,
+            'enviados' => $enviados,
+            'limite' => $limite,
+            'restantes' => $restantes
+        ];
+    }
+
+    public function verificarYNotificarLimite(): array
+    {
+        $estado = $this->obtenerEstadoLimite();
+        if ($estado['alerta']) {
+            $this->registrarAlertaAuditoria($estado['enviados'], $estado['limite'], $estado['restantes']);
+        }
+        return $estado;
+    }
+
+    private function registrarAlertaAuditoria(int $enviados, int $limite, int $restantes): void
+    {
+        $con = $this->obtenerConexion();
+        if (!$con) return;
+
+        try {
+            $sqlCheck = "SELECT id FROM auditoria WHERE tipo_evento = 'alerta_correo_limite' AND DATE(fecha_hora) = CURRENT_DATE() LIMIT 1";
+            $resCheck = $con->query($sqlCheck);
+            if ($resCheck && $resCheck->num_rows > 0) {
+                return;
+            }
+
+            $desc = "Alerta de cuota de correo: Se han enviado $enviados de $limite correos este mes. Quedan $restantes disponibles.";
+            $stmt = $con->prepare("INSERT INTO auditoria (idUsuario, username, tipo_evento, modulo, descripcion, ip_address, fecha_hora) VALUES (1, 'sistema', 'alerta_correo_limite', 'correos', ?, '127.0.0.1', NOW())");
+            if ($stmt) {
+                $stmt->bind_param("s", $desc);
+                $stmt->execute();
+                $stmt->close();
+            }
+        } catch (Exception $e) {
+            // Silencioso
+        }
     }
 
     /**
