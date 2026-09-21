@@ -1,5 +1,14 @@
-# Dependencias
-vendor/
+# Dependencias PHP de Composer (permitiendo recursos estáticos de frontend)
+vendor/*
+!vendor/bootstrap/
+!vendor/chart.js/
+!vendor/datatables/
+!vendor/fontawesome-free/
+!vendor/jquery/
+!vendor/jquery-easing/
+!vendor/sb-admin.css
+!vendor/sb-admin.min.css
+!vendor/sweetalert2.all.min.js
 composer.lock
 
 # Archivos temporales
