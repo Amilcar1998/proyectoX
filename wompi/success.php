@@ -501,16 +501,30 @@ if ($pago) {
 
         @media print {
             body {
-                background: #ffffff;
-                padding: 0;
+                background: #ffffff !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             .receipt-card {
-                box-shadow: none;
-                border: none;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                max-width: 100% !important;
+                margin: 0 !important;
             }
-            .btn-actions {
+            .receipt-header {
+                background: #064e3b !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+            .btn-actions, .brand-bar {
                 display: none !important;
             }
+            .print-only-block {
+                display: block !important;
+            }
+        }
+        .print-only-block {
+            display: none;
         }
     </style>
 </head>
@@ -637,6 +651,31 @@ if ($pago) {
                 </div>
                 <div class="fs-3 fw-bold text-success">
                     $<?= number_format($montoPagado, 2) ?> <span class="fs-6 text-dark">USD</span>
+                </div>
+            </div>
+
+            <!-- Bloque Exclusivo de Impresión Oficial -->
+            <div class="print-only-block mt-4 pt-3 border-top">
+                <div style="font-size: 11px; color: #64748b; margin-bottom: 25px; line-height: 1.4;">
+                    <strong>Comprobante Electrónico Autorizado:</strong> Este documento certifica la transacción procesada con éxito a través de Wompi El Salvador para Concentrados El Gordito S.A. de C.V. Válido como constancia de pago para retiro y despacho en planta.
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 25px; text-align: center;">
+                    <tr>
+                        <td style="width: 48%; vertical-align: top;">
+                            <div style="border-top: 1.5px solid #94a3b8; width: 85%; margin: 0 auto 5px auto;"></div>
+                            <div style="font-weight: bold; font-size: 12px; color: #1e293b;">Tesorería / Concentrados El Gordito</div>
+                            <div style="font-size: 10px; color: #64748b;">Firma y Sello Autorizado</div>
+                        </td>
+                        <td style="width: 4%;"></td>
+                        <td style="width: 48%; vertical-align: top;">
+                            <div style="border-top: 1.5px solid #94a3b8; width: 85%; margin: 0 auto 5px auto;"></div>
+                            <div style="font-weight: bold; font-size: 12px; color: #1e293b;">Cliente / Pagador</div>
+                            <div style="font-size: 10px; color: #64748b;"><?= htmlspecialchars($nombreCliente) ?></div>
+                        </td>
+                    </tr>
+                </table>
+                <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
+                    Folio de Transacción Digital: WMP-CONF-<?= !empty($idTransaccion) ? substr($idTransaccion, 0, 18) : rand(100000, 999999) ?> • Impreso el <?= date('d/m/Y H:i:s') ?>
                 </div>
             </div>
 

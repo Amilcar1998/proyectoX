@@ -334,6 +334,9 @@ echo $cli;
                       <button class="btn btn-success btn-sm font-weight-bold mb-1" data-toggle="modal" data-target="#modalAgregarProducto">
                         <i class="fas fa-plus mr-1"></i>Agregar por Modal
                       </button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold mb-1 ml-1" onclick="imprimirPedidoCliente(<?php echo $idPedidoActual; ?>)">
+                        <i class="fas fa-print mr-1"></i>Imprimir Comprobante
+                      </button>
                     </div>
                     <?php if ($granTotal > 0): ?>
                       <div>
@@ -435,11 +438,14 @@ echo $cli;
                           <?php echo htmlspecialchars($pedido['nombreEstado'] ?? 'Registrado'); ?>
                         </span>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="white-space: nowrap;">
                         <a href="controllerIndividualC.php?ver_detalle=<?php echo $pedido['idPedido']; ?>" class="btn btn-primary btn-sm font-weight-bold shadow-sm">
                           <i class="fas fa-eye mr-1"></i>Ver Items
                         </a>
-                        <form method="POST" action="controllerIndividualC.php" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar el pedido #<?php echo $pedido['idPedido']; ?>?');">
+                        <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold shadow-sm ml-1" onclick="imprimirPedidoCliente(<?php echo $pedido['idPedido']; ?>)" title="Imprimir Comprobante Oficial">
+                          <i class="fas fa-print"></i>
+                        </button>
+                        <form method="POST" action="controllerIndividualC.php" class="d-inline ml-1" onsubmit="return confirm('¿Seguro que deseas eliminar el pedido #<?php echo $pedido['idPedido']; ?>?');">
                           <input type="hidden" name="id_pedido" value="<?php echo $pedido['idPedido']; ?>">
                           <button type="submit" name="eliminar_pedido" class="btn btn-danger btn-sm shadow-sm" title="Eliminar pedido">
                             <i class="fas fa-trash"></i>
@@ -493,6 +499,7 @@ echo $cli;
                     <th class="text-center" style="width: 140px;">Método</th>
                     <th class="text-center" style="width: 130px;">Estado</th>
                     <th class="text-center" style="width: 170px;">Fecha y Hora</th>
+                    <th class="text-center" style="width: 120px;">Comprobante</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -533,6 +540,11 @@ echo $cli;
                       </td>
                       <td class="text-center small text-muted">
                         <i class="far fa-clock mr-1"></i><?php echo !empty($pago['fecha_hora']) ? date('d/m/Y H:i', strtotime($pago['fecha_hora'])) : 'N/D'; ?>
+                      </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold shadow-sm" onclick="imprimirPagoCliente(<?php echo $pago['idPago']; ?>)" title="Imprimir Comprobante Oficial">
+                          <i class="fas fa-print mr-1"></i>Recibo
+                        </button>
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -694,6 +706,419 @@ echo $cli;
       },
       allowOutsideClick: () => !Swal.isLoading()
     });
+  }
+
+  // Funciones de Impresión de Comprobantes para el Cliente
+  function imprimirPedidoCliente(idPedido) {
+    if (!idPedido) return;
+    Swal.fire({
+      title: 'Preparando Comprobante...',
+      text: 'Cargando datos del pedido...',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(); }
+    });
+
+    $.ajax({
+      url: 'controllerIndividualC.php',
+      type: 'GET',
+      dataType: 'json',
+      data: {
+        accion: 'obtenerDetallePedido',
+        idPedido: idPedido
+      },
+      success: function(resp) {
+        Swal.close();
+        if (resp && resp.success && resp.data) {
+          abrirVentanaImpresionPedido(resp.data);
+        } else {
+          Swal.fire('Error', resp.mensaje || 'No se pudo cargar el detalle del pedido.', 'error');
+        }
+      },
+      error: function() {
+        Swal.close();
+        Swal.fire('Error', 'No se pudo comunicar con el servidor para obtener el comprobante.', 'error');
+      }
+    });
+  }
+
+  function imprimirPagoCliente(idPago) {
+    if (!idPago) return;
+    Swal.fire({
+      title: 'Preparando Recibo...',
+      text: 'Cargando datos de la transacción...',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(); }
+    });
+
+    $.ajax({
+      url: 'controllerIndividualC.php',
+      type: 'GET',
+      dataType: 'json',
+      data: {
+        accion: 'obtenerDetallePago',
+        idPago: idPago
+      },
+      success: function(resp) {
+        Swal.close();
+        if (resp && resp.success && resp.data) {
+          abrirVentanaImpresionPago(resp.data);
+        } else {
+          Swal.fire('Error', resp.mensaje || 'No se pudo cargar la información del pago.', 'error');
+        }
+      },
+      error: function() {
+        Swal.close();
+        Swal.fire('Error', 'No se pudo comunicar con el servidor para obtener el comprobante.', 'error');
+      }
+    });
+  }
+
+  function abrirVentanaImpresionPedido(data) {
+    const p = data.pedido || {};
+    const items = data.items || [];
+    const total = parseFloat(data.total || 0).toFixed(2);
+    const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const idPedido = p.idPedido || '---';
+    const nombreCliente = ((p.NombreCliente || '') + ' ' + (p.apellidosCliente || '')).trim() || <?php echo json_encode($nombres); ?>;
+    const telCliente = p.telefono || 'Sin teléfono';
+    const correoCliente = p.correoCliente || <?php echo json_encode($correo); ?>;
+    const fechaPedido = p.fechaPedido || '---';
+    const nombreEstado = (p.nombreEstado || 'Pendiente').toUpperCase();
+
+    let itemsRows = '';
+    if (items.length > 0) {
+      items.forEach((it, idx) => {
+        const cant = parseInt(it.cantidad || 0);
+        const precio = parseFloat(it.PrecioUnitario || 0).toFixed(2);
+        const sub = parseFloat(it.subtotal || (cant * precio)).toFixed(2);
+        itemsRows += `
+          <tr>
+            <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+            <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">
+              <strong style="color: #1e293b; font-size: 13.5px;">${it.nombreReceta || 'Producto General'}</strong>
+              <div style="font-size: 11px; color: #64748b;">Alimento Concentrado Formulado</div>
+            </td>
+            <td style="text-align: center; font-weight: bold; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${cant} unid.</td>
+            <td style="text-align: right; color: #475569; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${precio}</td>
+            <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${sub}</td>
+          </tr>
+        `;
+      });
+    } else {
+      itemsRows = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: #94a3b8;">No se registraron productos en este pedido.</td></tr>`;
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <title>Comprobante de Pedido #${idPedido} - Concentrados El Gordito</title>
+        <style>
+          @page { size: letter portrait; margin: 12mm 15mm 12mm 15mm; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #1e293b; margin: 0; padding: 20px; font-size: 12.5px; line-height: 1.4; background: #ffffff; }
+          .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+          .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+          .badge-status { display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 12px; text-transform: uppercase; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+          .total-card { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 12px; margin-left: auto; width: 300px; }
+          .signatures { width: 100%; margin-top: 35px; border-collapse: collapse; page-break-inside: avoid; }
+          .signature-line { border-top: 1.5px solid #94a3b8; width: 85%; margin: 0 auto 5px auto; }
+        </style>
+      </head>
+      <body>
+        <table class="header-table">
+          <tr>
+            <td style="width: 58%; vertical-align: top;">
+              <div style="font-size: 20px; font-weight: 800; color: #0f766e; text-transform: uppercase; letter-spacing: -0.5px;">
+                Concentrados El Gordito
+              </div>
+              <div style="font-size: 11px; font-weight: 600; color: #475569; margin-top: 1px;">
+                Nutrición Animal de Alta Calidad • Planta Central de Producción
+              </div>
+              <div style="font-size: 10.5px; color: #64748b; margin-top: 4px; line-height: 1.3;">
+                📍 Km 45 Carretera Panamericana, San Salvador, El Salvador<br>
+                📞 PBX: (503) 2234-5678 • WhatsApp: (503) 7890-5678<br>
+                ✉️ ventas@concentradoselgordito.com • Registro MAG N° 894-SV
+              </div>
+            </td>
+            <td style="width: 42%; vertical-align: top; text-align: right;">
+              <div style="border: 1.5px solid #0f766e; border-radius: 8px; padding: 10px 12px; background: #f0fdfa; display: inline-block; text-align: right; min-width: 220px;">
+                <div style="font-size: 10px; font-weight: bold; color: #0f766e; text-transform: uppercase;">Comprobante de Pedido</div>
+                <div style="font-size: 18px; font-weight: 800; color: #134e4a; margin: 2px 0;">#PED-${String(idPedido).padStart(6, '0')}</div>
+                <div style="font-size: 10.5px; color: #475569;"><strong>Fecha Pedido:</strong> ${fechaPedido}</div>
+                <div style="font-size: 10px; color: #64748b;"><strong>Emisión:</strong> ${fechaEmision}</div>
+                <div style="margin-top: 4px;"><span class="badge-status">${nombreEstado}</span></div>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <div class="info-box">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <tr>
+              <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Datos del Cliente / Granja:</div>
+                <div style="font-size: 14px; font-weight: bold; color: #0f172a;">${nombreCliente}</div>
+                <div style="color: #475569; margin-top: 2px;">📞 Tel: ${telCliente}</div>
+                <div style="color: #475569;">✉️ Correo: ${correoCliente}</div>
+              </td>
+              <td style="width: 50%; vertical-align: top; border-left: 1px solid #cbd5e1; padding-left: 10px;">
+                <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Detalles de Despacho:</div>
+                <div style="color: #334155;"><strong>Origen:</strong> Planta Central El Gordito</div>
+                <div style="color: #334155;"><strong>Condición:</strong> Entrega en Planta / Ruta Programada</div>
+                <div style="color: #334155;"><strong>Moneda:</strong> Dólares de los Estados Unidos (USD)</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #0f766e; border-bottom: 2px solid #99f6e4; padding-bottom: 3px; margin-bottom: 8px;">
+          Detalle de Productos y Alimentos Concentrados
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+          <thead>
+            <tr style="background: #f1f5f9; color: #334155;">
+              <th style="padding: 7px; text-align: center; width: 35px; border-bottom: 2px solid #cbd5e1;">#</th>
+              <th style="padding: 7px; text-align: left; border-bottom: 2px solid #cbd5e1;">Descripción del Concentrado</th>
+              <th style="padding: 7px; text-align: center; width: 100px; border-bottom: 2px solid #cbd5e1;">Cantidad</th>
+              <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Precio Unitario</th>
+              <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>${itemsRows}</tbody>
+        </table>
+
+        <div class="total-card">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <tr>
+              <td style="color: #475569; padding: 2px 0;">Subtotal Productos:</td>
+              <td style="text-align: right; font-weight: 600; color: #1e293b;">$${total}</td>
+            </tr>
+            <tr>
+              <td style="color: #475569; padding: 2px 0;">IVA (Exento Ley Agropecuaria):</td>
+              <td style="text-align: right; font-weight: 600; color: #1e293b;">$0.00</td>
+            </tr>
+            <tr style="border-top: 1.5px solid #86efac;">
+              <td style="padding-top: 5px; font-weight: 800; font-size: 14px; color: #14532d;">TOTAL GENERAL:</td>
+              <td style="padding-top: 5px; text-align: right; font-weight: 800; font-size: 16px; color: #15803d;">$${total} USD</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="margin-top: 20px; padding: 8px 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 10.5px; color: #64748b; line-height: 1.35;">
+          <strong>Términos de Garantía y Despacho:</strong> El presente comprobante certifica la formulación y preparación de los concentrados solicitados. Al recibir el producto, el cliente valida el buen estado del empaque y peso correspondiente.
+        </div>
+
+        <table class="signatures">
+          <tr>
+            <td style="width: 48%; text-align: center; vertical-align: top;">
+              <div class="signature-line"></div>
+              <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Entregado por / Planta y Despacho</div>
+              <div style="font-size: 10px; color: #64748b;">Concentrados El Gordito S.A. de C.V.</div>
+            </td>
+            <td style="width: 4%;"></td>
+            <td style="width: 48%; text-align: center; vertical-align: top;">
+              <div class="signature-line"></div>
+              <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Recibido Conforme (Cliente)</div>
+              <div style="font-size: 10px; color: #64748b;">Firma, Nombre y N° Documento</div>
+            </td>
+          </tr>
+        </table>
+
+        <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
+          Impreso desde Concentrados El Gordito • Folio de Seguridad: CG-PED-${idPedido}-${Date.now().toString().slice(-6)}
+        </div>
+      </body>
+      </html>
+    `;
+
+    const ventana = window.open('', '_blank', 'height=800,width=900');
+    ventana.document.open();
+    ventana.document.write(html);
+    ventana.document.close();
+    ventana.focus();
+    setTimeout(() => { ventana.print(); }, 350);
+  }
+
+  function abrirVentanaImpresionPago(data) {
+    const p = data.pago || {};
+    const items = data.items || [];
+    const idTxn = p.idTransaccionWompi || (p.referencia || 'N/D');
+    const formaPago = p.metodo_pago || 'Wompi SV (Tarjeta)';
+    const idPago = p.idPago || '---';
+    const monto = parseFloat(p.monto || 0).toFixed(2);
+    const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const fechaTxn = p.fecha_hora || '---';
+    const nombreCliente = p.nombreCliente || <?php echo json_encode($nombres); ?>;
+    const correoCliente = p.correoCliente || <?php echo json_encode($correo); ?>;
+    const estado = (p.estado || 'completado').toUpperCase();
+    const esAprobado = estado === 'COMPLETADO' || estado === 'PAGADO' || estado === 'APROBADO';
+
+    let itemsRows = '';
+    if (items.length > 0) {
+      items.forEach((it, idx) => {
+        const cant = parseInt(it.cantidad || 1);
+        const prec = parseFloat(it.precio || 0).toFixed(2);
+        const sub = parseFloat(it.subtotal || (cant * prec)).toFixed(2);
+        itemsRows += `
+          <tr>
+            <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+            <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">
+              <strong style="color: #1e293b; font-size: 13.5px;">${it.nombre || 'Producto / Concentrado'}</strong>
+              <div style="font-size: 11px; color: #64748b;">Línea de Nutrición Animal</div>
+            </td>
+            <td style="text-align: center; font-weight: bold; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${cant} unid.</td>
+            <td style="text-align: right; color: #475569; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${prec}</td>
+            <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${sub}</td>
+          </tr>
+        `;
+      });
+    } else {
+      const concepto = p.nombrePlan || (p.descripcion || 'Pago de Concentrados y Servicios');
+      itemsRows = `
+        <tr>
+          <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">1</td>
+          <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">
+            <strong style="color: #1e293b; font-size: 13.5px;">${concepto}</strong>
+            <div style="font-size: 11px; color: #64748b;">Transacción Comercial Confirmada</div>
+          </td>
+          <td style="text-align: center; font-weight: bold; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">1 servicio</td>
+          <td style="text-align: right; color: #475569; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${monto}</td>
+          <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${monto}</td>
+        </tr>
+      `;
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <title>Comprobante de Pago #${idPago} - Concentrados El Gordito</title>
+        <style>
+          @page { size: letter portrait; margin: 12mm 15mm 12mm 15mm; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #1e293b; margin: 0; padding: 20px; font-size: 12.5px; line-height: 1.4; background: #ffffff; }
+          .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+          .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+          .badge-status { display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 12px; text-transform: uppercase; background: ${esAprobado ? '#dcfce7' : '#fee2e2'}; color: ${esAprobado ? '#166534' : '#991b1b'}; border: 1px solid ${esAprobado ? '#bbf7d0' : '#fecaca'}; }
+          .total-card { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 12px; margin-left: auto; width: 300px; }
+          .signatures { width: 100%; margin-top: 35px; border-collapse: collapse; page-break-inside: avoid; }
+          .signature-line { border-top: 1.5px solid #94a3b8; width: 85%; margin: 0 auto 5px auto; }
+        </style>
+      </head>
+      <body>
+        <table class="header-table">
+          <tr>
+            <td style="width: 58%; vertical-align: top;">
+              <div style="font-size: 20px; font-weight: 800; color: #0f766e; text-transform: uppercase; letter-spacing: -0.5px;">
+                Concentrados El Gordito
+              </div>
+              <div style="font-size: 11px; font-weight: 600; color: #475569; margin-top: 1px;">
+                Nutrición Animal de Alta Calidad • Pasarela Oficial Wompi El Salvador
+              </div>
+              <div style="font-size: 10.5px; color: #64748b; margin-top: 4px; line-height: 1.3;">
+                📍 Km 45 Carretera Panamericana, San Salvador, El Salvador<br>
+                📞 PBX: (503) 2234-5678 • WhatsApp: (503) 7890-5678<br>
+                ✉️ pagos@concentradoselgordito.com • NRC: 245981-4 • NIT: 0614-220921-102-1
+              </div>
+            </td>
+            <td style="width: 42%; vertical-align: top; text-align: right;">
+              <div style="border: 1.5px solid #0f766e; border-radius: 8px; padding: 10px 12px; background: #f0fdfa; display: inline-block; text-align: right; min-width: 220px;">
+                <div style="font-size: 10px; font-weight: bold; color: #0f766e; text-transform: uppercase;">Comprobante Oficial de Pago</div>
+                <div style="font-size: 18px; font-weight: 800; color: #134e4a; margin: 2px 0;">#PAG-${String(idPago).padStart(6, '0')}</div>
+                <div style="font-size: 10.5px; color: #475569;"><strong>Fecha Pago:</strong> ${fechaTxn}</div>
+                <div style="font-size: 10px; color: #64748b;"><strong>Emisión:</strong> ${fechaEmision}</div>
+                <div style="margin-top: 4px;"><span class="badge-status">${esAprobado ? 'PAGO APROBADO' : estado}</span></div>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <div class="info-box">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <tr>
+              <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Datos del Pagador:</div>
+                <div style="font-size: 14px; font-weight: bold; color: #0f172a;">${nombreCliente}</div>
+                <div style="color: #475569;">✉️ Correo: ${correoCliente}</div>
+              </td>
+              <td style="width: 50%; vertical-align: top; border-left: 1px solid #cbd5e1; padding-left: 10px;">
+                <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Trazabilidad de la Transacción:</div>
+                <div style="color: #334155;"><strong>Pasarela:</strong> Wompi El Salvador (Banco Agrícola)</div>
+                <div style="color: #334155;"><strong>Método:</strong> ${formaPago}</div>
+                <div style="color: #334155; word-break: break-all;"><strong>ID Transacción:</strong> <span style="font-family: monospace;">${idTxn}</span></div>
+                <div style="color: #334155;"><strong>Referencia:</strong> <span style="font-family: monospace;">${p.referencia || 'N/D'}</span></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #0f766e; border-bottom: 2px solid #99f6e4; padding-bottom: 3px; margin-bottom: 8px;">
+          Concepto y Desglose Liquidado
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+          <thead>
+            <tr style="background: #f1f5f9; color: #334155;">
+              <th style="padding: 7px; text-align: center; width: 35px; border-bottom: 2px solid #cbd5e1;">#</th>
+              <th style="padding: 7px; text-align: left; border-bottom: 2px solid #cbd5e1;">Descripción / Concepto</th>
+              <th style="padding: 7px; text-align: center; width: 100px; border-bottom: 2px solid #cbd5e1;">Cantidad</th>
+              <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Precio</th>
+              <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Total</th>
+            </tr>
+          </thead>
+          <tbody>${itemsRows}</tbody>
+        </table>
+
+        <div class="total-card">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <tr>
+              <td style="color: #475569; padding: 2px 0;">Monto Liquidado:</td>
+              <td style="text-align: right; font-weight: 600; color: #1e293b;">$${monto}</td>
+            </tr>
+            <tr>
+              <td style="color: #475569; padding: 2px 0;">Comisión / Recargos:</td>
+              <td style="text-align: right; font-weight: 600; color: #1e293b;">$0.00</td>
+            </tr>
+            <tr style="border-top: 1.5px solid #86efac;">
+              <td style="padding-top: 5px; font-weight: 800; font-size: 14px; color: #14532d;">TOTAL PAGADO:</td>
+              <td style="padding-top: 5px; text-align: right; font-weight: 800; font-size: 16px; color: #15803d;">$${monto} USD</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="margin-top: 20px; padding: 8px 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 10.5px; color: #64748b; line-height: 1.35;">
+          <strong>Certificación Electrónica:</strong> Este documento ampara la transacción procesada exitosamente en la plataforma de pagos electrónicos Wompi El Salvador. Conserve este comprobante para cualquier gestión o retiro de producto en planta.
+        </div>
+
+        <table class="signatures">
+          <tr>
+            <td style="width: 48%; text-align: center; vertical-align: top;">
+              <div class="signature-line"></div>
+              <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Autorizado / Tesorería y Caja</div>
+              <div style="font-size: 10px; color: #64748b;">Concentrados El Gordito S.A. de C.V.</div>
+            </td>
+            <td style="width: 4%;"></td>
+            <td style="width: 48%; text-align: center; vertical-align: top;">
+              <div class="signature-line"></div>
+              <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Sello Digital de Transacción</div>
+              <div style="font-size: 10px; color: #64748b;">Validación en Línea Wompi SV</div>
+            </td>
+          </tr>
+        </table>
+
+        <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
+          Folio Electrónico Oficial: WMP-PAG-${idPago}-${Date.now().toString().slice(-6)} • Registro Seguro SSL 256-bit
+        </div>
+      </body>
+      </html>
+    `;
+
+    const ventana = window.open('', '_blank', 'height=800,width=900');
+    ventana.document.open();
+    ventana.document.write(html);
+    ventana.document.close();
+    ventana.focus();
+    setTimeout(() => { ventana.print(); }, 350);
   }
 </script>
 

@@ -4,6 +4,36 @@ require_once __DIR__ . '/../models/modelClienteIn.php';
 
 $cli = new ModelClienteIn();
 $correo = $_SESSION['c1'] ?? ($_SESSION['s1'] ?? ($_SESSION['s2'] ?? ''));
+
+// Endpoints AJAX para obtención de datos de impresión de comprobantes del cliente
+if (isset($_REQUEST['accion']) && $_REQUEST['accion'] === 'obtenerDetallePedido') {
+    header('Content-Type: application/json; charset=utf-8');
+    require_once __DIR__ . '/../models/ModelPedido.php';
+    $modPedido = new ModelPedido();
+    $idPed = (int)($_REQUEST['idPedido'] ?? 0);
+    $data = ($idPed > 0) ? $modPedido->obtenerDetalleCompleto($idPed) : [];
+    if (!empty($data)) {
+        echo json_encode(['success' => true, 'data' => $data]);
+    } else {
+        echo json_encode(['success' => false, 'mensaje' => 'No se encontró el detalle del pedido.']);
+    }
+    exit;
+}
+
+if (isset($_REQUEST['accion']) && $_REQUEST['accion'] === 'obtenerDetallePago') {
+    header('Content-Type: application/json; charset=utf-8');
+    require_once __DIR__ . '/../models/PagoModel.php';
+    $modPago = new PagoModel();
+    $idPag = (int)($_REQUEST['idPago'] ?? 0);
+    $data = ($idPag > 0) ? $modPago->obtenerPagoPorId($idPag) : null;
+    if (!empty($data)) {
+        echo json_encode(['success' => true, 'data' => ['pago' => $data, 'items' => $data['items_comprados'] ?? []]]);
+    } else {
+        echo json_encode(['success' => false, 'mensaje' => 'No se encontró la información del pago.']);
+    }
+    exit;
+}
+
 $cliente = $cli->obtenerClientePorCorreo($correo);
 
 $idCliente = (int)($cliente['idCliente'] ?? 0);

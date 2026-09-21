@@ -307,6 +307,11 @@
                                                     title="Ver toda la información devuelta por Wompi">
                                                 <i class="fas fa-eye mr-1"></i>Detalle
                                             </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 ml-1 btn-imprimir-directo-pago" 
+                                                    data-id="<?php echo $p['idPago']; ?>" 
+                                                    title="Imprimir Comprobante Oficial">
+                                                <i class="fas fa-print"></i>
+                                            </button>
                                             <?php if ($esAdmin && $p['estado'] === 'completado'): ?>
                                                 <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 ml-1 btn-reembolsar"
                                                         data-id="<?php echo $p['idPago']; ?>"
@@ -554,6 +559,97 @@
                     </div>
                 </div>
 
+        let ultimoPagoData = null;
+
+        function renderizarModalDetalle(data) {
+            ultimoPagoData = data;
+            const p = data.pago || {};
+            const payload = data.payloadWompi || {};
+            const items = data.items || [];
+            const idTxnMostrar = data.idTransaccion || (p.idTransaccionWompi || 'No devuelto en consulta directa');
+            const idEnlaceMostrar = data.idEnlace || (p.idEnlaceWompi || 'No asociado a enlace permanente');
+            const formaPagoMostrar = data.formaPago || (p.metodo_pago || 'Wompi SV');
+            ultimoJsonCargado = JSON.stringify(data, null, 2);
+
+            let htmlProductos = '';
+            if (items.length > 0) {
+                htmlProductos = `
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-right">Precio</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                items.forEach((it, idx) => {
+                    const cant = parseInt(it.cantidad || 1);
+                    const prec = parseFloat(it.precio || 0).toFixed(2);
+                    const sub = parseFloat(it.subtotal || (cant * prec)).toFixed(2);
+                    htmlProductos += `
+                        <tr>
+                            <td class="text-center text-muted small">${idx + 1}</td>
+                            <td class="font-weight-bold text-dark">${it.nombre || 'Concentrado'}</td>
+                            <td class="text-center font-weight-bold">${cant}</td>
+                            <td class="text-right text-muted">$${prec}</td>
+                            <td class="text-right font-weight-bold text-success">$${sub}</td>
+                        </tr>
+                    `;
+                });
+                htmlProductos += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                htmlProductos = `
+                    <div class="p-3 bg-light rounded text-center text-muted">
+                        <i class="fas fa-tag mr-1 text-primary"></i>
+                        Concepto: <strong>${p.nombrePlan || (p.descripcion || 'Pago de Concentrados y Servicios')}</strong>
+                    </div>
+                `;
+            }
+
+            let estadoBadgeHtml = '';
+            if (p.estado === 'completado') {
+                estadoBadgeHtml = '<span class="badge badge-completado px-3 py-2" style="font-size: 14px;"><i class="fas fa-check-circle mr-1"></i>Pago Aprobado con Éxito</span>';
+            } else if (p.estado === 'reembolsado') {
+                estadoBadgeHtml = '<span class="badge badge-reembolsado px-3 py-2" style="font-size: 14px;"><i class="fas fa-undo mr-1"></i>Transacción Reembolsada</span>';
+            } else {
+                estadoBadgeHtml = `<span class="badge badge-secondary px-3 py-2" style="font-size: 14px;">${p.estado || 'Procesado'}</span>`;
+            }
+
+            const html = `
+                <!-- Encabezado Resumen del Pago -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <div class="summary-pill-card text-center">
+                            <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Monto de la Transacción</div>
+                            <div class="h3 font-weight-bold text-success mb-0">$${parseFloat(p.monto || 0).toFixed(2)} <span class="small text-dark font-weight-normal">${p.moneda || 'USD'}</span></div>
+                            <div class="small text-muted mt-1">Sin cargos ocultos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <div class="summary-pill-card text-center">
+                            <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Estado de Confirmación</div>
+                            <div class="mt-1">${estadoBadgeHtml}</div>
+                            <div class="small text-muted mt-1">${p.fecha_hora}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-pill-card text-center">
+                            <div class="text-xs text-muted text-uppercase font-weight-bold mb-1">Forma de Pago</div>
+                            <div class="h6 font-weight-bold text-dark mb-0 mt-1"><i class="fas fa-credit-card text-primary mr-1"></i>${formaPagoMostrar}</div>
+                            <div class="small text-muted">Wompi El Salvador</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Cuadrícula Principal de 2 Columnas -->
                 <div class="row">
                     <!-- Columna Izquierda: Cliente, Pedido y Wompi IDs -->
@@ -675,34 +771,196 @@
             });
         }
 
-        function imprimirModalDetalle() {
-            const contenido = document.getElementById('modalContenidoDetalle').innerHTML;
-            const ventana = window.open('', '', 'height=750,width=900');
-            ventana.document.write(`
-                <html>
+        function generarHtmlComprobantePago(data) {
+            const p = data.pago || {};
+            const items = data.items || [];
+            const idTxn = data.idTransaccion || (p.idTransaccionWompi || 'N/D');
+            const formaPago = data.formaPago || (p.metodo_pago || 'Wompi SV (Tarjeta)');
+            const idPago = p.idPago || '---';
+            const monto = parseFloat(p.monto || 0).toFixed(2);
+            const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const fechaTxn = p.fecha_hora || '---';
+            const nombreCliente = p.nombreCliente || 'Cliente General';
+            const telCliente = p.telefonoCliente || 'Sin teléfono';
+            const correoCliente = p.correoCliente || 'Sin correo';
+            const estado = (p.estado || 'completado').toUpperCase();
+            const esAprobado = estado === 'COMPLETADO' || estado === 'PAGADO' || estado === 'APROBADO';
+
+            let itemsRows = '';
+            if (items.length > 0) {
+                items.forEach((it, idx) => {
+                    const cant = parseInt(it.cantidad || 1);
+                    const prec = parseFloat(it.precio || 0).toFixed(2);
+                    const sub = parseFloat(it.subtotal || (cant * prec)).toFixed(2);
+                    itemsRows += `
+                        <tr>
+                            <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+                            <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">
+                                <strong style="color: #1e293b; font-size: 13.5px;">${it.nombre || 'Producto / Concentrado'}</strong>
+                                <div style="font-size: 11px; color: #64748b;">Línea de Nutrición Animal</div>
+                            </td>
+                            <td style="text-align: center; font-weight: bold; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${cant} unid.</td>
+                            <td style="text-align: right; color: #475569; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${prec}</td>
+                            <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${sub}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                const concepto = p.nombrePlan || (p.descripcion || 'Pago de Concentrados y Servicios');
+                itemsRows = `
+                    <tr>
+                        <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">1</td>
+                        <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">
+                            <strong style="color: #1e293b; font-size: 13.5px;">${concepto}</strong>
+                            <div style="font-size: 11px; color: #64748b;">Transacción Comercial Confirmada</div>
+                        </td>
+                        <td style="text-align: center; font-weight: bold; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">1 servicio</td>
+                        <td style="text-align: right; color: #475569; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${monto}</td>
+                        <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${monto}</td>
+                    </tr>
+                `;
+            }
+
+            return `
+                <!DOCTYPE html>
+                <html lang="es">
                 <head>
-                    <title>Comprobante de Pago Wompi - Concentrados El Gordito</title>
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+                    <meta charset="UTF-8">
+                    <title>Comprobante de Pago #${idPago} - Concentrados El Gordito</title>
                     <style>
-                        body { padding: 30px; font-family: sans-serif; }
-                        .json-pre-box, button, .btn { display: none !important; }
+                        @page { size: letter portrait; margin: 12mm 15mm 12mm 15mm; }
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #1e293b; margin: 0; padding: 20px; font-size: 12.5px; line-height: 1.4; background: #ffffff; }
+                        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                        .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+                        .badge-status { display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 12px; text-transform: uppercase; background: ${esAprobado ? '#dcfce7' : '#fee2e2'}; color: ${esAprobado ? '#166534' : '#991b1b'}; border: 1px solid ${esAprobado ? '#bbf7d0' : '#fecaca'}; }
+                        .total-card { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 12px; margin-left: auto; width: 300px; }
+                        .signatures { width: 100%; margin-top: 35px; border-collapse: collapse; page-break-inside: avoid; }
+                        .signature-line { border-top: 1.5px solid #94a3b8; width: 85%; margin: 0 auto 5px auto; }
                     </style>
                 </head>
                 <body>
-                    <div class="text-center mb-4">
-                        <h3>Concentrados El Gordito</h3>
-                        <h5>Comprobante Oficial de Transacción Wompi SV</h5>
+                    <table class="header-table">
+                        <tr>
+                            <td style="width: 58%; vertical-align: top;">
+                                <div style="font-size: 20px; font-weight: 800; color: #0f766e; text-transform: uppercase; letter-spacing: -0.5px;">
+                                    Concentrados El Gordito
+                                </div>
+                                <div style="font-size: 11px; font-weight: 600; color: #475569; margin-top: 1px;">
+                                    Nutrición Animal de Alta Calidad • Pasarela Oficial Wompi El Salvador
+                                </div>
+                                <div style="font-size: 10.5px; color: #64748b; margin-top: 4px; line-height: 1.3;">
+                                    📍 Km 45 Carretera Panamericana, San Salvador, El Salvador<br>
+                                    📞 PBX: (503) 2234-5678 • WhatsApp: (503) 7890-5678<br>
+                                    ✉️ pagos@concentradoselgordito.com • NRC: 245981-4 • NIT: 0614-220921-102-1
+                                </div>
+                            </td>
+                            <td style="width: 42%; vertical-align: top; text-align: right;">
+                                <div style="border: 1.5px solid #0f766e; border-radius: 8px; padding: 10px 12px; background: #f0fdfa; display: inline-block; text-align: right; min-width: 220px;">
+                                    <div style="font-size: 10px; font-weight: bold; color: #0f766e; text-transform: uppercase;">Comprobante Oficial de Pago</div>
+                                    <div style="font-size: 18px; font-weight: 800; color: #134e4a; margin: 2px 0;">#PAG-${String(idPago).padStart(6, '0')}</div>
+                                    <div style="font-size: 10.5px; color: #475569;"><strong>Fecha Pago:</strong> ${fechaTxn}</div>
+                                    <div style="font-size: 10px; color: #64748b;"><strong>Emisión:</strong> ${fechaEmision}</div>
+                                    <div style="margin-top: 4px;"><span class="badge-status">${esAprobado ? 'PAGO APROBADO' : estado}</span></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="info-box">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <tr>
+                                <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                                    <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Datos del Pagador:</div>
+                                    <div style="font-size: 14px; font-weight: bold; color: #0f172a;">${nombreCliente}</div>
+                                    <div style="color: #475569; margin-top: 2px;">📞 Tel: ${telCliente}</div>
+                                    <div style="color: #475569;">✉️ Correo: ${correoCliente}</div>
+                                </td>
+                                <td style="width: 50%; vertical-align: top; border-left: 1px solid #cbd5e1; padding-left: 10px;">
+                                    <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Trazabilidad de la Transacción:</div>
+                                    <div style="color: #334155;"><strong>Pasarela:</strong> Wompi El Salvador (Banco Agrícola)</div>
+                                    <div style="color: #334155;"><strong>Método:</strong> ${formaPago}</div>
+                                    <div style="color: #334155; word-break: break-all;"><strong>ID Transacción:</strong> <span style="font-family: monospace;">${idTxn}</span></div>
+                                    <div style="color: #334155;"><strong>Referencia:</strong> <span style="font-family: monospace;">${p.referencia || 'N/D'}</span></div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
-                    ${contenido}
+
+                    <div style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #0f766e; border-bottom: 2px solid #99f6e4; padding-bottom: 3px; margin-bottom: 8px;">
+                        Concepto y Desglose Liquidado
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background: #f1f5f9; color: #334155;">
+                                <th style="padding: 7px; text-align: center; width: 35px; border-bottom: 2px solid #cbd5e1;">#</th>
+                                <th style="padding: 7px; text-align: left; border-bottom: 2px solid #cbd5e1;">Descripción / Concepto</th>
+                                <th style="padding: 7px; text-align: center; width: 100px; border-bottom: 2px solid #cbd5e1;">Cantidad</th>
+                                <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Precio</th>
+                                <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsRows}</tbody>
+                    </table>
+
+                    <div class="total-card">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <tr>
+                                <td style="color: #475569; padding: 2px 0;">Monto Liquidado:</td>
+                                <td style="text-align: right; font-weight: 600; color: #1e293b;">$${monto}</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #475569; padding: 2px 0;">Comisión / Recargos:</td>
+                                <td style="text-align: right; font-weight: 600; color: #1e293b;">$0.00</td>
+                            </tr>
+                            <tr style="border-top: 1.5px solid #86efac;">
+                                <td style="padding-top: 5px; font-weight: 800; font-size: 14px; color: #14532d;">TOTAL PAGADO:</td>
+                                <td style="padding-top: 5px; text-align: right; font-weight: 800; font-size: 16px; color: #15803d;">$${monto} USD</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 8px 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 10.5px; color: #64748b; line-height: 1.35;">
+                        <strong>Certificación Electrónica:</strong> Este documento ampara la transacción procesada exitosamente en la plataforma de pagos electrónicos Wompi El Salvador. Conserve este comprobante para cualquier gestión o retiro de producto en planta.
+                    </div>
+
+                    <table class="signatures">
+                        <tr>
+                            <td style="width: 48%; text-align: center; vertical-align: top;">
+                                <div class="signature-line"></div>
+                                <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Autorizado / Tesorería y Caja</div>
+                                <div style="font-size: 10px; color: #64748b;">Concentrados El Gordito S.A. de C.V.</div>
+                            </td>
+                            <td style="width: 4%;"></td>
+                            <td style="width: 48%; text-align: center; vertical-align: top;">
+                                <div class="signature-line"></div>
+                                <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Sello Digital de Transacción</div>
+                                <div style="font-size: 10px; color: #64748b;">Validación en Línea Wompi SV</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
+                        Folio Electrónico Oficial: WMP-PAG-${idPago}-${Date.now().toString().slice(-6)} • Registro Seguro SSL 256-bit
+                    </div>
                 </body>
                 </html>
-            `);
+            `;
+        }
+
+        function imprimirModalDetalle() {
+            if (!ultimoPagoData) {
+                alert('No hay datos de pago cargados para imprimir.');
+                return;
+            }
+            const html = generarHtmlComprobantePago(ultimoPagoData);
+            const ventana = window.open('', '_blank', 'height=800,width=900');
+            ventana.document.open();
+            ventana.document.write(html);
             ventana.document.close();
             ventana.focus();
             setTimeout(() => {
                 ventana.print();
-                ventana.close();
-            }, 500);
+            }, 350);
         }
 
         // Manejador de evento para Reembolsar Pago
@@ -774,6 +1032,49 @@
                             Swal.fire('Error', msg, 'error');
                         }
                     });
+                }
+            });
+        });
+
+        // Manejador para Imprimir Directamente desde la Tabla
+        $(document).on('click', '.btn-imprimir-directo-pago', function() {
+            const idPago = $(this).data('id');
+            if (!idPago) return;
+
+            Swal.fire({
+                title: 'Preparando Comprobante...',
+                text: 'Obteniendo los datos de la transacción...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            $.ajax({
+                url: 'controllerPagos.php',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    accion: 'detalle_pago',
+                    idPago: idPago
+                },
+                success: function(resp) {
+                    Swal.close();
+                    if (resp.status === 'success' && resp.data) {
+                        const html = generarHtmlComprobantePago(resp.data);
+                        const ventana = window.open('', '_blank', 'height=800,width=900');
+                        ventana.document.open();
+                        ventana.document.write(html);
+                        ventana.document.close();
+                        ventana.focus();
+                        setTimeout(() => {
+                            ventana.print();
+                        }, 350);
+                    } else {
+                        Swal.fire('Error', resp.mensaje || 'No se pudieron obtener los datos de la transacción.', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.close();
+                    Swal.fire('Error de Conexión', 'No se pudo comunicar con el servidor para obtener el comprobante.', 'error');
                 }
             });
         });

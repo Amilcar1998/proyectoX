@@ -695,7 +695,10 @@ include 'configuracion.php';
             });
         }
 
+        let ultimoDetalleCargado = null;
+
         function renderizarDetalle(data) {
+            ultimoDetalleCargado = data;
             const p = data.pedido || {};
             const items = data.items || [];
             const recetas = data.recetas || [];
@@ -772,8 +775,218 @@ include 'configuracion.php';
             $('#tablaRecetaPedido').html(recetasHtml);
         }
 
+        function generarHtmlComprobantePedido(data) {
+            const p = data.pedido || {};
+            const items = data.items || [];
+            const recetas = data.recetas || [];
+            const total = parseFloat(data.total || 0).toFixed(2);
+            const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const idPedido = p.idPedido || '---';
+            const nombreCliente = ((p.NombreCliente || '') + ' ' + (p.apellidosCliente || '')).trim() || 'Cliente General';
+            const telCliente = p.telefono || 'Sin teléfono';
+            const correoCliente = p.correoCliente || 'Sin correo';
+            const fechaPedido = p.fechaPedido || '---';
+            const nombreEstado = (p.nombreEstado || 'Pendiente').toUpperCase();
+
+            let itemsRows = '';
+            if (items.length > 0) {
+                items.forEach((it, idx) => {
+                    const cant = parseInt(it.cantidad || 0);
+                    const precio = parseFloat(it.PrecioUnitario || 0).toFixed(2);
+                    const sub = parseFloat(it.subtotal || (cant * precio)).toFixed(2);
+                    itemsRows += `
+                        <tr>
+                            <td style="text-align: center; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+                            <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">
+                                <strong style="color: #1e293b; font-size: 13.5px;">${it.nombreReceta || 'Producto General'}</strong>
+                                <div style="font-size: 11px; color: #64748b;">Alimento Concentrado Formulado</div>
+                            </td>
+                            <td style="text-align: center; font-weight: bold; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${cant} unid.</td>
+                            <td style="text-align: right; color: #475569; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${precio}</td>
+                            <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">$${sub}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                itemsRows = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: #94a3b8;">No se registraron productos en este pedido.</td></tr>`;
+            }
+
+            let recetasSection = '';
+            if (recetas.length > 0) {
+                let recetasRows = '';
+                recetas.forEach((rec, idx) => {
+                    recetasRows += `
+                        <tr>
+                            <td style="text-align: center; padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+                            <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">${rec.NombreMP || 'Insumo'}</td>
+                            <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${rec.nombreReceta || 'General'}</td>
+                            <td style="text-align: center; font-weight: bold; color: #0284c7; padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${rec.cantidaSa || 0} kg</td>
+                            <td style="text-align: center; color: #64748b; padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${rec.fechaSa || '---'}</td>
+                        </tr>
+                    `;
+                });
+                recetasSection = `
+                    <div style="margin-top: 22px; page-break-inside: avoid;">
+                        <div style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #0369a1; border-bottom: 2px solid #bae6fd; padding-bottom: 4px; margin-bottom: 8px;">
+                            Desglose Técnico de Insumos / Materia Prima (Receta)
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+                            <thead>
+                                <tr style="background: #f0f9ff; color: #0369a1;">
+                                    <th style="padding: 6px 8px; text-align: center; width: 40px; border-bottom: 1px solid #bae6fd;">#</th>
+                                    <th style="padding: 6px 8px; text-align: left; border-bottom: 1px solid #bae6fd;">Materia Prima / Insumo</th>
+                                    <th style="padding: 6px 8px; text-align: left; border-bottom: 1px solid #bae6fd;">Producto Destino</th>
+                                    <th style="padding: 6px 8px; text-align: center; width: 110px; border-bottom: 1px solid #bae6fd;">Cantidad Salida</th>
+                                    <th style="padding: 6px 8px; text-align: center; width: 110px; border-bottom: 1px solid #bae6fd;">Fecha Registro</th>
+                                </tr>
+                            </thead>
+                            <tbody>${recetasRows}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            return `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Comprobante de Pedido #${idPedido} - Concentrados El Gordito</title>
+                    <style>
+                        @page { size: letter portrait; margin: 12mm 15mm 12mm 15mm; }
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #1e293b; margin: 0; padding: 20px; font-size: 12.5px; line-height: 1.4; background: #ffffff; }
+                        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                        .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+                        .badge-status { display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 12px; text-transform: uppercase; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+                        .total-card { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 12px; margin-left: auto; width: 300px; }
+                        .signatures { width: 100%; margin-top: 35px; border-collapse: collapse; page-break-inside: avoid; }
+                        .signature-line { border-top: 1.5px solid #94a3b8; width: 85%; margin: 0 auto 5px auto; }
+                    </style>
+                </head>
+                <body>
+                    <table class="header-table">
+                        <tr>
+                            <td style="width: 58%; vertical-align: top;">
+                                <div style="font-size: 20px; font-weight: 800; color: #0f766e; text-transform: uppercase; letter-spacing: -0.5px;">
+                                    Concentrados El Gordito
+                                </div>
+                                <div style="font-size: 11px; font-weight: 600; color: #475569; margin-top: 1px;">
+                                    Nutrición Animal de Alta Calidad • Planta Central de Producción
+                                </div>
+                                <div style="font-size: 10.5px; color: #64748b; margin-top: 4px; line-height: 1.3;">
+                                    📍 Km 45 Carretera Panamericana, San Salvador, El Salvador<br>
+                                    📞 PBX: (503) 2234-5678 • WhatsApp: (503) 7890-5678<br>
+                                    ✉️ ventas@concentradoselgordito.com • Registro MAG N° 894-SV
+                                </div>
+                            </td>
+                            <td style="width: 42%; vertical-align: top; text-align: right;">
+                                <div style="border: 1.5px solid #0f766e; border-radius: 8px; padding: 10px 12px; background: #f0fdfa; display: inline-block; text-align: right; min-width: 220px;">
+                                    <div style="font-size: 10px; font-weight: bold; color: #0f766e; text-transform: uppercase;">Comprobante de Pedido</div>
+                                    <div style="font-size: 18px; font-weight: 800; color: #134e4a; margin: 2px 0;">#PED-${String(idPedido).padStart(6, '0')}</div>
+                                    <div style="font-size: 10.5px; color: #475569;"><strong>Fecha Pedido:</strong> ${fechaPedido}</div>
+                                    <div style="font-size: 10px; color: #64748b;"><strong>Emisión:</strong> ${fechaEmision}</div>
+                                    <div style="margin-top: 4px;"><span class="badge-status">${nombreEstado}</span></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="info-box">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <tr>
+                                <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                                    <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Datos del Cliente / Granja:</div>
+                                    <div style="font-size: 14px; font-weight: bold; color: #0f172a;">${nombreCliente}</div>
+                                    <div style="color: #475569; margin-top: 2px;">📞 Tel: ${telCliente}</div>
+                                    <div style="color: #475569;">✉️ Correo: ${correoCliente}</div>
+                                </td>
+                                <td style="width: 50%; vertical-align: top; border-left: 1px solid #cbd5e1; padding-left: 10px;">
+                                    <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Detalles de Despacho:</div>
+                                    <div style="color: #334155;"><strong>Origen:</strong> Planta Central El Gordito</div>
+                                    <div style="color: #334155;"><strong>Condición:</strong> Entrega en Planta / Ruta Programada</div>
+                                    <div style="color: #334155;"><strong>Moneda:</strong> Dólares de los Estados Unidos (USD)</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #0f766e; border-bottom: 2px solid #99f6e4; padding-bottom: 3px; margin-bottom: 8px;">
+                        Detalle de Productos y Alimentos Concentrados
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background: #f1f5f9; color: #334155;">
+                                <th style="padding: 7px; text-align: center; width: 35px; border-bottom: 2px solid #cbd5e1;">#</th>
+                                <th style="padding: 7px; text-align: left; border-bottom: 2px solid #cbd5e1;">Descripción del Concentrado</th>
+                                <th style="padding: 7px; text-align: center; width: 100px; border-bottom: 2px solid #cbd5e1;">Cantidad</th>
+                                <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Precio Unitario</th>
+                                <th style="padding: 7px; text-align: right; width: 110px; border-bottom: 2px solid #cbd5e1;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsRows}</tbody>
+                    </table>
+
+                    <div class="total-card">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <tr>
+                                <td style="color: #475569; padding: 2px 0;">Subtotal Productos:</td>
+                                <td style="text-align: right; font-weight: 600; color: #1e293b;">$${total}</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #475569; padding: 2px 0;">IVA (Exento Ley Agropecuaria):</td>
+                                <td style="text-align: right; font-weight: 600; color: #1e293b;">$0.00</td>
+                            </tr>
+                            <tr style="border-top: 1.5px solid #86efac;">
+                                <td style="padding-top: 5px; font-weight: 800; font-size: 14px; color: #14532d;">TOTAL GENERAL:</td>
+                                <td style="padding-top: 5px; text-align: right; font-weight: 800; font-size: 16px; color: #15803d;">$${total} USD</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    ${recetasSection}
+
+                    <div style="margin-top: 20px; padding: 8px 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 10.5px; color: #64748b; line-height: 1.35;">
+                        <strong>Términos de Garantía y Despacho:</strong> El presente comprobante certifica la formulación y preparación de los concentrados solicitados. Al recibir el producto, el cliente valida el buen estado del empaque y peso correspondiente.
+                    </div>
+
+                    <table class="signatures">
+                        <tr>
+                            <td style="width: 48%; text-align: center; vertical-align: top;">
+                                <div class="signature-line"></div>
+                                <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Entregado por / Planta y Despacho</div>
+                                <div style="font-size: 10px; color: #64748b;">Concentrados El Gordito S.A. de C.V.</div>
+                            </td>
+                            <td style="width: 4%;"></td>
+                            <td style="width: 48%; text-align: center; vertical-align: top;">
+                                <div class="signature-line"></div>
+                                <div style="font-weight: bold; font-size: 11.5px; color: #1e293b;">Recibido Conforme (Cliente)</div>
+                                <div style="font-size: 10px; color: #64748b;">Firma, Nombre y N° Documento</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
+                        Impreso desde Concentrados El Gordito • Folio de Seguridad: CG-PED-${idPedido}-${Date.now().toString().slice(-6)}
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
         function imprimirDetallePedido() {
-            window.print();
+            if (!ultimoDetalleCargado) {
+                Swal.fire('Atención', 'No hay datos cargados para imprimir.', 'warning');
+                return;
+            }
+            const html = generarHtmlComprobantePedido(ultimoDetalleCargado);
+            const ventana = window.open('', '_blank', 'height=800,width=900');
+            ventana.document.open();
+            ventana.document.write(html);
+            ventana.document.close();
+            ventana.focus();
+            setTimeout(() => {
+                ventana.print();
+            }, 350);
         }
     </script>
 </body>
