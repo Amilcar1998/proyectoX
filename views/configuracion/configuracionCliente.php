@@ -10,10 +10,16 @@ $modulosPermitidos = $permisoModel->obtenerModulosPorRol($idRol);
 $brandHome = $permisoModel->obtenerRutaHome($idRol);
 $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? ($_SERVER['PHP_SELF'] ?? ''));
 
+$idUsuarioSesion = (int)($_SESSION['idUsuario'] ?? 0);
+$usuarioSesion = (string)($_SESSION['c1'] ?? ($_SESSION['s2'] ?? ($_SESSION['s1'] ?? '')));
+
 $nombres = $nombres ?? '';
 $nombres = is_array($nombres) ? '' : $nombres;
 if (empty($nombres)) {
-    $nombres = $_SESSION['c1'] ?? ($_SESSION['s2'] ?? ($_SESSION['s1'] ?? 'Cliente'));
+    $nombres = $permisoModel->obtenerNombreUsuario($idUsuarioSesion, $usuarioSesion);
+    if (empty($nombres)) {
+        $nombres = $usuarioSesion ?: 'Cliente';
+    }
 }
 $nombres = html_entity_decode((string)$nombres, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 $nombres = str_replace(["\xc2\xa0", '&nbsp;'], ' ', $nombres);
@@ -43,60 +49,10 @@ $cli="<!DOCTYPE html>
   <title>Portal Cliente - Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
-  <link href='vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css'>
-  <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css' rel='stylesheet'>
-
-  <!-- Page level plugin CSS-->
-  <link href='../controllers/vendor/datatables/dataTables.bootstrap4.css' rel='stylesheet'>
-
-  <!-- Custom styles for this template-->
-  <link href='../controllers/vendor/sb-admin.min.css' rel='stylesheet'>
-  <style>
-    html, body { 
-      height: 100%; 
-      margin: 0;
-      padding: 0;
-    }
-    #wrapper { 
-      min-height: 100vh; 
-      display: flex;
-      width: 100%;
-    }
-    #wrapper #content-wrapper {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      width: 100%;
-      min-width: 0; /* Prevents flexbox child from overflowing */
-      overflow-x: hidden;
-    }
-    .container-fluid {
-      padding: 1.25rem;
-      width: 100%;
-      max-width: 100%;
-    }
-    @media (max-width: 576px) {
-      .container-fluid {
-        padding: 0.75rem;
-      }
-      .navbar-brand {
-        font-size: 1rem;
-      }
-    }
-    footer.sticky-footer {
-      position: relative !important;
-      margin-top: auto;
-      width: 100% !important;
-      padding: 1rem 0;
-    }
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-  </style>
-
+  <link href='../vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css'>
+  <link href='../vendor/datatables/dataTables.bootstrap4.css' rel='stylesheet'>
+  <link href='../vendor/sb-admin.css' rel='stylesheet'>
+  <link href='../views/css/layout.css' rel='stylesheet'>
 </head>
 
 <body id='page-top'>

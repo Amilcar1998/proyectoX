@@ -11,7 +11,8 @@ class ReportePedidosModel extends Conexion {
     public function getPedidos(int $idEmpresa = 0): array {
         $condicion = ($idEmpresa > 0) ? " WHERE pe.idEmpresa = " . (int)$idEmpresa : "";
         $sql = "SELECT pe.idPedido AS Pedido,
-                       CONCAT(cl.NombreCliente, ' ', cl.apellidosCliente) AS Cliente,
+                       CONCAT(cl.nombrePersona, ' ', cl.apellidoPersona) AS Cliente,
+                       CONCAT(cl.nombrePersona, ' ', cl.apellidoPersona) AS Persona,
                        cl.telefono AS Telefono,
                        pe.fechaPedido AS Fecha,
                        ep.nombreEstado AS Estado,
@@ -21,7 +22,7 @@ class ReportePedidosModel extends Conexion {
                        dp.cantidad * r.PrecioUnitario AS Subtotal,
                        COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS Empresa
                 FROM pedido pe
-                INNER JOIN cliente cl ON pe.idCliente = cl.idCliente
+                INNER JOIN persona cl ON pe.idCliente = cl.idPersona
                 INNER JOIN estadopedido ep ON pe.idEstadoPedido = ep.idEstadoPedido
                 INNER JOIN detallepedido dp ON pe.idPedido = dp.IdPedido
                 INNER JOIN receta r ON dp.idReceta = r.idReceta

@@ -49,38 +49,30 @@
           public function getConnection(): mysqli {
              return $this->obtenerConexion();
           }
-           public function obtenerNombreUsuario(): string {
-              $nombre = '';
-              if (isset($_SESSION['s1'])) {
-                  $correo = $this->con->real_escape_string($_SESSION['s1']);
-                  $res = $this->con->query("SELECT e.nombreEmp, e.apellido FROM empleado e INNER JOIN usuarios u ON e.idUsuario = u.idUsuario WHERE u.username = '$correo' LIMIT 1");
-                  if ($res && $fila = $res->fetch_assoc()) {
-                      $nombre = trim($fila['nombreEmp'] . ' ' . $fila['apellido']);
-                  }
-                  if (empty($nombre)) {
-                      $nombre = (string)$_SESSION['s1'];
-                  }
-              } elseif (isset($_SESSION['s2'])) {
-                  $correo = $this->con->real_escape_string($_SESSION['s2']);
-                  $res = $this->con->query("SELECT e.nombreEmp, e.apellido FROM empleado e INNER JOIN usuarios u ON e.idUsuario = u.idUsuario WHERE u.username = '$correo' LIMIT 1");
-                  if ($res && $fila = $res->fetch_assoc()) {
-                      $nombre = trim($fila['nombreEmp'] . ' ' . $fila['apellido']);
-                  }
-                  if (empty($nombre)) {
-                      $nombre = (string)$_SESSION['s2'];
-                  }
-              } elseif (isset($_SESSION['c1'])) {
-                  $correo = $this->con->real_escape_string($_SESSION['c1']);
-                  $res = $this->con->query("SELECT c.NombreCliente, c.apellidosCliente FROM cliente c INNER JOIN usuarios u ON c.idUsuario = u.idUsuario WHERE u.username = '$correo' LIMIT 1");
-                  if ($res && $fila = $res->fetch_assoc()) {
-                      $nombre = trim($fila['NombreCliente'] . ' ' . $fila['apellidosCliente']);
-                  }
-                  if (empty($nombre)) {
-                      $nombre = (string)$_SESSION['c1'];
-                  }
-              }
-              return $nombre;
-           }
+            public function obtenerNombreUsuario(): string {
+               $nombre = '';
+               $correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? ''));
+               if (!empty($correo)) {
+                   $correoEscaped = $this->con->real_escape_string($correo);
+                    // 1. Buscar en persona
+                    $resP = $this->con->query("SELECT p.nombrePersona, p.apellidoPersona FROM persona p INNER JOIN usuarios u ON p.idUsuario = u.idUsuario WHERE u.username = '$correoEscaped' LIMIT 1");
+                    if ($resP && $fila = $resP->fetch_assoc()) {
+                        $nombre = trim(($fila['nombrePersona'] ?? ($fila['NombreCliente'] ?? '')) . ' ' . ($fila['apellidoPersona'] ?? ($fila['apellidosCliente'] ?? '')));
+                    }
+                   // 2. Buscar en empleado si no se encontró en persona
+                   if (empty($nombre)) {
+                       $resE = $this->con->query("SELECT e.nombreEmp, e.apellido FROM empleado e INNER JOIN usuarios u ON e.idUsuario = u.idUsuario WHERE u.username = '$correoEscaped' LIMIT 1");
+                       if ($resE && $fila = $resE->fetch_assoc()) {
+                           $nombre = trim(($fila['nombreEmp'] ?? '') . ' ' . ($fila['apellido'] ?? ''));
+                       }
+                   }
+                   // 3. Fallback al correo o usuario
+                   if (empty($nombre)) {
+                       $nombre = (string)$correo;
+                   }
+               }
+               return $nombre;
+            }
            public function getNombreUsuario(): string {
               return $this->obtenerNombreUsuario();
            }

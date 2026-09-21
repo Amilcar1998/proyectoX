@@ -12,14 +12,14 @@ include 'configuracion.php';
   <title>🏭 Gestión de Producción - Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
-  <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Page level plugin CSS-->
-  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+  <link href="../vendor/sb-admin.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
   <style>
@@ -225,7 +225,8 @@ include 'configuracion.php';
                       $estadoProduccion = (string)($key['estadoP'] ?? 'activo');
                       $idPedido = (int)($key['idPedido'] ?? 0);
                       $fechaPedido = htmlspecialchars((string)($key['fechaPedido'] ?? ''));
-                      $nombreCliente = htmlspecialchars((string)($key['NombreCliente'] ?? 'Cliente General'));
+                      $nombreCliente = htmlspecialchars(trim((string)($key['nombrePersona'] ?? ($key['NombreCliente'] ?? 'Persona General')) . ' ' . (string)($key['apellidoPersona'] ?? '')));
+                      if (empty($nombreCliente)) $nombreCliente = 'Persona General';
                       $emp = htmlspecialchars((string)($key['nombreEmp'] ?? 'Sin asignar'));
 
                       $isTerminado = (strtolower($estadoProduccion) === 'terminado');
@@ -322,11 +323,11 @@ include 'configuracion.php';
   </a>
 
   <!-- Scripts Base -->
-  <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-  <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-  <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="../vendor/datatables/jquery.dataTables.js"></script>
+  <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="js/sb-admin.min.js"></script>
   <script src="js/translations.js"></script>

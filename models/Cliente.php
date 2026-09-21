@@ -31,28 +31,39 @@ class Cliente
         return $this->nombreCi;
     }
 
-    /**
-     * @param mixed $nombreCi
-     */
+    public function getNombrePersona()
+    {
+        return $this->nombreCi;
+    }
+
     public function setNombreCi($nombreCi)
     {
         $this->nombreCi = $nombreCi;
     }
 
-    /**
-     * @return mixed
-     */
+    public function setNombrePersona($nombrePersona)
+    {
+        $this->nombreCi = $nombrePersona;
+    }
+
     public function getApellidos()
     {
         return $this->apellidos;
     }
 
-    /**
-     * @param mixed $apellidos
-     */
+    public function getApellidoPersona()
+    {
+        return $this->apellidos;
+    }
+
     public function setApellidos($apellidos)
     {
         $this->apellidos = $apellidos;
+    }
+
+    public function setApellidoPersona($apellidoPersona)
+    {
+        $this->apellidos = $apellidoPersona;
     }
 
     /**

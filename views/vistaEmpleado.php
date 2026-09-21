@@ -15,11 +15,11 @@ include 'configuracion.php';
   <title>👷 Gestión de Empleados | Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
-  <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Page level plugin CSS-->
-  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
-  <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+  <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">  
+  <link href="../vendor/sb-admin.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
@@ -172,8 +172,8 @@ include 'configuracion.php';
                     <div class="col-md-4 form-group">
                       <label for="txtGenero" class="font-weight-bold small">Género</label>
                       <select name="txtGenero" id="txtGenero" class="form-control">
-                        <option value="Hombre">Hombre</option>
-                        <option value="Mujer">Mujer</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
                       </select>
                     </div>
                     <div class="col-md-4 form-group">
@@ -200,24 +200,39 @@ include 'configuracion.php';
                     </div>
                   </div>
 
-                  <div class="row mb-2">
-                    <div class="col-md-8 form-group mb-2">
-                      <label for="txtUser" class="font-weight-bold small">Usuario Institucional (Generado Automáticamente)</label>
+                  <div class="row">
+                    <?php if (!empty($esSuperUsuario)): ?>
+                      <div class="col-md-6 form-group">
+                        <label for="txtIdEmpresa" class="font-weight-bold small text-primary"><i class="fas fa-building mr-1"></i>Empresa / Sucursal <span class="text-danger">*</span></label>
+                        <select name="txtIdEmpresa" id="txtIdEmpresa" class="form-control" required onchange="actualizarUsuarioPreview()">
+                          <?php foreach ($listaEmpresas as $emp): 
+                            $domEmp = 'gordito.com';
+                            if (!empty($emp['correo']) && strpos($emp['correo'], '@') !== false) {
+                              $domEmp = trim(explode('@', $emp['correo'])[1]);
+                            } elseif (!empty($emp['slug'])) {
+                              $domEmp = trim(str_replace('-', '', $emp['slug'])) . '.com';
+                            }
+                          ?>
+                            <option value="<?php echo (int)$emp['idEmpresa']; ?>" data-dominio="<?php echo htmlspecialchars($domEmp); ?>" <?php echo ((int)$emp['idEmpresa'] === $idEmpresaSesion ? 'selected' : ''); ?>>
+                              <?php echo htmlspecialchars($emp['nombreEmpresa']); ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+                    <?php else: ?>
+                      <input type="hidden" name="txtIdEmpresa" id="txtIdEmpresa" value="<?php echo $idEmpresaSesion; ?>" data-dominio="<?php echo htmlspecialchars($dominioEmpresa ?? 'gordito.com'); ?>">
+                      <div class="col-md-6 form-group">
+                        <label class="font-weight-bold small"><i class="fas fa-building mr-1"></i>Empresa Asignada</label>
+                        <input type="text" class="form-control bg-light" readonly value="<?php echo htmlspecialchars($empresaActual['nombreEmpresa'] ?? 'Concentrados El Gordito'); ?>">
+                      </div>
+                    <?php endif; ?>
+                    <div class="col-md-6 form-group">
+                      <label for="txtUser" class="font-weight-bold small"><i class="fas fa-user-circle mr-1"></i>Usuario Institucional (Autogenerado)</label>
                       <div class="input-group">
                         <div class="input-group-prepend">
                           <span class="input-group-text bg-white"><i class="fas fa-envelope text-muted"></i></span>
                         </div>
-                        <input type="text" name="txtUser" id="txtUser" class="form-control bg-white" readonly placeholder="Se generará automáticamente (ej: juan.perez@<?php echo htmlspecialchars($dominioEmpresa ?? 'gordito.com'); ?>)">
-                      </div>
-                      <small class="form-text text-muted">El empleado utilizará este correo institucional para iniciar sesión.</small>
-                    </div>
-                    <div class="col-md-4 form-group mb-2" id="grupoEstadoEmpleado">
-                      <label class="font-weight-bold small">Estado del Empleado</label>
-                      <div class="custom-control custom-checkbox bg-white p-2 rounded border">
-                        <input type="checkbox" class="custom-control-input" id="chkActivoEmp" name="chkActivo" value="1" checked>
-                        <label class="custom-control-label font-weight-bold text-dark small" for="chkActivoEmp">
-                          <i class="fas fa-check-circle text-success mr-1"></i>Activo
-                        </label>
+                        <input type="text" name="txtUser" id="txtUser" class="form-control bg-light font-weight-bold text-primary" readonly placeholder="nombre.apellido26@empresa.com">
                       </div>
                     </div>
                   </div>
@@ -337,10 +352,16 @@ include 'configuracion.php';
                     <i class="fas fa-user-circle text-secondary mr-1"></i><?php echo htmlspecialchars($nombresEmp . ' ' . $apellidoEmp); ?>
                   </td>
                   <td class="align-middle">
-                    <?php if (strtolower($generoEmp) === 'hombre' || strtolower($generoEmp) === 'm'): ?>
-                      <span class="text-muted"><i class="fas fa-mars mr-1 text-primary"></i>Hombre</span>
+                    <?php 
+                      $esMascEmp = (strtoupper((string)$generoEmp) === 'M' || stripos((string)$generoEmp, 'masc') !== false || stripos((string)$generoEmp, 'hombre') !== false);
+                      $esFemEmp = (strtoupper((string)$generoEmp) === 'F' || stripos((string)$generoEmp, 'fem') !== false || stripos((string)$generoEmp, 'mujer') !== false);
+                    ?>
+                    <?php if ($esMascEmp): ?>
+                      <span class="text-dark font-weight-bold"><i class="fas fa-mars mr-1 text-primary"></i>Masculino</span>
+                    <?php elseif ($esFemEmp): ?>
+                      <span class="text-dark font-weight-bold"><i class="fas fa-venus mr-1 text-danger"></i>Femenino</span>
                     <?php else: ?>
-                      <span class="text-muted"><i class="fas fa-venus mr-1 text-danger"></i>Mujer</span>
+                      <span class="text-muted"><?php echo htmlspecialchars($generoEmp ?: 'N/A'); ?></span>
                     <?php endif; ?>
                   </td>
                   <td class="align-middle">
@@ -408,11 +429,11 @@ include 'configuracion.php';
   </a>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-  <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-  <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="../vendor/datatables/jquery.dataTables.js"></script>
+  <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
   <script src="../controllers/js/sb-admin.min.js"></script>
   <script src="../controllers/js/translations.js"></script>
   <script src="../controllers/js/demo/datatables-demo.js"></script>
@@ -451,7 +472,15 @@ include 'configuracion.php';
       }
     }
 
-    const DOMINIO_EMPRESA_ACTUAL = '<?php echo htmlspecialchars($dominioEmpresa ?? 'gordito.com', ENT_QUOTES); ?>';
+    function obtenerDominioEmpleado() {
+      var sel = $('#txtIdEmpresa');
+      if (sel.is('select')) {
+        var dom = sel.find('option:selected').data('dominio');
+        if (dom) return dom;
+      }
+      var domHidden = sel.data('dominio');
+      return domHidden || 'gordito.com';
+    }
 
     function actualizarUsuarioPreview() {
       if ($('#txtIdEmpleado').val() === '') {
@@ -459,8 +488,12 @@ include 'configuracion.php';
         var a = $('#txtApellidos').val().trim().split(/\s+/)[0] || '';
         n = n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
         a = a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        var dominio = obtenerDominioEmpleado();
+        var num = '26';
+
         if (n || a) {
-          $('#txtUser').val((n && a ? n + '.' + a : (n || a)) + '@' + DOMINIO_EMPRESA_ACTUAL);
+          var base = (n && a ? n + '.' + a : (n || a));
+          $('#txtUser').val(base + num + '@' + dominio);
         } else {
           $('#txtUser').val('');
         }
@@ -468,6 +501,7 @@ include 'configuracion.php';
     }
 
     $('#txtNombres, #txtApellidos').on('input', actualizarUsuarioPreview);
+    $('#txtIdEmpresa').on('change', actualizarUsuarioPreview);
 
     function sugerirRolSegunPuesto() {
       var puesto = parseInt($('#txtCargo').val()) || 0;
@@ -492,12 +526,23 @@ include 'configuracion.php';
       marcarSubmodulos('rol');
     });
 
+    function normalizarGeneroEmp(genero) {
+      if (!genero) return 'Masculino';
+      const g = genero.toString().trim().toUpperCase();
+      if (g === 'M' || g.indexOf('MASC') !== -1 || g === 'HOMBRE') {
+        return 'Masculino';
+      } else if (g === 'F' || g.indexOf('FEM') !== -1 || g === 'MUJER') {
+        return 'Femenino';
+      }
+      return genero;
+    }
+
     function cargarEmpleado(id, nombres, apellidos, genero, cargo, idUsuario, username, idRol, activo) {
       $('#modalTitulo').text('Modificar Empleado #' + id);
       $('#txtIdEmpleado').val(id);
       $('#txtNombres').val(nombres);
       $('#txtApellidos').val(apellidos);
-      $('#txtGenero').val(genero);
+      $('#txtGenero').val(normalizarGeneroEmp(genero));
       $('#txtCargo').val(cargo);
       $('#txtRol').val(idRol || '2');
       $('#txtIdUsuario').val(idUsuario);
@@ -531,7 +576,7 @@ include 'configuracion.php';
       $('#txtIdEmpleado').val('');
       $('#txtNombres').val('');
       $('#txtApellidos').val('');
-      $('#txtGenero').val('Hombre');
+      $('#txtGenero').val('Masculino');
       $('#txtCargo').val('');
       $('#txtRol').val('2');
       $('#txtIdUsuario').val('');

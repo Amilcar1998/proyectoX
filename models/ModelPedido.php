@@ -19,11 +19,11 @@ public function __construct()
         if ($idEmpresa > 0) {
             $condicion = " WHERE pedido.idEmpresa = " . (int)$idEmpresa . " ";
         }
-        $sql = "SELECT pedido.idPedido, pedido.fechaPedido, pedido.idEmpresa, cliente.NombreCliente, cliente.ApellidosCliente, cliente.telefono, 
+        $sql = "SELECT pedido.idPedido, pedido.fechaPedido, pedido.idEmpresa, persona.idPersona, persona.nombrePersona, persona.apellidoPersona, persona.nombrePersona AS NombreCliente, persona.apellidoPersona AS ApellidosCliente, persona.telefono, 
                        estadopedido.idEstadoPedido, estadopedido.nombreEstado,
                        COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa
                 FROM pedido 
-                INNER JOIN cliente ON pedido.idCliente = cliente.idCliente 
+                INNER JOIN persona ON pedido.idCliente = persona.idPersona 
                 INNER JOIN estadopedido ON pedido.idEstadoPedido = estadopedido.idEstadoPedido 
                 LEFT JOIN empresas emp ON pedido.idEmpresa = emp.idEmpresa
                 $condicion
@@ -45,23 +45,23 @@ public function __construct()
 
     public function obtenerSesionEmpleado(string $correo): array
     {
-        $stmt = $this->con->prepare(
-            "SELECT idEmpleado, nombreEmp, apellido 
-             FROM empleado 
-             INNER JOIN usuarios ON empleado.idUsuario = usuarios.idUsuario 
-             WHERE username = ?"
-        );
-        if (!$stmt) return [];
-        $stmt->bind_param("s", $correo);
-        $stmt->execute();
-        $res = $stmt->get_result();
+        $correo = $this->con->real_escape_string($correo);
+        // 1. Buscar en persona
+        $res = $this->con->query("SELECT p.nombrePersona AS nombreEmp, p.apellidoPersona AS apellido FROM persona p INNER JOIN usuarios u ON p.idUsuario=u.idUsuario WHERE u.username='$correo' LIMIT 1");
         $r = [];
+        if ($res && $res->num_rows > 0) {
+            while ($row = $res->fetch_assoc()) {
+                $r[] = $row;
+            }
+            return $r;
+        }
+        // 2. Fallback a empleado
+        $res = $this->con->query("SELECT nombreEmp, apellido FROM empleado INNER JOIN usuarios ON empleado.idUsuario=usuarios.idUsuario WHERE username='$correo'");
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $r[] = $row;
             }
         }
-        $stmt->close();
         return $r;
     }
 
@@ -73,17 +73,17 @@ public function __construct()
     public function obtenerDetallePedido(int $idPedido): array
     {
         $stmt = $this->con->prepare(
-            "SELECT dp.idDetallePedido, dp.cantidad, dp.idReceta, dp.IdPedido, r.nombreReceta, r.PrecioUnitario,
-                    (dp.cantidad * COALESCE(r.PrecioUnitario, 0)) as subtotal
-             FROM detallepedido dp 
-             INNER JOIN receta r ON dp.idReceta = r.idReceta 
+            "SELECT dp.iddetallePedido, dp.idReceta, dp.IdPedido, dp.cantidad, dp.subtotal,
+                    r.nombreReceta, r.PrecioUnitario, r.descripcion
+             FROM detallepedido dp
+             INNER JOIN receta r ON dp.idReceta = r.idReceta
              WHERE dp.IdPedido = ?"
         );
-        if (!$stmt) return [];
+        $r = [];
+        if (!$stmt) return $r;
         $stmt->bind_param("i", $idPedido);
         $stmt->execute();
         $res = $stmt->get_result();
-        $r = [];
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $r[] = $row;
@@ -124,18 +124,16 @@ public function __construct()
     public function obtenerRecetaPorPedido(int $idPedido): array
     {
         $stmt = $this->con->prepare(
-            "SELECT dr.idDetalleReceta, dr.cantidaSa, dr.fechaSa, mp.NombreMP, r.nombreReceta, dp.IdPedido, dp.cantidad as cantidadPedida
-             FROM detallereceta dr 
-             INNER JOIN materiaprima mp ON dr.idMateriaPrima = mp.idMateriaPrima 
-             INNER JOIN receta r ON dr.IdReceta = r.idReceta 
-             INNER JOIN detallepedido dp ON r.idReceta = dp.idReceta 
+            "SELECT r.idReceta, r.nombreReceta, r.PrecioUnitario, r.descripcion, dp.cantidad
+             FROM receta r
+             INNER JOIN detallepedido dp ON r.idReceta = dp.idReceta
              WHERE dp.IdPedido = ?"
         );
-        if (!$stmt) return [];
+        $r = [];
+        if (!$stmt) return $r;
         $stmt->bind_param("i", $idPedido);
         $stmt->execute();
         $res = $stmt->get_result();
-        $r = [];
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $r[] = $row;
@@ -149,10 +147,10 @@ public function __construct()
     {
         $stmt = $this->con->prepare(
             "SELECT p.idPedido, p.fechaPedido, p.idCliente, p.idEstadoPedido, ep.nombreEstado,
-                    c.NombreCliente, c.apellidosCliente, c.telefono, c.edad, c.genero,
+                    c.idPersona, c.nombrePersona, c.apellidoPersona, c.nombrePersona AS NombreCliente, c.apellidoPersona AS apellidosCliente, c.telefono, c.edad, c.genero,
                     u.username as correoCliente
              FROM pedido p
-             INNER JOIN cliente c ON p.idCliente = c.idCliente
+             INNER JOIN persona c ON p.idCliente = c.idPersona
              INNER JOIN estadopedido ep ON p.idEstadoPedido = ep.idEstadoPedido
              LEFT JOIN usuarios u ON c.idUsuario = u.idUsuario
              WHERE p.idPedido = ?

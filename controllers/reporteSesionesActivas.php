@@ -14,14 +14,14 @@ include '../views/configuracion.php';
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
    <title>Usuarios Activos | Concentrados El Gordito</title>
-   <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-   <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-   <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
-   <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-   <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-   <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-   <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-   <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+   <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+   <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+   <link href="../vendor/sb-admin.css" rel="stylesheet" />
+   <script src="../vendor/jquery/jquery.min.js"></script>
+   <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+   <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+   <script src="../vendor/datatables/jquery.dataTables.js"></script>
+   <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
    <script src="../controllers/js/sb-admin.min.js"></script>
    <script src="js/translations.js"></script>
    <script src="js/demo/datatables-demo.js"></script>

@@ -7,97 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>🏷️ Gestión de Precios, Nivelaciones y Promociones</title>
 
-    <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
-    <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../vendor/sb-admin.css" rel="stylesheet">
+    <script src="../vendor/sweetalert2.all.min.js"></script>
 
-    <style>
-        .card-stat {
-            border-radius: 12px;
-            border: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card-stat:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        }
-        .badge-promo-active {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: #ffffff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.78rem;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
-            display: inline-block;
-        }
-        .badge-promo-inactive {
-            background: #f1f5f9;
-            color: #64748b;
-            border: 1px solid #cbd5e1;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.76rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            white-space: nowrap;
-        }
-        .status-pill-completado {
-            background-color: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        .status-pill-cancelado {
-            background-color: #fff1f2;
-            color: #9f1239;
-            border: 1px solid #fecdd3;
-        }
-        .status-pill-pendiente {
-            background-color: #fffbeb;
-            color: #92400e;
-            border: 1px solid #fde68a;
-        }
-        .status-pill-proceso {
-            background-color: #f0f9ff;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
-        }
-        .price-current {
-            font-size: 1.18rem;
-            font-weight: 800;
-            color: #059669;
-        }
-        .price-old {
-            font-size: 0.92rem;
-            color: #94a3b8;
-            text-decoration: line-through;
-            font-weight: 600;
-        }
-        .nav-tabs-custom .nav-link {
-            font-weight: 700;
-            color: #64748b;
-            border-radius: 8px 8px 0 0;
-            padding: 10px 20px;
-        }
-        .nav-tabs-custom .nav-link.active {
-            color: #059669;
-            background-color: #ffffff;
-            border-color: #dee2e6 #dee2e6 #ffffff;
-            border-top: 3px solid #059669;
-        }
-    </style>
+    <link href="../views/css/promociones.css" rel="stylesheet">
 </head>
 <body id="page-top">
     <?php echo "$nav"; ?>
@@ -616,139 +531,20 @@
     </form>
 
     <!-- Scripts Base -->
-    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
-    <script src="../controllers/js/sb-admin.min.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../vendor/datatables/jquery.dataTables.js"></script>
+    <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="../views/js/sb-admin.min.js"></script>
 
     <script>
-        const promocionActivaActual = <?= json_encode($promocionActivaActual ?: null) ?>;
-
-        $(document).ready(function() {
-            $('#dataTable').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
-                }
-            });
-
-            $('#dataTableHistorial').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
-                },
-                order: [[0, 'desc']]
-            });
-
-            <?php if (!empty($mensaje)): ?>
-                Swal.fire({
-                    icon: '<?= $tipoMensaje ?>',
-                    title: '<?= ($tipoMensaje === "success" ? "¡Operación Exitosa!" : "Aviso") ?>',
-                    text: '<?= addslashes($mensaje) ?>',
-                    confirmButtonColor: '#059669'
-                });
-            <?php endif; ?>
-
-            // Interceptar envío del formulario de promoción para validar promoción única
-            $('#formPromocion').on('submit', function(e) {
-                e.preventDefault();
-                const idActual = parseInt($('#promoIdReceta').val()) || 0;
-                const nombreActual = $('#promoNombreReceta').val();
-                const form = this;
-
-                if (promocionActivaActual && parseInt(promocionActivaActual.idReceta) !== idActual) {
-                    Swal.fire({
-                        title: '⚠️ ¿Reemplazar promoción activa?',
-                        html: `Actualmente ya existe una promoción activa para <b>"${promocionActivaActual.nombreReceta}"</b> (Oferta: $${parseFloat(promocionActivaActual.PrecioUnitario).toFixed(2)} USD).<br><br><b>Regla del Sistema:</b> Solo puede haber <u>una única promoción activa</u> a la vez.<br><br>Si continúas, la promoción anterior será <b>cancelada automáticamente y pasará al histórico</b>, restaurando su precio regular, y se activará la nueva oferta para <b>"${nombreActual}"</b>.<br><br>¿Deseas confirmar el reemplazo?`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#dc2626',
-                        cancelButtonColor: '#6b7280',
-                        confirmButtonText: 'Sí, cancelar anterior y activar nueva',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                } else {
-                    form.submit();
-                }
-            });
-        });
-
-        // Abrir Modal de Nivelación
-        function abrirModalNivelacion(id, nombre, precioActual) {
-            $('#nivelacionIdReceta').val(id);
-            $('#nivelacionNombreReceta').val(nombre);
-            $('#nivelacionPrecioActual').val(precioActual.toFixed(2));
-            $('#nivelacionNuevoPrecio').val(precioActual.toFixed(2));
-            $('#modalNivelacion').modal('show');
-        }
-
-        // Abrir Modal de Promoción
-        function abrirModalPromocion(id, nombre, precioBase, precioVenta, fInicio, fFin) {
-            $('#promoIdReceta').val(id);
-            $('#promoNombreReceta').val(nombre);
-            $('#promoPrecioRegular').val(precioBase.toFixed(2));
-            $('#promoPrecioOferta').val(precioVenta < precioBase ? precioVenta.toFixed(2) : (precioBase * 0.85).toFixed(2));
-
-            // Configurar fechas por defecto si vienen vacías
-            const now = new Date();
-            const nowFormatted = now.toISOString().slice(0, 16);
-            const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-            const in7DaysFormatted = in7Days.toISOString().slice(0, 16);
-
-            if (fInicio) {
-                $('#promoFechaInicio').val(fInicio.replace(' ', 'T').slice(0, 16));
-            } else {
-                $('#promoFechaInicio').val(nowFormatted);
-            }
-
-            if (fFin) {
-                $('#promoFechaFin').val(fFin.replace(' ', 'T').slice(0, 16));
-            } else {
-                $('#promoFechaFin').val(in7DaysFormatted);
-            }
-
-            calcularCalculoPromo();
-            $('#modalPromocion').modal('show');
-        }
-
-        // Cálculo dinámico de % de descuento y ahorro
-        function calcularCalculoPromo() {
-            const regular = parseFloat($('#promoPrecioRegular').val()) || 0;
-            const oferta = parseFloat($('#promoPrecioOferta').val()) || 0;
-
-            if (regular > oferta && oferta > 0) {
-                const ahorro = regular - oferta;
-                const pct = Math.round((ahorro / regular) * 100);
-                $('#badgeCalculoDescuento').text('-' + pct + '%');
-                $('#montoCalculoAhorro').text('$' + ahorro.toFixed(2) + ' USD');
-            } else {
-                $('#badgeCalculoDescuento').text('0%');
-                $('#montoCalculoAhorro').text('$0.00 USD');
-            }
-        }
-
-        // Cancelar promoción anticipada
-        function cancelarPromocion(id, nombre) {
-            Swal.fire({
-                title: '¿Finalizar promoción?',
-                text: 'La oferta de "' + nombre + '" será desactivada y volverá a su precio base regular.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Sí, finalizar oferta',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#cancelarIdReceta').val(id);
-                    $('#formCancelarPromo').submit();
-                }
-            });
-        }
+        window.promocionesConfig = {
+            promocionActivaActual: <?= json_encode($promocionActivaActual ?: null) ?>,
+            mensaje: <?= !empty($mensaje) ? json_encode($mensaje) : 'null' ?>,
+            tipoMensaje: <?= !empty($tipoMensaje) ? json_encode($tipoMensaje) : '"info"' ?>
+        };
     </script>
+    <script src="../views/js/promociones.js"></script>
 </body>
 </html>

@@ -1,31 +1,36 @@
 <?php
 require_once __DIR__ . '/sesiones.php';
 require_once __DIR__ . '/../models/ClienteModel.php';
+require_once __DIR__ . '/../models/EmpresaModel.php';
 
 $cliente = new ClienteModel();
+$empresaModel = new EmpresaModel();
 
 $correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? '');
 $idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
 $esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || (($correo ?? '') === 'amilcar199819@gmail.com');
 $idEmpresaFiltro = $esSuperUsuario ? 0 : $idEmpresaSesion;
 
-if (isset($_REQUEST["insertar"])) {
-    $u = new Usuario("", $_REQUEST["usuarioC"], sha1('123456'), '2');
-    $cliente->getAddUs($u, $idEmpresaSesion);
-    $user = $_REQUEST["usuarioC"];
-    $usuario = $cliente->getUser($idEmpresaSesion);
-    $id = '';
-    foreach ($usuario as $us) {
-        if ($us['username'] === $user) {
-            $id = $us["idUsuario"];
-            break;
-        }
-    }
+$listaEmpresas = $empresaModel->listarTodas();
+$empresaActual = $empresaModel->obtenerPorId($idEmpresaSesion);
 
-    $e = new Cliente($_REQUEST["idCliente"], $_REQUEST["nombreC"], $_REQUEST["apellidoC"], $_REQUEST["telefonoC"], $_REQUEST["edadC"], $_REQUEST["generoC"], $id);
-    $cliente->agregarCliente($e, $idEmpresaSesion);
-    $msj = "Se ha agregado el registro exitosamente";
-    $icon = "success";
+$dominioEmpresaActual = 'gordito.com';
+if ($empresaActual && !empty($empresaActual['correo']) && strpos($empresaActual['correo'], '@') !== false) {
+    $dominioEmpresaActual = trim(explode('@', $empresaActual['correo'])[1]);
+}
+
+if (isset($_REQUEST["insertar"])) {
+    $idEmpresaTarget = $esSuperUsuario ? (int)($_REQUEST['idEmpresa'] ?? $idEmpresaSesion) : $idEmpresaSesion;
+    if ($idEmpresaTarget <= 0) $idEmpresaTarget = 1;
+
+    $resultado = $cliente->registrarClienteAutogenerado($_REQUEST, $idEmpresaTarget);
+    if ($resultado['exito']) {
+        $msj = "Se ha registrado el cliente y su usuario autogenerado: " . $resultado['username'];
+        $icon = "success";
+    } else {
+        $msj = $resultado['mensaje'] ?? "Error: No se pudo agregar la persona.";
+        $icon = "warning";
+    }
 }
 
 if (isset($_REQUEST["modificar"])) {
@@ -42,12 +47,15 @@ if (isset($_REQUEST["eliminar"])) {
     $icon = "success";
 }
 
-$user = $cliente->getUser($idEmpresaFiltro);
 $Rcliente = $cliente->getCliente($idEmpresaFiltro);
 $session = $cliente->getSessionEmp($correo);
 $nombres = '';
 foreach ($session as $key) {
     $nombres = trim(($key['nombreEmp'] ?? '') . ' ' . ($key['apellido'] ?? ''));
+}
+if (empty($nombres)) {
+    require_once __DIR__ . '/../models/PermisoModel.php';
+    $nombres = (new PermisoModel())->obtenerNombreUsuario((int)($_SESSION['idUsuario'] ?? 0), $correo);
 }
 
 include __DIR__ . "/../views/vistaCliente.php";

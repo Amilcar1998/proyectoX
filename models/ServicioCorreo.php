@@ -157,10 +157,14 @@ class ServicioCorreo
         $limite = $this->obtenerLimiteMensual();
         $enviados = $this->obtenerTotalEnviadosMes();
         $restantes = max(0, $limite - $enviados);
-        $alerta = ($restantes <= 50);
+        $finalizada = ($restantes <= 0);
+        $porFinalizar = ($restantes > 0 && $restantes <= 100);
+        $alerta = ($finalizada || $porFinalizar);
 
         return [
             'alerta' => $alerta,
+            'finalizada' => $finalizada,
+            'porFinalizar' => $porFinalizar,
             'enviados' => $enviados,
             'limite' => $limite,
             'restantes' => $restantes

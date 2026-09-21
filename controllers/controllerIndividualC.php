@@ -38,8 +38,15 @@ $cliente = $cli->obtenerClientePorCorreo($correo);
 
 $idCliente = (int)($cliente['idCliente'] ?? 0);
 $idUsuario = (int)($cliente['idUsuario'] ?? 0);
-$nombres = trim(($cliente['NombreCliente'] ?? 'Cliente') . ' ' . ($cliente['apellidosCliente'] ?? ''));
+$nombres = trim(($cliente['nombrePersona'] ?? ($cliente['NombreCliente'] ?? 'Cliente')) . ' ' . ($cliente['apellidoPersona'] ?? ($cliente['apellidosCliente'] ?? '')));
 $fechaActual = date('d/m/Y');
+
+$idEmpresaCliente = (int)($cliente['idEmpresa'] ?? ($_SESSION['idEmpresa'] ?? 1));
+
+require_once __DIR__ . '/../models/EmpresaModel.php';
+$empresaModel = new EmpresaModel();
+$estadoSuscripcionEmpresa = $empresaModel->verificarSuscripcionEmpresa($idEmpresaCliente);
+$suscripcionEmpresaCaducada = empty($estadoSuscripcionEmpresa['activa']);
 
 $suscripcion = $cli->obtenerSuscripcionUsuario($idUsuario);
 $misPagos = ($idUsuario > 0) ? $cli->obtenerPagosPorUsuario($idUsuario) : [];
@@ -52,11 +59,12 @@ $materiaPrimaRes = [];
 $mostrarModalAgregar = false;
 
 // Función auxiliar para asegurar que el cliente existe
-$asegurarCliente = function() use ($cli, &$idCliente, &$idUsuario, $correo) {
+$asegurarCliente = function() use ($cli, &$idCliente, &$idUsuario, &$idEmpresaCliente, $correo) {
     if ($idCliente <= 0 && !empty($correo)) {
         $c = $cli->obtenerClientePorCorreo($correo);
         $idCliente = (int)($c['idCliente'] ?? 0);
         $idUsuario = (int)($c['idUsuario'] ?? 0);
+        $idEmpresaCliente = (int)($c['idEmpresa'] ?? 1);
     }
     return $idCliente;
 };
@@ -65,7 +73,7 @@ $asegurarCliente = function() use ($cli, &$idCliente, &$idUsuario, $correo) {
 if (isset($_POST['crear_pedido']) || isset($_REQUEST['pedidos'])) {
     $asegurarCliente();
     if ($idCliente > 0) {
-        $idNuevoPedido = $cli->crearPedido($fechaActual, $idCliente, 1);
+        $idNuevoPedido = $cli->crearPedido($fechaActual, $idCliente, 1, $idEmpresaCliente);
         if ($idNuevoPedido > 0) {
             $idPedidoActual = $idNuevoPedido;
             $detalleRes = $cli->obtenerDetalleProductosPedido($idPedidoActual);
@@ -96,7 +104,7 @@ if (isset($_POST['agregar_producto']) || isset($_POST['agregar_desde_catalogo'])
         if (!empty($ultimos) && (int)($ultimos[0]['idEstadoPedido'] ?? 0) === 1) {
             $idPedidoDestino = (int)$ultimos[0]['idPedido'];
         } else {
-            $idPedidoDestino = $cli->crearPedido($fechaActual, $idCliente, 1);
+            $idPedidoDestino = $cli->crearPedido($fechaActual, $idCliente, 1, $idEmpresaCliente);
         }
     }
 
@@ -163,7 +171,7 @@ if (isset($_POST['eliminar_pedido']) || isset($_REQUEST['EliminarP'])) {
     }
 }
 
-$receta = $cli->obtenerRecetas();
+$receta = $cli->obtenerRecetas($idEmpresaCliente);
 $dataPedido = ($idCliente > 0) ? $cli->obtenerPedidosPorCliente($idCliente) : [];
 
 include __DIR__ . '/../views/individualCliente.php';

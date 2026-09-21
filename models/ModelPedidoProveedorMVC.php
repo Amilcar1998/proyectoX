@@ -166,7 +166,7 @@ class ModelPedidoProveedor extends Conexion {
      * @return array
      */
     public function obtenerProveedores(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("SELECT idProveedor, nombreProveedor FROM proveedor $condicion ORDER BY nombreProveedor ASC");
         if (!$res) {
             return [];
@@ -210,7 +210,7 @@ class ModelPedidoProveedor extends Conexion {
      * @return array
      */
     public function obtenerMateriasPrimas(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("SELECT idMateriaPrima, NombreMP FROM materiaprima $condicion ORDER BY NombreMP ASC");
         if (!$res) {
             return [];

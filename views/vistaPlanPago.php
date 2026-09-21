@@ -10,10 +10,10 @@
 
     <title>💳 Planes de Pago</title>
 
-    <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
+    <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../vendor/sb-admin.css" rel="stylesheet" />
 
     <style>
         body {
@@ -75,15 +75,15 @@
         .status-pill-cancelado i { color: #e11d48; }
     </style>
 
-    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../vendor/datatables/jquery.dataTables.js"></script>
+    <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../controllers/js/sb-admin.min.js"></script>
     <script src="../controllers/js/translations.js"></script>
     <script src="../controllers/js/demo/datatables-demo.js"></script>
-    <script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+    <script src="../vendor/sweetalert2.all.min.js"></script>
 
     <script>
         const WOMPI_PUBLIC_KEY = '<?php echo WOMPI_PUBLIC_KEY; ?>';

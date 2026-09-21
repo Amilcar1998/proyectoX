@@ -8,7 +8,7 @@ class ModelMateriaPrima extends Conexion {
     }
 
     public function getTabla(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("SELECT * FROM materiaprima $condicion ORDER BY idMateriaPrima ASC");
         $r = [];
         if ($res) {

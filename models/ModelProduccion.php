@@ -25,12 +25,12 @@ class ModelProduccion extends Conexion
         if ($idEmpresa > 0) {
             $condicion = " WHERE (p.idEmpresa = " . (int)$idEmpresa . " OR ped.idEmpresa = " . (int)$idEmpresa . ") ";
         }
-        $sql = "SELECT p.idProduccion, p.idEmpresa, p.fechaP, p.estadoP, p.idPedido, ped.fechaPedido, c.NombreCliente, e.nombreEmp,
+        $sql = "SELECT p.idProduccion, p.idEmpresa, p.fechaP, p.estadoP, p.idPedido, ped.fechaPedido, c.nombrePersona, c.apellidoPersona, c.nombrePersona AS NombreCliente, e.nombreEmp,
                        COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa
                 FROM produccion p 
                 LEFT JOIN empleado e ON p.idEmpleado = e.idEmpleado 
                 LEFT JOIN pedido ped ON p.idPedido = ped.idPedido 
-                LEFT JOIN cliente c ON ped.idCliente = c.idCliente 
+                LEFT JOIN persona c ON ped.idCliente = c.idPersona 
                 LEFT JOIN empresas emp ON COALESCE(p.idEmpresa, ped.idEmpresa) = emp.idEmpresa
                 $condicion
                 ORDER BY p.idProduccion DESC";

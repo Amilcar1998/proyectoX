@@ -9,10 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>📊 Dashboard | Concentrados El Gordito</title>
 
-    <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../vendor/sb-admin.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
+    <link href="../views/css/layout.css" rel="stylesheet">
+    <link href="../views/css/dashboard.css" rel="stylesheet">
 
 </head>
 
@@ -100,91 +103,120 @@
             </div>
           <?php endif; ?>
 
+          <?php if (!empty($suscripcionCaducada)): ?>
+            <!-- CARD DE BLOQUEO POR SUSCRIPCIÓN CADUCADA -->
+            <div class="card border-0 shadow-lg mb-4 text-center p-4 p-md-5" style="border-radius: 20px; background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%); border: 2px solid #fecdd3 !important;">
+              <div class="card-body">
+                <div class="mb-4">
+                  <span class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle shadow" style="width: 90px; height: 90px; font-size: 40px;">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </div>
+                <h2 class="font-weight-bold text-danger mb-2">¡Suscripción de Empresa Caducada!</h2>
+                <h5 class="text-dark font-weight-bold mb-3"><?php echo htmlspecialchars($infoEmpresa['nombreEmpresa'] ?? 'Tu Empresa'); ?></h5>
+                <p class="text-muted lead mx-auto mb-4" style="max-width: 720px; font-size: 1.05rem;">
+                  El paquete de suscripción <strong>(<?php echo htmlspecialchars($estadoSuscripcion['nombrePlan'] ?? 'Plan Comercial'); ?>)</strong> ha finalizado su período de vigencia<?php echo !empty($estadoSuscripcion['fecha_fin']) ? ' el <strong>' . date('d/m/Y h:i A', strtotime($estadoSuscripcion['fecha_fin'])) . '</strong>' : ''; ?>.
+                  <br><br>
+                  Por motivos de seguridad y control, la visualización de métricas, reportes y operaciones del sistema se encuentra bloqueada. Para reactivar el acceso de inmediato, por favor adquiere o renueva tu paquete de suscripción.
+                </p>
+                <div class="d-flex justify-content-center flex-wrap gap-3">
+                  <a href="../#planes" target="_blank" class="btn btn-danger btn-lg font-weight-bold px-4 py-3 shadow mr-md-3 mb-2" style="border-radius: 30px;">
+                    <i class="fas fa-shopping-cart mr-2"></i>Comprar / Renovar Paquete Ahora
+                  </a>
+                  <a href="controllerPlanPago.php" class="btn btn-outline-danger btn-lg font-weight-bold px-4 py-3 shadow-sm mb-2" style="border-radius: 30px;">
+                    <i class="fas fa-list-alt mr-2"></i>Ver Planes Disponibles
+                  </a>
+                </div>
+              </div>
+            </div>
+          <?php else: ?>
+
           <?php if ($idRol === 1 || $idRol === 4): ?>
             <!-- ========================================== -->
             <!-- VISTA DASHBOARD: GERENTE (1) Y ADMIN (4)  -->
             <!-- ========================================== -->
 
-            <!-- Fila de Tarjetas Resumen -->
-            <div class="row mb-4">
-              <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pedidos Totales</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['totalPedidos'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-shopping-cart fa-2x text-gray-300"></i></div>
-                    </div>
+            <!-- Fila de Tarjetas Resumen Modernas (KPIs) -->
+            <div class="kpi-grid">
+              
+              <!-- 1. Pedidos Totales -->
+              <div class="kpi-card kpi-indigo">
+                <div class="kpi-header">
+                  <span class="kpi-title">Pedidos Totales</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-shopping-bag"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['totalPedidos'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-check-circle text-success mr-1"></i>En el sistema</span>
+                  <a href="controllerPedidos.php" class="kpi-link-badge text-primary" style="background:#eef2ff;">Ver &rarr;</a>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2" style="border-left: .25rem solid #10b981 !important;">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                          <i class="fas fa-bolt text-warning mr-1"></i>Ventas Wompi SV
-                        </div>
-                        <div class="h4 mb-0 font-weight-bold text-gray-800">
-                          $<?php echo number_format((float)($resumen['montoPagosWompi'] ?? 0), 2); ?>
-                        </div>
-                        <div class="mt-1">
-                          <a href="controllerPagos.php" class="badge badge-success px-2 py-1 text-white">
-                            <i class="fas fa-credit-card mr-1"></i><?php echo $resumen['totalPagosWompi'] ?? 0; ?> pagos • Ver Módulo &rarr;
-                          </a>
-                        </div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-money-bill-wave fa-2x text-success"></i></div>
-                    </div>
+              <!-- 2. Ventas Wompi SV -->
+              <div class="kpi-card kpi-emerald">
+                <div class="kpi-header">
+                  <span class="kpi-title">Ventas Wompi SV</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-credit-card"></i>
                   </div>
+                </div>
+                <div class="kpi-value">$<?php echo number_format((float)($resumen['montoPagosWompi'] ?? 0), 2); ?></div>
+                <div class="kpi-footer">
+                  <a href="controllerPagos.php" class="kpi-link-badge">
+                    <i class="fas fa-bolt mr-1"></i><?php echo $resumen['totalPagosWompi'] ?? 0; ?> pagos recibidos
+                  </a>
                 </div>
               </div>
 
-              <div class="col-xl-2 col-md-6 mb-4">
-                <div class="card border-left-info shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Monto Facturado</div>
-                        <div class="h4 mb-0 font-weight-bold text-gray-800">$<?php echo number_format((float)($resumen['montoTotal'] ?? 0), 2); ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div>
-                    </div>
+              <!-- 3. Monto Facturado -->
+              <div class="kpi-card kpi-cyan">
+                <div class="kpi-header">
+                  <span class="kpi-title">Monto Facturado</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-file-invoice-dollar"></i>
                   </div>
+                </div>
+                <div class="kpi-value">$<?php echo number_format((float)($resumen['montoTotal'] ?? 0), 2); ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-receipt mr-1 text-info"></i>Facturación total</span>
+                  <a href="controllerFactura.php" class="kpi-link-badge text-info" style="background:#f0f9ff;">Ver &rarr;</a>
                 </div>
               </div>
 
-              <div class="col-xl-2 col-md-6 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Stock Crítico</div>
-                        <div class="h4 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['stockCritico'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i></div>
-                    </div>
+              <!-- 4. Stock Crítico -->
+              <div class="kpi-card kpi-amber">
+                <div class="kpi-header">
+                  <span class="kpi-title">Stock Crítico</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-exclamation-triangle"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['stockCritico'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="<?php echo ($resumen['stockCritico'] ?? 0) > 0 ? 'text-danger font-weight-bold' : 'text-success'; ?>">
+                    <i class="fas fa-box-open mr-1"></i><?php echo ($resumen['stockCritico'] ?? 0) > 0 ? 'Menor a 500 lbs' : 'Stock óptimo'; ?>
+                  </span>
+                  <a href="controllerInventario.php" class="kpi-link-badge text-warning" style="background:#fffbeb;">Ver &rarr;</a>
                 </div>
               </div>
 
-              <div class="col-xl-2 col-md-6 mb-4">
-                <div class="card border-left-secondary shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Empleados</div>
-                        <div class="h4 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['totalEmpleados'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
-                    </div>
+              <!-- 5. Empleados -->
+              <div class="kpi-card kpi-violet">
+                <div class="kpi-header">
+                  <span class="kpi-title">Empleados</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-users-cog"></i>
                   </div>
                 </div>
+                <div class="kpi-value"><?php echo $resumen['totalEmpleados'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-user-check text-purple mr-1"></i>Personal activo</span>
+                  <a href="controllerEmpleado.php" class="kpi-link-badge" style="background:#f5f3ff; color:#7c3aed;">Ver &rarr;</a>
+                </div>
               </div>
+
             </div>
 
             <!-- Gráficos -->
@@ -247,10 +279,12 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <?php foreach ($pedidosRecientes as $fila): ?>
+                          <?php foreach ($pedidosRecientes as $fila): 
+                            $nomCli = trim(($fila['nombrePersona'] ?? ($fila['NombreCliente'] ?? '')) . ' ' . ($fila['apellidoPersona'] ?? ''));
+                          ?>
                           <tr>
                             <td><strong>#<?php echo htmlspecialchars((string)($fila['idPedido'] ?? '')); ?></strong></td>
-                            <td><?php echo htmlspecialchars((string)($fila['NombreCliente'] ?? '')); ?></td>
+                            <td><?php echo htmlspecialchars($nomCli ?: 'Persona General'); ?></td>
                             <td><?php echo htmlspecialchars((string)($fila['empleado'] ?? '')); ?></td>
                             <td><?php echo htmlspecialchars((string)($fila['nombreReceta'] ?? ($fila['recetas'] ?? ''))); ?></td>
                             <td><?php echo htmlspecialchars((string)($fila['fechaPedido'] ?? '')); ?></td>
@@ -270,62 +304,70 @@
             <!-- VISTA DASHBOARD: EMPLEADO (ROL 2)          -->
             <!-- ========================================== -->
 
-            <div class="row mb-4">
-              <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-info shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pedidos en Sistema</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['pedidosActivos'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
-                    </div>
+            <div class="kpi-grid">
+              
+              <!-- 1. Pedidos en Sistema -->
+              <div class="kpi-card kpi-cyan">
+                <div class="kpi-header">
+                  <span class="kpi-title">Pedidos en Sistema</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-clipboard-list"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['pedidosActivos'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-tasks text-info mr-1"></i>En cola operativa</span>
+                  <a href="controllerProduccion.php" class="kpi-link-badge text-info" style="background:#f0f9ff;">Ir a Producción &rarr;</a>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Materias Primas</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['totalMateriasPrimas'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-boxes fa-2x text-gray-300"></i></div>
-                    </div>
+              <!-- 2. Materias Primas -->
+              <div class="kpi-card kpi-emerald">
+                <div class="kpi-header">
+                  <span class="kpi-title">Materias Primas</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-boxes"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['totalMateriasPrimas'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-check-circle text-success mr-1"></i>Registradas</span>
+                  <a href="controllerMateriaPrima.php" class="kpi-link-badge">Ver Insumos &rarr;</a>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Stock Crítico (< 500)</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['stockCritico'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-exclamation-triangle fa-2x text-warning"></i></div>
-                    </div>
+              <!-- 3. Stock Crítico -->
+              <div class="kpi-card kpi-amber">
+                <div class="kpi-header">
+                  <span class="kpi-title">Stock Crítico (&lt; 500)</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-exclamation-triangle"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['stockCritico'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="<?php echo ($resumen['stockCritico'] ?? 0) > 0 ? 'text-danger font-weight-bold' : 'text-success'; ?>">
+                    <i class="fas fa-box-open mr-1"></i><?php echo ($resumen['stockCritico'] ?? 0) > 0 ? 'Reponer insumos' : 'Nivel seguro'; ?>
+                  </span>
+                  <a href="controllerInventario.php" class="kpi-link-badge text-warning" style="background:#fffbeb;">Ver Stock &rarr;</a>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Mis Producciones</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['misProducciones'] ?? 0; ?></div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-industry fa-2x text-primary"></i></div>
-                    </div>
+              <!-- 4. Mis Producciones -->
+              <div class="kpi-card kpi-indigo">
+                <div class="kpi-header">
+                  <span class="kpi-title">Mis Producciones</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-industry"></i>
                   </div>
                 </div>
+                <div class="kpi-value"><?php echo $resumen['misProducciones'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-user-tag text-primary mr-1"></i>Asignadas</span>
+                  <a href="controllerProduccion.php" class="kpi-link-badge text-primary" style="background:#eef2ff;">Historial &rarr;</a>
+                </div>
               </div>
+
             </div>
 
             <!-- Gráficos Operativos -->
@@ -368,10 +410,12 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <?php foreach ($pedidosRecientes as $fila): ?>
+                          <?php foreach ($pedidosRecientes as $fila): 
+                            $nomCli = trim(($fila['nombrePersona'] ?? ($fila['NombreCliente'] ?? '')) . ' ' . ($fila['apellidoPersona'] ?? ''));
+                          ?>
                           <tr>
                             <td><strong>#<?php echo htmlspecialchars((string)($fila['idPedido'] ?? '')); ?></strong></td>
-                            <td><?php echo htmlspecialchars((string)($fila['NombreCliente'] ?? '')); ?></td>
+                            <td><?php echo htmlspecialchars($nomCli ?: 'Persona General'); ?></td>
                             <td><?php echo htmlspecialchars((string)($fila['empleado'] ?? '')); ?></td>
                             <td><?php echo htmlspecialchars((string)($fila['nombreReceta'] ?? ($fila['recetas'] ?? ''))); ?></td>
                             <td><?php echo htmlspecialchars((string)($fila['fechaPedido'] ?? '')); ?></td>
@@ -391,63 +435,53 @@
             <!-- VISTA DASHBOARD: CLIENTE (ROL 3)           -->
             <!-- ========================================== -->
 
-            <div class="row mb-4">
-              <div class="col-xl-4 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Mis Pedidos Realizados</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['totalPedidos'] ?? 0; ?></div>
-                        <div class="mt-2">
-                          <a href="controllerIndividualC.php" class="btn btn-sm btn-outline-primary py-0">
-                            <i class="fas fa-plus mr-1"></i>Realizar Pedido
-                          </a>
-                        </div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-shopping-bag fa-2x text-primary"></i></div>
-                    </div>
+            <div class="kpi-grid">
+              
+              <!-- 1. Mis Pedidos Realizados -->
+              <div class="kpi-card kpi-indigo">
+                <div class="kpi-header">
+                  <span class="kpi-title">Mis Pedidos Realizados</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-shopping-bag"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['totalPedidos'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-truck text-primary mr-1"></i>Total órdenes</span>
+                  <a href="controllerIndividualC.php" class="kpi-link-badge text-primary" style="background:#eef2ff;"><i class="fas fa-plus mr-1"></i>Nuevo Pedido</a>
                 </div>
               </div>
 
-              <div class="col-xl-4 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Mis Pagos en Línea (Wompi)</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800"><?php echo $resumen['totalPagosWompi'] ?? 0; ?></div>
-                        <div class="mt-2">
-                          <a href="controllerPagos.php" class="btn btn-sm btn-outline-success py-0">
-                            <i class="fas fa-credit-card mr-1"></i>Ver Pagos
-                          </a>
-                        </div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-check-circle fa-2x text-success"></i></div>
-                    </div>
+              <!-- 2. Pagos en Línea Wompi -->
+              <div class="kpi-card kpi-emerald">
+                <div class="kpi-header">
+                  <span class="kpi-title">Pagos en Línea (Wompi)</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-credit-card"></i>
                   </div>
+                </div>
+                <div class="kpi-value"><?php echo $resumen['totalPagosWompi'] ?? 0; ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-check-double text-success mr-1"></i>Transacciones</span>
+                  <a href="controllerPagos.php" class="kpi-link-badge"><i class="fas fa-receipt mr-1"></i>Mis Pagos</a>
                 </div>
               </div>
 
-              <div class="col-xl-4 col-md-6 mb-4">
-                <div class="card border-left-info shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Comprado / Pagado</div>
-                        <div class="h3 mb-0 font-weight-bold text-gray-800">$<?php echo number_format((float)($resumen['montoPagosWompi'] ?? 0), 2); ?></div>
-                        <div class="mt-2">
-                          <a href="controllerPlanPago.php" class="btn btn-sm btn-outline-info py-0">
-                            <i class="fas fa-award mr-1"></i>Planes Disponibles
-                          </a>
-                        </div>
-                      </div>
-                      <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-info"></i></div>
-                    </div>
+              <!-- 3. Total Comprado / Pagado -->
+              <div class="kpi-card kpi-cyan">
+                <div class="kpi-header">
+                  <span class="kpi-title">Total Pagado Wompi</span>
+                  <div class="kpi-icon-wrapper">
+                    <i class="fas fa-dollar-sign"></i>
                   </div>
                 </div>
+                <div class="kpi-value">$<?php echo number_format((float)($resumen['montoPagosWompi'] ?? 0), 2); ?></div>
+                <div class="kpi-footer">
+                  <span class="text-muted"><i class="fas fa-wallet text-info mr-1"></i>Saldo procesado</span>
+                  <a href="controllerPlanPago.php" class="kpi-link-badge text-info" style="background:#f0f9ff;"><i class="fas fa-award mr-1"></i>Planes</a>
+                </div>
               </div>
+
             </div>
 
             <!-- Tablas de Historial del Cliente -->
@@ -544,6 +578,8 @@
 
           <?php endif; ?>
 
+          <?php endif; // Fin de validación suscripcionCaducada ?>
+
         </div>
         <!-- /.container-fluid -->
 
@@ -555,98 +591,25 @@
 
     <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
-    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
-    <script src="js/sb-admin.min.js"></script>
-    <script src="js/translations.js"></script>
-    <script src="js/demo/datatables-demo.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../vendor/datatables/jquery.dataTables.js"></script>
+    <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="../views/js/sb-admin.min.js"></script>
+    <script src="../views/js/translations.js"></script>
+    <script src="../views/js/demo/datatables-demo.js"></script>
 
     <?php if ($idRol === 1 || $idRol === 4 || $idRol === 2): ?>
     <script>
-      <?php if (!empty($pedidosMensuales)): ?>
-      const meses = <?php echo json_encode(array_column($pedidosMensuales, 'mes')); ?>;
-      const cantidades = <?php echo json_encode(array_column($pedidosMensuales, 'cantidad')); ?>;
-
-      if (document.getElementById('chartPedidosMensuales')) {
-        new Chart(document.getElementById('chartPedidosMensuales'), {
-          type: 'bar',
-          data: {
-            labels: meses,
-            datasets: [{
-              label: 'Pedidos',
-              data: cantidades,
-              backgroundColor: '#4e73df'
-            }]
-          },
-          options: { responsive: true, plugins: { legend: { display: false } } }
-        });
-      }
-      <?php endif; ?>
-
-      <?php if (!empty($stockMaterias)): ?>
-      const stockLabels = <?php echo json_encode(array_column($stockMaterias, 'NombreMP')); ?>;
-      const stockData = <?php echo json_encode(array_column($stockMaterias, 'Existencias')); ?>;
-
-      if (document.getElementById('chartStock')) {
-        new Chart(document.getElementById('chartStock'), {
-          type: 'bar',
-          data: {
-            labels: stockLabels,
-            datasets: [{
-              label: 'Existencias',
-              data: stockData,
-              backgroundColor: '#1cc88a'
-            }]
-          },
-          options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } } }
-        });
-      }
-      <?php endif; ?>
-
-      <?php if (!empty($produccionEmpleado)): ?>
-      const empLabels = <?php echo json_encode(array_column($produccionEmpleado, 'empleado')); ?>;
-      const empData = <?php echo json_encode(array_column($produccionEmpleado, 'totalProduccion')); ?>;
-
-      if (document.getElementById('chartProduccion')) {
-        new Chart(document.getElementById('chartProduccion'), {
-          type: 'doughnut',
-          data: {
-            labels: empLabels,
-            datasets: [{
-              data: empData,
-              backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6610f2']
-            }]
-          },
-          options: { responsive: true }
-        });
-      }
-      <?php endif; ?>
-
-      <?php if (!empty($montoMensual) && ($idRol === 1 || $idRol === 4)): ?>
-      const mesesFact = <?php echo json_encode(array_column($montoMensual, 'mes')); ?>;
-      const montosFact = <?php echo json_encode(array_column($montoMensual, 'monto')); ?>;
-
-      if (document.getElementById('chartFacturacion')) {
-        new Chart(document.getElementById('chartFacturacion'), {
-          type: 'line',
-          data: {
-            labels: mesesFact,
-            datasets: [{
-              label: 'Monto Facturado',
-              data: montosFact,
-              borderColor: '#36b9cc',
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: { responsive: true, plugins: { legend: { display: false } } }
-        });
-      }
-      <?php endif; ?>
+      window.dashboardData = {
+        pedidosMensuales: <?php echo json_encode($pedidosMensuales ?? []); ?>,
+        stockMaterias: <?php echo json_encode($stockMaterias ?? []); ?>,
+        produccionEmpleado: <?php echo json_encode($produccionEmpleado ?? []); ?>,
+        montoMensual: <?php echo json_encode($montoMensual ?? []); ?>
+      };
     </script>
+    <script src="../views/js/dashboard.js"></script>
     <?php endif; ?>
 
   </body>

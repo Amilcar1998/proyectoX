@@ -14,14 +14,14 @@ include 'configuracion.php';
     <title>📦 Gestión de Pedidos - Concentrados El Gordito</title>
 
     <!-- Custom fonts for this template-->
-    <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Page level plugin CSS-->
-    <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+    <link href="../vendor/sb-admin.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <style>
@@ -364,7 +364,7 @@ include 'configuracion.php';
                                         <?php foreach ($datos as $row): 
                                             $id = (int)($row['idPedido'] ?? 0);
                                             $fecha = htmlspecialchars((string)($row['fechaPedido'] ?? ''));
-                                            $nombre = htmlspecialchars(trim(($row['NombreCliente'] ?? '') . ' ' . ($row['ApellidosCliente'] ?? '')));
+                                            $nombre = htmlspecialchars(trim(($row['nombrePersona'] ?? ($row['NombreCliente'] ?? '')) . ' ' . ($row['apellidoPersona'] ?? ($row['ApellidosCliente'] ?? ''))));
                                             $telefono = htmlspecialchars((string)($row['telefono'] ?? ''));
                                             $estado = (string)($row['nombreEstado'] ?? 'Pendiente');
                                             $idEstado = (int)($row['idEstadoPedido'] ?? 1);
@@ -624,11 +624,11 @@ include 'configuracion.php';
     </a>
 
     <!-- Scripts Base -->
-    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../vendor/datatables/jquery.dataTables.js"></script>
+    <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/sb-admin.min.js"></script>
     <script src="js/translations.js"></script>
@@ -711,39 +711,6 @@ include 'configuracion.php';
             });
         }
 
-        function renderizarDetalle(data) {
-            const p = data.pedido || {};
-            const items = data.items || [];
-            const recetas = data.recetas || [];
-            const total = parseFloat(data.total || 0).toFixed(2);
-
-            const nombreCliente = ((p.NombreCliente || '') + ' ' + (p.apellidosCliente || '')).trim() || 'Cliente No Identificado';
-            $('#detClienteNombre').text(nombreCliente);
-            $('#detClienteTel').text(p.telefono || 'Sin teléfono registrado');
-            $('#detClienteCorreo').text(p.correoCliente || 'Sin correo');
-            $('#detFechaPedido').text(p.fechaPedido || '---');
-            $('#detTotalPedido').text('$' + total);
-            $('#detTotalItems').text(items.length);
-            $('#pieTotalGeneral').text('$' + total);
-
-            const idEstado = parseInt(p.idEstadoPedido || 1);
-            const nombreEstado = p.nombreEstado || 'Pendiente';
-            let badgeHtml = '<span class="status-pill status-pill-pendiente"><i class="fas fa-clock"></i> Pendiente</span>';
-
-            if (idEstado === 2 || nombreEstado.toLowerCase().includes('proceso') || nombreEstado.toLowerCase().includes('producc')) {
-                badgeHtml = '<span class="status-pill status-pill-proceso"><i class="fas fa-cog fa-spin"></i> En Proceso</span>';
-                $('#btnPasarProduccion').hide();
-            } else if (idEstado === 3 || nombreEstado.toLowerCase().includes('completa') || nombreEstado.toLowerCase().includes('entrega')) {
-                badgeHtml = '<span class="status-pill status-pill-completado"><i class="fas fa-check-circle"></i> Completado</span>';
-                $('#btnPasarProduccion').hide();
-            } else if (idEstado === 4 || nombreEstado.toLowerCase().includes('cancela')) {
-                badgeHtml = '<span class="status-pill status-pill-cancelado"><i class="fas fa-times-circle"></i> Cancelado</span>';
-                $('#btnPasarProduccion').hide();
-            } else {
-                $('#btnPasarProduccion').show();
-            }
-            $('#detEstadoBadge').html(badgeHtml);
-
         let ultimoDetalleCargado = null;
 
         function renderizarDetalle(data) {
@@ -753,7 +720,7 @@ include 'configuracion.php';
             const recetas = data.recetas || [];
             const total = parseFloat(data.total || 0).toFixed(2);
 
-            const nombreCliente = ((p.NombreCliente || '') + ' ' + (p.apellidosCliente || '')).trim() || 'Cliente No Identificado';
+            const nombreCliente = ((p.nombrePersona || p.NombreCliente || '') + ' ' + (p.apellidoPersona || p.apellidosCliente || '')).trim() || 'Persona No Identificada';
             $('#detClienteNombre').text(nombreCliente);
             $('#detClienteTel').text(p.telefono || 'Sin teléfono registrado');
             $('#detClienteCorreo').text(p.correoCliente || 'Sin correo');
@@ -831,7 +798,7 @@ include 'configuracion.php';
             const total = parseFloat(data.total || 0).toFixed(2);
             const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             const idPedido = p.idPedido || '---';
-            const nombreCliente = ((p.NombreCliente || '') + ' ' + (p.apellidosCliente || '')).trim() || 'Cliente General';
+            const nombreCliente = ((p.nombrePersona || p.NombreCliente || '') + ' ' + (p.apellidoPersona || p.apellidosCliente || '')).trim() || 'Persona General';
             const telCliente = p.telefono || 'Sin teléfono';
             const correoCliente = p.correoCliente || 'Sin correo';
             const fechaPedido = p.fechaPedido || '---';

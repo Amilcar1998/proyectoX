@@ -194,13 +194,13 @@ if ($pago) {
 
         // Buscar por idUsuario del pago (viene del registro en la landing)
         if ($idUsuario > 0) {
-            $stmtCU = $conn->prepare("SELECT idCliente FROM cliente WHERE idUsuario = ? LIMIT 1");
+            $stmtCU = $conn->prepare("SELECT idPersona FROM persona WHERE idUsuario = ? LIMIT 1");
             if ($stmtCU) {
                 $stmtCU->bind_param("i", $idUsuario);
                 $stmtCU->execute();
                 $resC = $stmtCU->get_result();
                 if ($resC && $rowC = $resC->fetch_assoc()) {
-                    $idCliente = (int)$rowC['idCliente'];
+                    $idCliente = (int)$rowC['idPersona'];
                 }
                 $stmtCU->close();
             }
@@ -208,19 +208,19 @@ if ($pago) {
 
         // Buscar por teléfono si no encontró por idUsuario
         if ($idCliente === 0 && !empty($telefonoCliente)) {
-            $stmtC = $conn->prepare("SELECT idCliente FROM cliente WHERE telefono = ? LIMIT 1");
+            $stmtC = $conn->prepare("SELECT idPersona FROM persona WHERE telefono = ? LIMIT 1");
             if ($stmtC) {
                 $stmtC->bind_param("s", $telefonoCliente);
                 $stmtC->execute();
                 $resC = $stmtC->get_result();
                 if ($resC && $rowC = $resC->fetch_assoc()) {
-                    $idCliente = (int)$rowC['idCliente'];
+                    $idCliente = (int)$rowC['idPersona'];
                 }
                 $stmtC->close();
             }
         }
 
-        // Si no existe, crear cliente nuevo vinculado al usuario
+        // Si no existe, crear persona nueva vinculada al usuario
         if ($idCliente === 0) {
             if ($idUsuario === 0) {
                 $qU = $conn->query("SELECT idUsuario FROM usuarios WHERE id_Rol = 3 OR id_Rol = 2 LIMIT 1");
@@ -230,7 +230,7 @@ if ($pago) {
             $nomC       = $partes[0];
             $apeC       = $partes[1] ?? '';
             $stmtNewC   = $conn->prepare(
-                "INSERT INTO cliente (NombreCliente, apellidosCliente, telefono, idUsuario) VALUES (?, ?, ?, ?)"
+                "INSERT INTO persona (nombrePersona, apellidoPersona, telefono, idUsuario) VALUES (?, ?, ?, ?)"
             );
             if ($stmtNewC) {
                 $stmtNewC->bind_param("sssi", $nomC, $apeC, $telefonoCliente, $idUsuario);

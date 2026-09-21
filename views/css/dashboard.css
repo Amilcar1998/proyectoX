@@ -1,0 +1,145 @@
+/**
+ * dashboard.css - Estilos específicos para el Dashboard y tarjetas KPI
+ * Concentrados El Gordito
+ */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 145px;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(203, 213, 225, 1);
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 14px 14px 0 0;
+}
+
+.kpi-card.kpi-indigo::before { background: linear-gradient(90deg, #4f46e5, #6366f1); }
+.kpi-card.kpi-emerald::before { background: linear-gradient(90deg, #059669, #10b981); }
+.kpi-card.kpi-cyan::before { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+.kpi-card.kpi-amber::before { background: linear-gradient(90deg, #d97706, #f59e0b); }
+.kpi-card.kpi-violet::before { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin: 0;
+}
+
+.kpi-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.kpi-indigo .kpi-icon-wrapper { background: rgba(79, 70, 229, 0.12); color: #4f46e5; }
+.kpi-emerald .kpi-icon-wrapper { background: rgba(5, 150, 105, 0.12); color: #059669; }
+.kpi-cyan .kpi-icon-wrapper { background: rgba(2, 132, 199, 0.12); color: #0284c7; }
+.kpi-amber .kpi-icon-wrapper { background: rgba(217, 119, 6, 0.12); color: #d97706; }
+.kpi-violet .kpi-icon-wrapper { background: rgba(124, 58, 237, 0.12); color: #7c3aed; }
+
+.kpi-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  margin-bottom: 0.35rem;
+  font-feature-settings: "tnum";
+}
+
+.kpi-footer {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.kpi-link-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.kpi-emerald .kpi-link-badge {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.kpi-emerald .kpi-link-badge:hover {
+  background: #059669;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.kpi-indigo .kpi-link-badge {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+.kpi-indigo .kpi-link-badge:hover {
+  background: #4f46e5;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.kpi-cyan .kpi-link-badge {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.kpi-cyan .kpi-link-badge:hover {
+  background: #0284c7;
+  color: #ffffff;
+  transform: translateY(-1px);
+}

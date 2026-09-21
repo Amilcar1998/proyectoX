@@ -140,7 +140,7 @@ if (!class_exists('UsuarioModel')) {
                 'enviado' => $enviado,
                 'enlace' => $enlace,
                 'mensaje' => $enviado 
-                    ? "Correo de recuperación enviado a $correo." 
+                    ? "Correo de recuperación enviado a $correo. Por favor revisa tu bandeja de entrada." 
                     : "No se pudo enviar el correo automáticamente. Usa el enlace directo:"
             ];
         }
@@ -207,6 +207,82 @@ if (!class_exists('UsuarioModel')) {
             require_once __DIR__ . '/ServicioCorreo.php';
             $servicioCorreo = new ServicioCorreo();
             return $servicioCorreo->enviarRecuperacionClave($correo, $enlace);
+        }
+
+        public function generarUsernameUnico(string $nombre, string $apellido, int $idEmpresa = 1): string
+        {
+            $dominio = 'gordito.com';
+            if ($idEmpresa > 0) {
+                $stmtEmp = $this->con->prepare("SELECT slug, correo FROM empresas WHERE idEmpresa = ? LIMIT 1");
+                if ($stmtEmp) {
+                    $stmtEmp->bind_param("i", $idEmpresa);
+                    $stmtEmp->execute();
+                    $resEmp = $stmtEmp->get_result();
+                    if ($rowEmp = $resEmp->fetch_assoc()) {
+                        if (!empty($rowEmp['correo']) && strpos($rowEmp['correo'], '@') !== false) {
+                            $dominio = trim(explode('@', $rowEmp['correo'])[1]);
+                        } elseif (!empty($rowEmp['slug'])) {
+                            $dominio = trim(str_replace('-', '', $rowEmp['slug'])) . '.com';
+                        }
+                    }
+                    $stmtEmp->close();
+                }
+            }
+
+            $partesN = explode(' ', trim($nombre));
+            $partesA = explode(' ', trim($apellido));
+            $n = $partesN[0] ?? '';
+            $a = $partesA[0] ?? '';
+
+            $limpiar = function(string $txt): string {
+                $txt = mb_strtolower($txt, 'UTF-8');
+                $txt = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $txt) ?: $txt;
+                $txt = preg_replace('/[^a-z0-9]/', '', $txt);
+                return $txt;
+            };
+
+            $n = $limpiar($n) ?: 'usuario';
+            $a = $limpiar($a) ?: 'persona';
+
+            $base = $n . '.' . $a;
+            $numero = (int)date('y'); // Sufijo de año actual p.ej. 26
+            if ($numero <= 0) $numero = 26;
+
+            $usernameCandidato = $base . $numero . '@' . $dominio;
+            $contador = $numero;
+
+            while (true) {
+                $stmtCheck = $this->con->prepare("SELECT idUsuario FROM usuarios WHERE username = ? LIMIT 1");
+                if (!$stmtCheck) break;
+                $stmtCheck->bind_param("s", $usernameCandidato);
+                $stmtCheck->execute();
+                $resCheck = $stmtCheck->get_result();
+                $existe = ($resCheck && $resCheck->num_rows > 0);
+                $stmtCheck->close();
+
+                if (!$existe) {
+                    break;
+                }
+                $contador++;
+                $usernameCandidato = $base . $contador . '@' . $dominio;
+            }
+
+            return $usernameCandidato;
+        }
+
+        public function crearUsuarioAutogenerado(string $username, int $idRol = 3, int $idEmpresa = 1, string $clavePlana = '123456'): int
+        {
+            if ($idEmpresa <= 0) $idEmpresa = 1;
+            $claveHash = sha1($clavePlana);
+            $debeCambiar = 1;
+
+            $stmt = $this->con->prepare("INSERT INTO usuarios (username, pass, id_Rol, idEmpresa, debe_cambiar_pass, activo) VALUES (?, ?, ?, ?, ?, 1)");
+            if (!$stmt) return 0;
+            $stmt->bind_param("ssiii", $username, $claveHash, $idRol, $idEmpresa, $debeCambiar);
+            $stmt->execute();
+            $nuevoId = (int)$stmt->insert_id;
+            $stmt->close();
+            return $nuevoId;
         }
 
         private function obtenerUrlBase(): string

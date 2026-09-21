@@ -1,0 +1,169 @@
+/**
+ * layout.css - Estilos estructurales y globales del sistema
+ * Concentrados El Gordito
+ */
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+#wrapper {
+  display: flex;
+  flex: 1 0 auto;
+  width: 100%;
+  align-items: stretch;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 235px !important;
+  min-width: 235px !important;
+  background-color: #111827 !important;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky !important;
+  top: 0;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+  scrollbar-color: #64748b #1e293b;
+  transition: width 0.2s ease, min-width 0.2s ease;
+}
+
+.sidebar.toggled {
+  width: 80px !important;
+  min-width: 80px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.sidebar.toggled .nav-item {
+  text-align: center;
+  width: 80px;
+}
+
+.sidebar.toggled .nav-item .nav-link {
+  text-align: center;
+  padding: 0.75rem 0.25rem !important;
+  width: 80px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar.toggled .nav-item .nav-link span {
+  font-size: 0.65rem !important;
+  display: block !important;
+  line-height: 1.1;
+  margin-top: 4px;
+  white-space: normal;
+  text-align: center;
+  word-break: break-word;
+}
+
+.sidebar.toggled .nav-item .nav-link i.fa-fw {
+  font-size: 1.15rem;
+  margin-right: 0 !important;
+}
+
+.sidebar.toggled .nav-item .nav-link .fa-chevron-down {
+  display: none !important;
+}
+
+.sidebar.toggled .collapse {
+  display: none !important;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Content Area */
+#content-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 235px);
+  min-width: 0;
+  background-color: #f1f5f9;
+  transition: width 0.2s ease;
+}
+
+body.sidebar-toggled #content-wrapper {
+  width: calc(100% - 80px);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  .sidebar.toggled {
+    width: 235px !important;
+    min-width: 235px !important;
+    position: fixed !important;
+    z-index: 1050;
+  }
+  #content-wrapper, body.sidebar-toggled #content-wrapper {
+    width: 100% !important;
+  }
+}
+
+.container-fluid {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+.table-responsive {
+  width: 100% !important;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Sticky Footer */
+footer.sticky-footer {
+  position: static !important;
+  width: 100% !important;
+  background-color: #111827 !important;
+  color: #94a3b8 !important;
+  border-top: 1px solid #1f2937 !important;
+  margin-top: auto;
+  padding: 1.1rem 0 !important;
+  flex-shrink: 0;
+}
+
+footer.sticky-footer .copyright, 
+footer.sticky-footer span {
+  color: #cbd5e1 !important;
+  font-size: 0.86rem;
+  font-weight: 500;
+}

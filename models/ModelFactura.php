@@ -82,7 +82,7 @@ class ModelFactura extends Conexion {
     }
 
     public function getProveedores(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("select idProveedor, nombreProveedor from proveedor $condicion ORDER BY nombreProveedor ASC");
         $r = [];
         if ($res) {

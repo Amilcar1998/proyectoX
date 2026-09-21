@@ -6,13 +6,17 @@ require_once __DIR__ . '/../models/ModelDashboard.php';
 
 $pagoModel = new PagoModel();
 
-// Endpoint AJAX: Obtener detalle completo de un pago para el modal
-if (isset($_GET['accion']) && $_GET['accion'] === 'obtenerDetalle') {
+// Endpoint AJAX: Obtener detalle completo de un pago para el modal e impresión de comprobante
+if (isset($_GET['accion']) && in_array($_GET['accion'], ['obtenerDetalle', 'detalle_pago'], true)) {
     header('Content-Type: application/json');
     $idPago = (int)($_GET['idPago'] ?? 0);
     $pagoDetalle = $pagoModel->obtenerPagoPorId($idPago);
     if ($pagoDetalle) {
-        echo json_encode(['status' => 'success', 'pago' => $pagoDetalle]);
+        echo json_encode([
+            'status' => 'success',
+            'pago' => $pagoDetalle,
+            'data' => $pagoDetalle
+        ]);
     } else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'mensaje' => 'Pago no encontrado']);
@@ -62,9 +66,10 @@ if (!empty($correoUsuario)) {
 }
 
 $idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || ($correoUsuario === 'amilcar199819@gmail.com');
 
 if ($esAdmin) {
-    if ($idRolSesion === 4 || $idEmpresaSesion === 1) {
+    if ($esSuperUsuario) {
         // Super Administrador de la plataforma ve global
         $pagos = $pagoModel->listarPagos(200, 0);
         $estadisticas = $pagoModel->obtenerEstadisticasGlobales();

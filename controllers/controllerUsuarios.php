@@ -17,8 +17,17 @@ if (isset($_POST["cambiar_estado"])) {
 }
 
 if (isset($_REQUEST["modificar"])) {
-    $u = new Usuario($_REQUEST["txtUsuario"], $_REQUEST["txtUser"], sha1($_REQUEST["txtPass"]), $_REQUEST["txtRol"]);
-    $objU->modificarUsuario($u);
+    $idUsuario = (int)($_REQUEST["txtUsuario"] ?? 0);
+    $userTxt = trim($_REQUEST["txtUser"] ?? '');
+    $idRol = (int)($_REQUEST["txtRol"] ?? 2);
+    $passTxt = trim($_REQUEST["txtPass"] ?? '');
+
+    if (!empty($passTxt)) {
+        $u = new Usuario($idUsuario, $userTxt, sha1($passTxt), $idRol);
+        $objU->modificarUsuario($u);
+    } else {
+        $objU->modificarUsuarioSinPass($idUsuario, $userTxt, $idRol);
+    }
     $msj = "Se ha modificado el usuario exitosamente";
     $icon = "success";
 }
@@ -38,11 +47,15 @@ if (isset($_REQUEST["empleado"])) {
 }
 
 $rol = $objU->getRol();
-$correo = $_SESSION["s1"] ?? ($_SESSION['s2'] ?? '');
+$correo = $_SESSION["s1"] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? ''));
 $session = $objU->getSessionEmp($correo);
 $nombres = '';
 foreach ($session as $key) {
     $nombres = trim(($key['nombreEmp'] ?? '') . ' ' . ($key['apellido'] ?? ''));
+}
+if (empty($nombres)) {
+    require_once __DIR__ . '/../models/PermisoModel.php';
+    $nombres = (new PermisoModel())->obtenerNombreUsuario((int)($_SESSION['idUsuario'] ?? 0), $correo);
 }
 
 include __DIR__ . "/../views/vistaUsuarios.php";

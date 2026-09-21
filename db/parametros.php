@@ -21,23 +21,51 @@ if (!function_exists('obtenerParametroEnv')) {
 }
 
 // ==============================================================================
-// CONFIGURACIÓN DE BASE DE DATOS (Aiven / Remoto / Local)
+// CONFIGURACIÓN DE BASE DE DATOS (Detección Local vs Nube / Producción)
 // ==============================================================================
 if (!defined('SERVER')) {
-    $mysqlUrl = obtenerParametroEnv('MYSQL_URL') ?: obtenerParametroEnv('DATABASE_URL');
-    if (!empty($mysqlUrl)) {
-        $parsed = parse_url($mysqlUrl);
-        $server   = $parsed['host'] ?? 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com';
-        $user     = $parsed['user'] ?? 'avnadmin';
-        $password = $parsed['pass'] ?? base64_decode('QVZOU19vNEYzbmJUTXlHTXp0WHMzeWl5');
-        $database = isset($parsed['path']) && ltrim($parsed['path'], '/') !== '' ? ltrim($parsed['path'], '/') : 'defaultdb';
-        $port     = isset($parsed['port']) ? (int)$parsed['port'] : 24364;
+    $appEnv = strtolower(obtenerParametroEnv('APP_ENV', ''));
+    
+    // Si no está explícito en APP_ENV, detectar automáticamente por host / entorno
+    if ($appEnv === '') {
+        $hostHttp = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+        $esLocal = (
+            strpos($hostHttp, 'localhost') !== false ||
+            strpos($hostHttp, '127.0.0.1') !== false ||
+            (PHP_OS_FAMILY === 'Windows' && empty(getenv('RAILWAY_ENVIRONMENT')) && empty($_ENV['RAILWAY_ENVIRONMENT']) && empty(getenv('PORT')))
+        );
     } else {
-        $server   = obtenerParametroEnv('MYSQLHOST') ?: obtenerParametroEnv('MYSQL_HOST') ?: obtenerParametroEnv('DB_HOST', 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com');
-        $user     = obtenerParametroEnv('MYSQLUSER') ?: obtenerParametroEnv('MYSQL_USER') ?: obtenerParametroEnv('DB_USER', 'avnadmin');
-        $password = obtenerParametroEnv('MYSQLPASSWORD') ?: obtenerParametroEnv('MYSQL_PASSWORD') ?: obtenerParametroEnv('DB_PASSWORD') ?: obtenerParametroEnv('DB_PASS') ?: obtenerParametroEnv('MYSQL_PASS') ?: obtenerParametroEnv('PASSWORD', base64_decode('QVZOU19vNEYzbmJUTXlHTXp0WHMzeWl5'));
-        $database = obtenerParametroEnv('MYSQLDATABASE') ?: obtenerParametroEnv('MYSQL_DATABASE') ?: obtenerParametroEnv('DB_NAME', 'defaultdb');
-        $port     = (int)(obtenerParametroEnv('MYSQLPORT') ?: obtenerParametroEnv('MYSQL_PORT') ?: obtenerParametroEnv('DB_PORT', '24364'));
+        $esLocal = ($appEnv === 'local' || $appEnv === 'development' || $appEnv === 'dev');
+    }
+
+    if ($esLocal) {
+        // ENTORNO DE DESARROLLO LOCAL (XAMPP / MySQL Local)
+        $server   = obtenerParametroEnv('DB_HOST_LOCAL', '127.0.0.1');
+        $user     = obtenerParametroEnv('DB_USER_LOCAL', 'root');
+        $password = obtenerParametroEnv('DB_PASSWORD_LOCAL', '');
+        $database = obtenerParametroEnv('DB_NAME_LOCAL', 'concentrados');
+        $port     = (int)obtenerParametroEnv('DB_PORT_LOCAL', '3306');
+        $usarSsl  = false;
+        $entorno  = 'local';
+    } else {
+        // ENTORNO DE PRODUCCIÓN / NUBE (Aiven Cloud / Railway)
+        $mysqlUrl = obtenerParametroEnv('MYSQL_URL') ?: obtenerParametroEnv('DATABASE_URL');
+        if (!empty($mysqlUrl)) {
+            $parsed = parse_url($mysqlUrl);
+            $server   = $parsed['host'] ?? 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com';
+            $user     = $parsed['user'] ?? 'avnadmin';
+            $password = $parsed['pass'] ?? base64_decode('QVZOU19vNEYzbmJUTXlHTXp0WHMzeWl5');
+            $database = isset($parsed['path']) && ltrim($parsed['path'], '/') !== '' ? ltrim($parsed['path'], '/') : 'defaultdb';
+            $port     = isset($parsed['port']) ? (int)$parsed['port'] : 24364;
+        } else {
+            $server   = obtenerParametroEnv('MYSQLHOST') ?: obtenerParametroEnv('MYSQL_HOST') ?: obtenerParametroEnv('DB_HOST', 'mysql-385afffc-amilcar199819-a010.e.aivencloud.com');
+            $user     = obtenerParametroEnv('MYSQLUSER') ?: obtenerParametroEnv('MYSQL_USER') ?: obtenerParametroEnv('DB_USER', 'avnadmin');
+            $password = obtenerParametroEnv('MYSQLPASSWORD') ?: obtenerParametroEnv('MYSQL_PASSWORD') ?: obtenerParametroEnv('DB_PASSWORD') ?: obtenerParametroEnv('DB_PASS') ?: obtenerParametroEnv('MYSQL_PASS') ?: obtenerParametroEnv('PASSWORD', base64_decode('QVZOU19vNEYzbmJUTXlHTXp0WHMzeWl5'));
+            $database = obtenerParametroEnv('MYSQLDATABASE') ?: obtenerParametroEnv('MYSQL_DATABASE') ?: obtenerParametroEnv('DB_NAME', 'defaultdb');
+            $port     = (int)(obtenerParametroEnv('MYSQLPORT') ?: obtenerParametroEnv('MYSQL_PORT') ?: obtenerParametroEnv('DB_PORT', '24364'));
+        }
+        $usarSsl  = true;
+        $entorno  = 'produccion';
     }
 
     define("SERVER", $server);
@@ -46,7 +74,8 @@ if (!defined('SERVER')) {
     define("BASE", $database);
     define("PORT", $port);
     define("CHAR", "utf8mb4");
-    define("MYSQL_SSL", true);
+    define("MYSQL_SSL", $usarSsl);
+    define("ENTORNO_APP", $entorno);
 }
 
 // Wompi - credenciales leídas de variables de entorno o sandbox

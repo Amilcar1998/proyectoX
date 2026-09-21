@@ -151,8 +151,8 @@ if (!class_exists('EmpleadoModel')) {
          */
         public function obtenerDominioPorEmpresa(int $idEmpresa = 1): string
         {
-            if ($idEmpresa <= 1) {
-                return 'gordito.com';
+            if ($idEmpresa <= 0) {
+                $idEmpresa = 1;
             }
             $stmt = $this->con->prepare("SELECT slug, correo, nombreEmpresa FROM empresas WHERE idEmpresa = ? LIMIT 1");
             if ($stmt) {
@@ -190,61 +190,27 @@ if (!class_exists('EmpleadoModel')) {
             $apellidos = array_values(array_filter(preg_split('/\s+/', trim($apellido))));
 
             $pNombre = strtolower($this->limpiarTexto($nombres[0] ?? 'empleado'));
-            $sNombre = isset($nombres[1]) ? strtolower($this->limpiarTexto($nombres[1])) : '';
-            
             $pApellido = strtolower($this->limpiarTexto($apellidos[0] ?? 'usuario'));
-            $sApellido = isset($apellidos[1]) ? strtolower($this->limpiarTexto($apellidos[1])) : '';
+
+            if (empty($pNombre)) $pNombre = 'empleado';
+            if (empty($pApellido)) $pApellido = 'usuario';
 
             $dominioTexto = $this->obtenerDominioPorEmpresa($idEmpresa);
             $dominio = "@{$dominioTexto}";
-            $candidatos = [];
-
-            // 1. Primer nombre . Primer apellido (ej: juan.perez@dominio.com)
-            $candidatos[] = "{$pNombre}.{$pApellido}{$dominio}";
-
-            // 2. Si tiene segundo nombre, agregar letras del segundo nombre (ej: juanc.perez, juanca.perez, juancarlos.perez)
-            if (!empty($sNombre)) {
-                $candidatos[] = "{$pNombre}" . substr($sNombre, 0, 1) . ".{$pApellido}{$dominio}";
-                $candidatos[] = "{$pNombre}" . substr($sNombre, 0, 2) . ".{$pApellido}{$dominio}";
-                $candidatos[] = "{$pNombre}{$sNombre}.{$pApellido}{$dominio}";
-            }
-
-            // 3. Si tiene segundo apellido, agregar letras del segundo apellido (ej: juan.perezl)
-            if (!empty($sApellido)) {
-                $candidatos[] = "{$pNombre}.{$pApellido}" . substr($sApellido, 0, 1) . "{$dominio}";
-            }
-
-            // 4. Si tiene segundo nombre y segundo apellido (ej: juanc.perezl)
-            if (!empty($sNombre) && !empty($sApellido)) {
-                $candidatos[] = "{$pNombre}" . substr($sNombre, 0, 1) . ".{$pApellido}" . substr($sApellido, 0, 1) . "{$dominio}";
-            }
-
-            // 5. Variaciones progresivas usando letras del primer nombre (ej: j.perez, ju.perez, jua.perez, jperez, etc.)
-            $lenNombre = strlen($pNombre);
-            for ($i = 1; $i <= $lenNombre; $i++) {
-                $sub = substr($pNombre, 0, $i);
-                $candidatos[] = "{$sub}.{$pApellido}{$dominio}";
-                $candidatos[] = "{$sub}{$pApellido}{$dominio}";
-            }
-
-            // Probar candidatos en orden
-            $candidatosUnicos = array_values(array_unique($candidatos));
-            foreach ($candidatosUnicos as $candidato) {
-                if (!$this->existeUsername($candidato)) {
-                    return $candidato;
-                }
-            }
-
-            // Si todas las combinaciones con letras del nombre existen, agregar sufijo numérico
             $base = "{$pNombre}.{$pApellido}";
-            $contador = 2;
-            while (true) {
-                $username = "{$base}{$contador}{$dominio}";
-                if (!$this->existeUsername($username)) {
-                    return $username;
-                }
+
+            $numero = (int)date('y');
+            if ($numero <= 0) $numero = 26;
+
+            $username = "{$base}{$numero}{$dominio}";
+            $contador = $numero;
+
+            while ($this->existeUsername($username)) {
                 $contador++;
+                $username = "{$base}{$contador}{$dominio}";
             }
+
+            return $username;
         }
 
         private function limpiarTexto(string $str): string

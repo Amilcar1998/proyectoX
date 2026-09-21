@@ -87,7 +87,7 @@ if (!class_exists('RegistroLandingModel')) {
             $telefono  = $datos['telefono'] ?? '';
 
             $stmt = $this->con->prepare(
-                "INSERT INTO cliente (NombreCliente, apellidosCliente, telefono, idUsuario) VALUES (?, ?, ?, ?)"
+                "INSERT INTO persona (nombrePersona, apellidoPersona, telefono, idUsuario) VALUES (?, ?, ?, ?)"
             );
             if (!$stmt) return;
             $stmt->bind_param("sssi", $nombre, $apellidos, $telefono, $idUsuario);
@@ -98,7 +98,7 @@ if (!class_exists('RegistroLandingModel')) {
         private function obtenerDatosCliente(int $idUsuario, string $correo): array
         {
             $stmt = $this->con->prepare(
-                "SELECT NombreCliente, apellidosCliente, telefono FROM cliente WHERE idUsuario = ? LIMIT 1"
+                "SELECT nombrePersona, apellidoPersona, telefono FROM persona WHERE idUsuario = ? LIMIT 1"
             );
             if (!$stmt) return ['idUsuario' => $idUsuario, 'correo' => $correo, 'nombre' => $correo, 'telefono' => ''];
             $stmt->bind_param("i", $idUsuario);
@@ -107,7 +107,7 @@ if (!class_exists('RegistroLandingModel')) {
             $row = $res->fetch_assoc();
             $stmt->close();
 
-            $nombre = $row ? trim($row['NombreCliente'] . ' ' . $row['apellidosCliente']) : $correo;
+            $nombre = $row ? trim(($row['nombrePersona'] ?? '') . ' ' . ($row['apellidoPersona'] ?? '')) : $correo;
             return [
                 'idUsuario' => $idUsuario,
                 'correo'    => $correo,

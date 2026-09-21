@@ -1,5 +1,5 @@
 <?php
-require dirname(__DIR__) . '/controllers/vendor/autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 include '../models/ModelMateriaPrima.php';
 include 'sesiones.php';
 

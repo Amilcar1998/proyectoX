@@ -21,9 +21,9 @@ foreach ($listaEmpresas as $e) {
     <title>🏢 Administración de Empresas - Concentrados El Gordito</title>
 
     <!-- Custom fonts and styles -->
-    <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
+    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../vendor/sb-admin.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -200,9 +200,15 @@ foreach ($listaEmpresas as $e) {
                                                     <div class="avatar-empresa mr-2"><?php echo htmlspecialchars($inicial); ?></div>
                                                     <div>
                                                         <div class="font-weight-bold text-dark"><?php echo htmlspecialchars($empItem['nombreEmpresa']); ?></div>
-                                                        <small class="text-muted">
-                                                            <i class="fas fa-link mr-1"></i>/<?php echo htmlspecialchars($empItem['slug']); ?>
-                                                        </small>
+                                                        <div class="d-flex align-items-center flex-wrap mt-1">
+                                                            <span class="badge badge-light border text-primary mr-1">
+                                                                <i class="<?php echo htmlspecialchars($empItem['iconoRubro'] ?? 'fas fa-industry'); ?> mr-1"></i>
+                                                                <?php echo htmlspecialchars($empItem['nombreRubro'] ?? 'General'); ?>
+                                                            </span>
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-link mr-1"></i>/<?php echo htmlspecialchars($empItem['slug']); ?>
+                                                            </small>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -302,9 +308,21 @@ foreach ($listaEmpresas as $e) {
                                         <input type="hidden" name="accion" value="actualizar_empresa">
                                         <input type="hidden" name="idEmpresa" id="edit_idEmpresa" value="">
                                         
-                                        <div class="form-group">
-                                            <label class="font-weight-bold small text-gray-700">Nombre Comercial de la Empresa</label>
-                                            <input type="text" class="form-control" name="nombreEmpresa" id="edit_nombreEmpresa" required>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-7">
+                                                <label class="font-weight-bold small text-gray-700">Nombre Comercial de la Empresa</label>
+                                                <input type="text" class="form-control" name="nombreEmpresa" id="edit_nombreEmpresa" required>
+                                            </div>
+                                            <div class="form-group col-md-5">
+                                                <label class="font-weight-bold small text-gray-700">Rubro / Sector Comercial</label>
+                                                <select class="form-control" name="idRubro" id="edit_idRubro" required>
+                                                    <?php foreach ($listaRubros as $rub): ?>
+                                                        <option value="<?php echo (int)$rub['idRubro']; ?>">
+                                                            <?php echo htmlspecialchars($rub['nombreRubro']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
                                         </div>
 
                                         <div class="form-row">
@@ -465,11 +483,21 @@ foreach ($listaEmpresas as $e) {
                     <div class="modal-body">
                         
                         <div class="form-row">
-                            <div class="form-group col-md-8">
+                            <div class="form-group col-md-6">
                                 <label class="font-weight-bold small text-gray-700">Nombre de la Empresa / Razón Social</label>
                                 <input type="text" class="form-control" name="nombreEmpresa" placeholder="Ej: Avícola San José" required>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-bold small text-gray-700">Rubro Comercial</label>
+                                <select class="form-control" name="idRubro" required>
+                                    <?php foreach ($listaRubros as $rub): ?>
+                                        <option value="<?php echo (int)$rub['idRubro']; ?>">
+                                            <?php echo htmlspecialchars($rub['nombreRubro']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
                                 <label class="font-weight-bold small text-gray-700">Slug (URL opcional)</label>
                                 <input type="text" class="form-control" name="slug" placeholder="avicola-san-jose">
                             </div>
@@ -562,11 +590,11 @@ foreach ($listaEmpresas as $e) {
     <?php endif; ?>
 
     <!-- Scripts -->
-    <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-    <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../vendor/datatables/jquery.dataTables.js"></script>
+    <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../controllers/js/sb-admin.min.js"></script>
     <script src="../controllers/js/translations.js"></script>
     <script src="../controllers/js/demo/datatables-demo.js"></script>
@@ -624,6 +652,7 @@ foreach ($listaEmpresas as $e) {
             // Formulario Perfil Comercial
             $('#edit_idEmpresa').val(empresa.idEmpresa);
             $('#edit_nombreEmpresa').val(empresa.nombreEmpresa || '');
+            $('#edit_idRubro').val(empresa.idRubro || '1');
             $('#edit_slug').val(empresa.slug || '');
             $('#edit_idUsuarioDueno').val(empresa.idUsuarioDueno || '1');
             $('#edit_direccion').val(empresa.direccion || '');

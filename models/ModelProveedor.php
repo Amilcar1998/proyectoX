@@ -10,7 +10,7 @@ class ModelProveedor extends Conexion {
     }
 
     public function getTabla(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("SELECT * FROM proveedor $condicion ORDER BY idProveedor ASC");
         $r = [];
         if ($res) {

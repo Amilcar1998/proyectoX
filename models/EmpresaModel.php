@@ -23,8 +23,10 @@ if (!class_exists('EmpresaModel')) {
         {
             $consulta = "
                 SELECT e.*, u.username AS usuarioDueno, r.nombreRol,
+                       rub.nombreRubro, rub.icono AS iconoRubro, rub.slugRubro,
                        CONCAT(COALESCE(emp.nombreEmp, ''), ' ', COALESCE(emp.apellido, '')) AS nombreResponsable
                 FROM empresas e
+                LEFT JOIN rubros rub ON e.idRubro = rub.idRubro
                 LEFT JOIN usuarios u ON e.idUsuarioDueno = u.idUsuario
                 LEFT JOIN rol r ON u.id_Rol = r.id_Rol
                 LEFT JOIN empleado emp ON u.idUsuario = emp.idUsuario
@@ -50,8 +52,10 @@ if (!class_exists('EmpresaModel')) {
         {
             $stmt = $this->con->prepare("
                 SELECT e.*, u.username AS usuarioDueno,
+                       rub.nombreRubro, rub.icono AS iconoRubro, rub.slugRubro,
                        CONCAT(COALESCE(emp.nombreEmp, ''), ' ', COALESCE(emp.apellido, '')) AS nombreResponsable
                 FROM empresas e
+                LEFT JOIN rubros rub ON e.idRubro = rub.idRubro
                 LEFT JOIN usuarios u ON e.idUsuarioDueno = u.idUsuario
                 LEFT JOIN empleado emp ON u.idUsuario = emp.idUsuario
                 WHERE e.idEmpresa = ?
@@ -233,6 +237,8 @@ if (!class_exists('EmpresaModel')) {
             $telefono = trim((string)($datos['telefono'] ?? ''));
             $correo = trim((string)($datos['correo'] ?? ''));
             $whatsapp = trim((string)($datos['whatsapp'] ?? ''));
+            $idRubro = (int)($datos['idRubro'] ?? 1);
+            if ($idRubro <= 0) $idRubro = 1;
             $wompiAppId = trim((string)($datos['wompiAppId'] ?? ''));
             $wompiApiKey = trim((string)($datos['wompiApiKey'] ?? ''));
             $wompiActivo = !empty($datos['wompiActivo']) ? 1 : 0;
@@ -240,11 +246,11 @@ if (!class_exists('EmpresaModel')) {
 
             $stmt = $this->con->prepare(
                 "INSERT INTO empresas 
-                 (idUsuarioDueno, nombreEmpresa, slug, direccion, telefono, correo, whatsapp, wompiAppId, wompiApiKey, wompiActivo, activo)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                 (idUsuarioDueno, idRubro, nombreEmpresa, slug, direccion, telefono, correo, whatsapp, wompiAppId, wompiApiKey, wompiActivo, activo)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             if (!$stmt) return 0;
-            $stmt->bind_param("issssssssii", $idUsuarioDueno, $nombreEmpresa, $slug, $direccion, $telefono, $correo, $whatsapp, $wompiAppId, $wompiApiKey, $wompiActivo, $activo);
+            $stmt->bind_param("iissssssssii", $idUsuarioDueno, $idRubro, $nombreEmpresa, $slug, $direccion, $telefono, $correo, $whatsapp, $wompiAppId, $wompiApiKey, $wompiActivo, $activo);
             $stmt->execute();
             $nuevoId = (int)$this->con->insert_id;
             $stmt->close();
@@ -281,6 +287,8 @@ if (!class_exists('EmpresaModel')) {
         public function actualizar(int $idEmpresa, array $datos): bool
         {
             $idUsuarioDueno = (int)($datos['idUsuarioDueno'] ?? 1);
+            $idRubro = (int)($datos['idRubro'] ?? 1);
+            if ($idRubro <= 0) $idRubro = 1;
             $nombreEmpresa = trim((string)($datos['nombreEmpresa'] ?? ''));
             $slug = trim((string)($datos['slug'] ?? ''));
             if (empty($slug)) {
@@ -297,11 +305,11 @@ if (!class_exists('EmpresaModel')) {
 
             $stmt = $this->con->prepare(
                 "UPDATE empresas 
-                 SET idUsuarioDueno = ?, nombreEmpresa = ?, slug = ?, direccion = ?, telefono = ?, correo = ?, whatsapp = ?, wompiAppId = ?, wompiApiKey = ?, wompiActivo = ?, activo = ?
+                 SET idUsuarioDueno = ?, idRubro = ?, nombreEmpresa = ?, slug = ?, direccion = ?, telefono = ?, correo = ?, whatsapp = ?, wompiAppId = ?, wompiApiKey = ?, wompiActivo = ?, activo = ?
                  WHERE idEmpresa = ?"
             );
             if (!$stmt) return false;
-            $stmt->bind_param("issssssssiii", $idUsuarioDueno, $nombreEmpresa, $slug, $direccion, $telefono, $correo, $whatsapp, $wompiAppId, $wompiApiKey, $wompiActivo, $activo, $idEmpresa);
+            $stmt->bind_param("iissssssssiii", $idUsuarioDueno, $idRubro, $nombreEmpresa, $slug, $direccion, $telefono, $correo, $whatsapp, $wompiAppId, $wompiApiKey, $wompiActivo, $activo, $idEmpresa);
             $exito = $stmt->execute();
             $stmt->close();
 
@@ -459,6 +467,123 @@ if (!class_exists('EmpresaModel')) {
                 $stmt->close();
             }
             return $slug;
+        }
+
+        /**
+         * Verifica el estado y vigencia del plan de suscripción de una empresa
+         * @param int $idEmpresa
+         * @return array
+         */
+        public function verificarSuscripcionEmpresa(int $idEmpresa): array
+        {
+            // Empresa 1 (Plataforma Principal / Super Admin) siempre cuenta con acceso total ilimitado
+            if ($idEmpresa <= 1) {
+                return [
+                    'activa' => true,
+                    'estado' => 'activo',
+                    'dias_restantes' => 365,
+                    'fecha_fin' => '2099-12-31 23:59:59',
+                    'nombrePlan' => 'Plan Empresarial Ilimitado',
+                    'monto' => 0.00,
+                    'mensaje' => 'Suscripción activa.'
+                ];
+            }
+
+            // 1. Obtener la empresa
+            $empresa = $this->obtenerPorId($idEmpresa);
+            if (!$empresa || (int)($empresa['activo'] ?? 0) === 0) {
+                return [
+                    'activa' => false,
+                    'estado' => 'desactivada',
+                    'dias_restantes' => 0,
+                    'fecha_fin' => null,
+                    'nombrePlan' => 'Sin Plan',
+                    'monto' => 0.00,
+                    'mensaje' => 'La empresa se encuentra desactivada por administración.'
+                ];
+            }
+
+            // 2. Buscar plan en usuario_plan_pago vinculado a la empresa o a su dueño
+            $idDueno = (int)($empresa['idUsuarioDueno'] ?? 0);
+            
+            $stmt = $this->con->prepare(
+                "SELECT upp.idUsuarioPlan, upp.idPlanPago, upp.fecha_inicio, upp.fecha_fin, upp.estado, 
+                        pp.nombrePlan, pp.monto, pp.duracion_dias
+                 FROM usuario_plan_pago upp
+                 INNER JOIN plan_pago pp ON upp.idPlanPago = pp.idPlanPago
+                 INNER JOIN usuarios u ON upp.idUsuario = u.idUsuario
+                 WHERE (u.idEmpresa = ? OR u.idUsuario = ?)
+                 ORDER BY upp.idUsuarioPlan DESC LIMIT 1"
+            );
+            if (!$stmt) {
+                return [
+                    'activa' => false,
+                    'estado' => 'sin_conexion',
+                    'dias_restantes' => 0,
+                    'fecha_fin' => null,
+                    'nombrePlan' => 'Sin Plan',
+                    'monto' => 0.00,
+                    'mensaje' => 'Error al verificar la suscripción.'
+                ];
+            }
+
+            $stmt->bind_param("ii", $idEmpresa, $idDueno);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $plan = $res->fetch_assoc();
+            $stmt->close();
+
+            if (!$plan) {
+                return [
+                    'activa' => false,
+                    'estado' => 'sin_plan',
+                    'dias_restantes' => 0,
+                    'fecha_fin' => null,
+                    'nombrePlan' => 'Sin Plan Asignado',
+                    'monto' => 0.00,
+                    'mensaje' => 'La empresa no cuenta con un paquete de suscripción activo. Debe adquirir un paquete para acceder a la información y servicios.'
+                ];
+            }
+
+            // Validar fecha_fin y estado
+            $fechaFin = !empty($plan['fecha_fin']) ? new DateTime($plan['fecha_fin']) : null;
+            $ahora = new DateTime();
+            $estaVencido = false;
+            $diasRestantes = 0;
+
+            if ($fechaFin) {
+                $estaVencido = ($ahora > $fechaFin);
+                $interval = $ahora->diff($fechaFin);
+                $diasRestantes = $estaVencido ? -((int)$interval->days) : ((int)$interval->days);
+            }
+
+            $estadoBD = strtolower(trim((string)($plan['estado'] ?? '')));
+            if ($estaVencido || $estadoBD === 'vencido' || $estadoBD === 'inactivo' || $estadoBD === 'cancelado') {
+                if ($estadoBD === 'activo' && $estaVencido) {
+                    $idUP = (int)$plan['idUsuarioPlan'];
+                    $this->con->query("UPDATE usuario_plan_pago SET estado = 'inactivo' WHERE idUsuarioPlan = $idUP");
+                }
+
+                return [
+                    'activa' => false,
+                    'estado' => ($estadoBD === 'cancelado') ? 'cancelado' : 'inactivo',
+                    'dias_restantes' => $diasRestantes,
+                    'fecha_fin' => $plan['fecha_fin'],
+                    'nombrePlan' => $plan['nombrePlan'],
+                    'monto' => (float)($plan['monto'] ?? 0.00),
+                    'mensaje' => 'La suscripción de la empresa ha caducado o se encuentra inactiva. Debe volver a comprar o renovar el paquete para acceder a los datos y operaciones.'
+                ];
+            }
+
+            return [
+                'activa' => true,
+                'estado' => 'activo',
+                'dias_restantes' => $diasRestantes,
+                'fecha_fin' => $plan['fecha_fin'],
+                'nombrePlan' => $plan['nombrePlan'],
+                'monto' => (float)($plan['monto'] ?? 0.00),
+                'mensaje' => 'Suscripción activa.'
+            ];
         }
     }
 }

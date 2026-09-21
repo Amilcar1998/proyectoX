@@ -14,6 +14,24 @@ $obUser = new UsuarioModel();
 $auditoria = new AuditoriaModel();
 $sesionId = session_id();
 
+// Procesar cierre de sesión si se solicita explícitamente
+if (isset($_REQUEST['c']) || isset($_REQUEST['logout'])) {
+    $username = (string)($_SESSION["s1"] ?? $_SESSION["s2"] ?? $_SESSION["c1"] ?? '');
+    $idUsuario = 0;
+    if (!empty($username)) {
+        $idUsuario = obtenerIdUsuarioPorUsername($username);
+    }
+    cerrarSesionAuditoria($sesionId, $idUsuario, $username);
+    $_SESSION = [];
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+    }
+    session_destroy();
+    iniciarSesionSegura();
+    $sesionId = session_id();
+}
+
 // 1. Verificar si ya existe una sesión activa en la BD para este session_id
 $sesionActivaBD = $auditoria->obtenerSesionActivaPorId($sesionId);
 
@@ -21,6 +39,7 @@ if ($sesionActivaBD) {
     $rolId = (int)$sesionActivaBD['id_Rol'];
     $usuarioBD = (string)$sesionActivaBD['username'];
     $_SESSION['id_Rol'] = $rolId;
+    $_SESSION['idUsuario'] = (int)($sesionActivaBD['idUsuario'] ?? 0);
 
     // Restaurar variables de sesión en PHP si faltaban
     if (($rolId === 1 || $rolId === 4) && empty($_SESSION['s1'])) {
@@ -47,6 +66,9 @@ if ($sesionActivaBD) {
 // 2. Si hay sesión activa en PHP, enviar siempre al Home o a cambiar clave si es obligatorio
 if (isset($_SESSION['s1']) || isset($_SESSION['s2']) || isset($_SESSION['c1'])) {
     $usuarioSesion = (string)($_SESSION['s1'] ?? $_SESSION['s2'] ?? $_SESSION['c1'] ?? '');
+    if (empty($_SESSION['idUsuario'])) {
+        $_SESSION['idUsuario'] = obtenerIdUsuarioPorUsername($usuarioSesion);
+    }
     if (!isset($_SESSION['debe_cambiar_pass'])) {
         $_SESSION['debe_cambiar_pass'] = $obUser->debeCambiarClave($usuarioSesion) ? 1 : 0;
     }
@@ -80,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $_SESSION['id_Rol'] = $rol;
             $_SESSION['idEmpresa'] = $obUser->obtenerIdEmpresaPorUsername($login);
+            $_SESSION['idUsuario'] = $idUsuario;
 
             if ($rol === 1 || $rol === 4) {
                 $_SESSION['s1'] = $login;
@@ -115,9 +138,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = $resultado['mensaje'];
         } else {
             $successMsg = $resultado['mensaje'];
-            if (!empty($resultado['enlace'])) {
+            // Solo si NO se pudo enviar por correo, mostrar enlace directo de respaldo
+            if (!empty($resultado['enlace']) && empty($resultado['enviado'])) {
                 $enlace = htmlspecialchars($resultado['enlace']);
                 $resetLinkHtml = "<div style='margin-top:8px;'><strong>Enlace directo de recuperación:</strong><br><a href='$enlace' style='color:#1e40af;font-weight:bold;word-break:break-all;text-decoration:underline;'>$enlace</a></div>";
+            } else {
+                $resetLinkHtml = '';
             }
         }
     }

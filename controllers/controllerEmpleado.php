@@ -25,13 +25,16 @@ $msj = null;
 $icon = null;
 
 if (isset($_POST["insertar"])) {
+    $idEmpresaTarget = $esSuperUsuario ? (int)($_POST['txtIdEmpresa'] ?? $idEmpresaSesion) : $idEmpresaSesion;
+    if ($idEmpresaTarget <= 0) $idEmpresaTarget = 1;
+
     $datosEmpleado = [
         'nombre' => trim($_POST['txtNombres'] ?? ''),
         'apellido' => trim($_POST['txtApellidos'] ?? ''),
         'genero' => $_POST['txtGenero'] ?? '',
         'idPuesto' => (int)($_POST['txtCargo'] ?? 2),
         'idRol' => (int)($_POST['txtRol'] ?? 2),
-        'idEmpresa' => $idEmpresaSesion
+        'idEmpresa' => $idEmpresaTarget
     ];
 
     $submodulosSeleccionados = isset($_POST['submodulos']) && is_array($_POST['submodulos']) ? $_POST['submodulos'] : [];
@@ -117,6 +120,11 @@ $puesto = $obEmp->obtenerCargos();
 $rolesSistema = $obEmp->obtenerRolesSistema();
 $rolesJerarquia = $permisoModel->obtenerRolesConJerarquia();
 $catalogoSubmodulos = $permisoModel->obtenerCatalogoSubmodulosConModulo();
+require_once __DIR__ . '/../models/EmpresaModel.php';
+$empresaModel = new EmpresaModel();
+$listaEmpresas = $empresaModel->listarTodas();
+$empresaActual = $empresaModel->obtenerPorId($idEmpresaSesion);
+
 $dominioEmpresa = $obEmp->obtenerDominioPorEmpresa($idEmpresaSesion);
 
 $nombres = '';

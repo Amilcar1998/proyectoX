@@ -8,10 +8,12 @@
 
 require_once __DIR__ . '/sesiones.php';
 require_once __DIR__ . '/../models/EmpresaModel.php';
+require_once __DIR__ . '/../models/RubroModel.php';
 require_once __DIR__ . '/../models/ModelDashboard.php';
 require_once __DIR__ . '/../models/AuditoriaHelper.php';
 
 $empresaModel = new EmpresaModel();
+$rubroModel = new RubroModel();
 $daoDash = new ModelDashboard();
 
 $correoUsuario = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? ''));
@@ -21,6 +23,9 @@ $idRolSesion = (int)($_SESSION['id_Rol'] ?? 0);
 // Determinar privilegios de Superusuario Global vs Gerente/Admin de Empresa Aislada
 $idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
 $esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || ($correoUsuario === 'amilcar199819@gmail.com');
+
+// Obtener listado de rubros comerciales activos
+$listaRubros = $rubroModel->obtenerActivos();
 
 // Obtener nombre para el navbar
 $nombres = $correoUsuario;
@@ -49,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'crearNuevoDueno' => ($idDuenoForm === 0 || !empty($_POST['crearNuevoDueno'])),
                 'nombreDueno' => trim((string)($_POST['nombreDueno'] ?? 'Gerente')),
                 'apellidoDueno' => trim((string)($_POST['apellidoDueno'] ?? '')),
+                'idRubro' => (int)($_POST['idRubro'] ?? 1),
                 'nombreEmpresa' => trim((string)($_POST['nombreEmpresa'] ?? '')),
                 'slug' => trim((string)($_POST['slug'] ?? '')),
                 'direccion' => trim((string)($_POST['direccion'] ?? '')),
@@ -82,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $datos = [
             'idUsuarioDueno' => $esSuperUsuario ? (int)($_POST['idUsuarioDueno'] ?? $idUsuario) : $idUsuario,
+            'idRubro' => (int)($_POST['idRubro'] ?? 1),
             'nombreEmpresa' => trim((string)($_POST['nombreEmpresa'] ?? '')),
             'slug' => trim((string)($_POST['slug'] ?? '')),
             'direccion' => trim((string)($_POST['direccion'] ?? '')),
@@ -179,6 +186,12 @@ if ($esSuperUsuario) {
     }
 } else {
     // Empresa aislada para el Gerente / Administrador de este tenant
+    $idEmpresaGet = (int)($_GET['empresa'] ?? 0);
+    if ($idEmpresaGet > 0 && $idEmpresaGet !== $idEmpresaSesion) {
+        // Intento de acceso a otra empresa: Redirigir forzosamente a su empresa autorizada
+        header("Location: controllerConfiguracionNegocio.php?empresa=" . $idEmpresaSesion);
+        exit();
+    }
     $empresa = $empresaModel->obtenerPorId($idEmpresaSesion);
     if (!$empresa) {
         $empresa = $empresaModel->obtenerPorUsuario($idUsuario);

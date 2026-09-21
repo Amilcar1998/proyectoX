@@ -613,15 +613,58 @@ $urlBaseApp = obtenerUrlBase();
           Fórmulas diseñadas por especialistas en nutrición animal para cada etapa productiva de tus animales.
         </p>
 
-        <!-- Filtros de Categoría -->
+        <!-- Filtros de Categoría Dinámicos por Rubro y Línea -->
+        <?php
+          $categoriasUnicas = [];
+          foreach ($catalogoProductos as $prodItem) {
+              $f = $prodItem['filtro'] ?? 'general';
+              if (!isset($categoriasUnicas[$f])) {
+                  $categoriasUnicas[$f] = [
+                      'filtro' => $f,
+                      'nombre' => $prodItem['categoria'] ?? 'General',
+                      'icono' => $prodItem['icono'] ?? 'fas fa-box-open'
+                  ];
+              }
+          }
+        ?>
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-4" id="filtrosCategorias">
-          <button class="filter-btn active mr-2 mb-2" data-filter="todos">Todos los Productos</button>
-          <button class="filter-btn mr-2 mb-2" data-filter="aves">Aves / Pollos</button>
-          <button class="filter-btn mr-2 mb-2" data-filter="cerdos">Porcinos</button>
-          <button class="filter-btn mr-2 mb-2" data-filter="ganado">Ganado Bovino</button>
-          <button class="filter-btn mb-2" data-filter="balanceados">Balanceados</button>
+          <button class="filter-btn active mr-2 mb-2" data-filter="todos">
+            <i class="fas fa-th-large mr-1"></i>Todos los Productos
+          </button>
+          <?php if (!empty($categoriasUnicas)): ?>
+            <?php foreach ($categoriasUnicas as $catItem): ?>
+              <button class="filter-btn mr-2 mb-2" data-filter="<?php echo htmlspecialchars($catItem['filtro']); ?>">
+                <i class="<?php echo htmlspecialchars($catItem['icono']); ?> mr-1"></i><?php echo htmlspecialchars($catItem['nombre']); ?>
+              </button>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
+
+      <?php if (!empty($suscripcionTiendaCaducada)): ?>
+        <!-- AVISO DE SUSCRIPCIÓN CADUCADA DE LA TIENDA -->
+        <div class="card border-0 shadow-lg text-center p-5 mb-5" style="border-radius: 20px; background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%); border: 2px solid #fecdd3 !important;">
+          <div class="card-body">
+            <div class="mb-3">
+              <span class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle shadow" style="width: 80px; height: 80px; font-size: 36px;">
+                <i class="fas fa-store-slash"></i>
+              </span>
+            </div>
+            <h3 class="font-weight-bold text-danger mb-2">¡Catálogo Temporalmente No Disponible!</h3>
+            <h5 class="text-dark font-weight-bold mb-3"><?php echo htmlspecialchars($infoEmpresa['nombre'] ?? 'Tienda Comercial'); ?></h5>
+            <p class="text-muted lead mx-auto mb-4" style="max-width: 680px; font-size: 1.05rem;">
+              La suscripción comercial de esta tienda ha finalizado su período de vigencia.
+              <br>
+              Para continuar atendiendo pedidos en línea y acceder a las fórmulas y productos, el administrador debe renovar su paquete de suscripción.
+            </p>
+            <div>
+              <a href="#planes" class="btn btn-danger btn-lg font-weight-bold px-4 py-3 shadow" style="border-radius: 30px;">
+                <i class="fas fa-shopping-cart mr-2"></i>Ver Paquetes de Suscripción
+              </a>
+            </div>
+          </div>
+        </div>
+      <?php else: ?>
 
       <!-- Cuadrícula de Productos -->
       <div class="row" id="catalogoGrid">
@@ -685,6 +728,7 @@ $urlBaseApp = obtenerUrlBase();
           </div>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
 
     </div>
   </section>

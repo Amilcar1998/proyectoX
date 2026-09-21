@@ -31,10 +31,22 @@ if (!empty($usuarioSesion)) {
 // Carga de datos para la Landing Page / Catálogo Público
 $tiendaSlug = trim((string)($_GET['tienda'] ?? ''));
 $modeloLanding = new LandingModel();
-$catalogoProductos = $modeloLanding->obtenerProductosCatalogo();
+$infoEmpresa = $modeloLanding->obtenerInformacionEmpresa($tiendaSlug);
+$idEmpresaLanding = (int)($infoEmpresa['idEmpresa'] ?? 0);
+
+require_once __DIR__ . '/../models/EmpresaModel.php';
+$empresaModel = new EmpresaModel();
+$infoSuscripcionTienda = $empresaModel->verificarSuscripcionEmpresa($idEmpresaLanding);
+$suscripcionTiendaCaducada = ($idEmpresaLanding > 1 && empty($infoSuscripcionTienda['activa']));
+
+if ($suscripcionTiendaCaducada) {
+    $catalogoProductos = [];
+} else {
+    $catalogoProductos = $modeloLanding->obtenerProductosCatalogo($idEmpresaLanding);
+}
+
 $planesServicio = $modeloLanding->obtenerPlanesDisponibles();
 $estadisticas = $modeloLanding->obtenerEstadisticas();
-$infoEmpresa = $modeloLanding->obtenerInformacionEmpresa($tiendaSlug);
 
 // Renderizar la vista pública del catálogo / landing
 require_once __DIR__ . '/../views/landing.php';

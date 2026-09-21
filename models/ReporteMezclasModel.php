@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../db/conexion.php';
-require_once __DIR__ . '/../controllers/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mpdf\Mpdf;
 

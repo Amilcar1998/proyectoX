@@ -13,14 +13,47 @@ if (!class_exists('PermisoModel')) {
         public function inicializarEsquema(): bool
         {
             $sqlFile = __DIR__ . '/../db/permisos.sql';
-            if (!file_exists($sqlFile)) return false;
+            if (file_exists($sqlFile)) {
+                // Verificar si la tabla modulos ya existe
+                $check = $this->con->query("SHOW TABLES LIKE 'submodulos'");
+                if (!$check || $check->num_rows === 0) {
+                    $sql = file_get_contents($sqlFile);
+                    $this->con->multi_query($sql);
+                    while ($this->con->more_results() && $this->con->next_result()) {;}
+                }
+            }
 
-            // Verificar si la tabla modulos ya existe
-            $check = $this->con->query("SHOW TABLES LIKE 'submodulos'");
-            if ($check && $check->num_rows > 0) return true;
+            // Asegurar migración física definitiva de cliente a persona
+            $checkPersona = $this->con->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE' AND Tables_in_" . (defined('BASE') ? BASE : 'concentrados') . " = 'persona'");
+            if (!$checkPersona || $checkPersona->num_rows === 0) {
+                $checkCliente = $this->con->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE' AND Tables_in_" . (defined('BASE') ? BASE : 'concentrados') . " = 'cliente'");
+                if ($checkCliente && $checkCliente->num_rows > 0) {
+                    $this->con->query("RENAME TABLE cliente TO persona");
+                    $this->con->query("ALTER TABLE persona CHANGE COLUMN idCliente idPersona INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Identificador único y autoincremental de la persona'");
+                }
+            }
+            // Descartar vista temporal cliente
+            $this->con->query("DROP VIEW IF EXISTS cliente");
 
-            $sql = file_get_contents($sqlFile);
-            return (bool)$this->con->multi_query($sql);
+            // Asegurar que el usuario administrador (391001) tenga registro de persona
+            $checkAdmin = $this->con->query("SELECT idPersona FROM persona WHERE idUsuario = 391001 LIMIT 1");
+            if (!$checkAdmin || $checkAdmin->num_rows === 0) {
+                $this->con->query("INSERT INTO persona (nombrePersona, apellidoPersona, telefono, edad, genero, idUsuario, idEmpresa) VALUES ('Amilcar', 'Administrador', '70000000', '28', 'M', 391001, 1)");
+            }
+
+            // Asegurar restricción única a nivel de base de datos: 1 persona por usuario por empresa
+            $checkIndex1 = $this->con->query("SHOW INDEX FROM persona WHERE Key_name = 'uq_persona_usuario_empresa'");
+            if (!$checkIndex1 || $checkIndex1->num_rows === 0) {
+                @$this->con->query("ALTER TABLE persona ADD UNIQUE KEY uq_persona_usuario_empresa (idUsuario, idEmpresa)");
+            }
+
+            // Asegurar restricción única a nivel de base de datos: nombres y apellidos únicos por empresa
+            $checkIndex2 = $this->con->query("SHOW INDEX FROM persona WHERE Key_name = 'uq_persona_nombre_apellido_empresa'");
+            if (!$checkIndex2 || $checkIndex2->num_rows === 0) {
+                @$this->con->query("ALTER TABLE persona ADD UNIQUE KEY uq_persona_nombre_apellido_empresa (nombrePersona, apellidoPersona, idEmpresa)");
+            }
+
+            return true;
         }
 
         public function obtenerModulosPorRol(int $idRol, int $idUsuario = 0): array
@@ -263,11 +296,40 @@ if (!class_exists('PermisoModel')) {
             return true;
         }
 
+        public function obtenerIdEmpresaPorUsuario(int $idUsuario): int
+        {
+            if ($idUsuario <= 0) return 1;
+            $stmt = $this->con->prepare("SELECT idEmpresa FROM usuarios WHERE idUsuario = ? LIMIT 1");
+            if (!$stmt) return 1;
+            $stmt->bind_param("i", $idUsuario);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $row = $res->fetch_assoc();
+            $stmt->close();
+            return (int)($row['idEmpresa'] ?? 1);
+        }
+
         public function verificarAcceso(int $idRol, string $controlador, int $idUsuario = 0): bool
         {
             // Controladores públicos o no sujetos a permisos
             $publicos = ['controlUser.php', 'controllerRecuperarClave.php', 'reset_password.php', 'index.php', 'controllerCambiarClave.php'];
             if (in_array($controlador, $publicos, true)) return true;
+
+            // Validación de Suscripción para empresas/inquilinos (clientes directos Rol 3 exentos de suscripción de software)
+            if ($idUsuario > 0 && $idRol !== 3) {
+                $idEmp = $this->obtenerIdEmpresaPorUsuario($idUsuario);
+                if ($idEmp > 1) {
+                    require_once __DIR__ . '/EmpresaModel.php';
+                    $empModel = new EmpresaModel();
+                    $subInfo = $empModel->verificarSuscripcionEmpresa($idEmp);
+                    if (empty($subInfo['activa'])) {
+                        $permitidosSinSuscripcion = ['controllerDashboard.php', 'controllerPlanPago.php', 'controllerPagos.php'];
+                        if (!in_array($controlador, $permitidosSinSuscripcion, true)) {
+                            return false;
+                        }
+                    }
+                }
+            }
 
             // Rol 4 (Admin) tiene acceso total sin restricciones
             if ($idRol === 4 && $idUsuario <= 0) return true;
@@ -434,6 +496,117 @@ if (!class_exists('PermisoModel')) {
                 return 'controllerDashboard.php';
             }
             return 'controlUser.php';
+        }
+
+        public function obtenerNombreUsuario(int $idUsuario = 0, string $username = ''): string
+        {
+            if ($idUsuario === 0 && empty($username)) {
+                $idUsuario = (int)($_SESSION['idUsuario'] ?? 0);
+                $username = (string)($_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? '')));
+            }
+
+            // 1. Buscar en tabla de persona
+            $nombrePer = $this->buscarNombrePersona($idUsuario, $username);
+            if (!empty($nombrePer)) {
+                return $nombrePer;
+            }
+
+            // 2. Buscar en tabla de empleados
+            $nombreEmp = $this->buscarNombreEmpleado($idUsuario, $username);
+            if (!empty($nombreEmp)) {
+                return $nombreEmp;
+            }
+
+            // 3. Formatear amigablemente a partir del username
+            return $this->formatearNombreDesdeUsuario($username);
+        }
+
+        private function buscarNombrePersona(int $idUsuario, string $username): string
+        {
+            if ($idUsuario > 0) {
+                $stmt = $this->con->prepare("SELECT nombrePersona, apellidoPersona FROM persona WHERE idUsuario = ? LIMIT 1");
+                if ($stmt) {
+                    $stmt->bind_param("i", $idUsuario);
+                    $stmt->execute();
+                    $res = $stmt->get_result();
+                    if ($fila = $res->fetch_assoc()) {
+                        $stmt->close();
+                        $nom = trim(($fila['nombrePersona'] ?? '') . ' ' . ($fila['apellidoPersona'] ?? ''));
+                        if (!empty($nom)) return $nom;
+                    } else {
+                        $stmt->close();
+                    }
+                }
+            }
+
+            if (!empty($username)) {
+                $stmt = $this->con->prepare("SELECT p.nombrePersona, p.apellidoPersona FROM persona p INNER JOIN usuarios u ON p.idUsuario = u.idUsuario WHERE u.username = ? LIMIT 1");
+                if ($stmt) {
+                    $stmt->bind_param("s", $username);
+                    $stmt->execute();
+                    $res = $stmt->get_result();
+                    if ($fila = $res->fetch_assoc()) {
+                        $stmt->close();
+                        $nom = trim(($fila['nombrePersona'] ?? '') . ' ' . ($fila['apellidoPersona'] ?? ''));
+                        if (!empty($nom)) return $nom;
+                    } else {
+                        $stmt->close();
+                    }
+                }
+            }
+            return '';
+        }
+
+        private function buscarNombreEmpleado(int $idUsuario, string $username): string
+        {
+            if ($idUsuario > 0) {
+                $stmt = $this->con->prepare("SELECT nombreEmp, apellido FROM empleado WHERE idUsuario = ? AND activo = 1 LIMIT 1");
+                if ($stmt) {
+                    $stmt->bind_param("i", $idUsuario);
+                    $stmt->execute();
+                    $res = $stmt->get_result();
+                    if ($fila = $res->fetch_assoc()) {
+                        $stmt->close();
+                        $nom = trim(($fila['nombreEmp'] ?? '') . ' ' . ($fila['apellido'] ?? ''));
+                        if (!empty($nom)) return $nom;
+                    } else {
+                        $stmt->close();
+                    }
+                }
+            }
+
+            if (!empty($username)) {
+                $stmt = $this->con->prepare("SELECT e.nombreEmp, e.apellido FROM empleado e INNER JOIN usuarios u ON e.idUsuario = u.idUsuario WHERE u.username = ? AND e.activo = 1 LIMIT 1");
+                if ($stmt) {
+                    $stmt->bind_param("s", $username);
+                    $stmt->execute();
+                    $res = $stmt->get_result();
+                    if ($fila = $res->fetch_assoc()) {
+                        $stmt->close();
+                        $nom = trim(($fila['nombreEmp'] ?? '') . ' ' . ($fila['apellido'] ?? ''));
+                        if (!empty($nom)) return $nom;
+                    } else {
+                        $stmt->close();
+                    }
+                }
+            }
+            return '';
+        }
+
+        private function formatearNombreDesdeUsuario(string $username): string
+        {
+            if (empty($username)) {
+                return 'Usuario';
+            }
+            if (strpos($username, '@') !== false) {
+                $parte = explode('@', $username)[0];
+                $limpio = preg_replace('/[0-9_\.\-]+/', ' ', $parte);
+                $limpio = ucwords(trim($limpio));
+                if (!empty($limpio)) {
+                    return $limpio;
+                }
+            }
+            return ucwords(str_replace(['.', '_', '-'], ' ', $username));
         }
     }
 }

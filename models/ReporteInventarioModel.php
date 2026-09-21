@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../db/conexion.php';
-require_once __DIR__ . '/../controllers/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mpdf\Mpdf;
 
@@ -10,7 +10,7 @@ class ReporteInventarioMP extends Conexion {
     }
 
     public function getInventario(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (mp.idEmpresa = " . (int)$idEmpresa . " OR mp.idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE (mp.idEmpresa = " . (int)$idEmpresa . " OR i.idEmpresa = " . (int)$idEmpresa . ") " : "";
         $sql = "SELECT mp.idMateriaPrima AS Codigo, mp.NombreMP AS Materia_Prima,
                        i.Existencias AS Existencias,
                        CASE WHEN i.Existencias <= 5 THEN 'CRITICO'
@@ -37,7 +37,7 @@ class ReporteInventarioMP extends Conexion {
     public function getInventarioEscaso(int $idEmpresa = 0): array {
         $condicion = " WHERE i.Existencias <= 10 ";
         if ($idEmpresa > 0) {
-            $condicion .= " AND (mp.idEmpresa = " . (int)$idEmpresa . " OR mp.idEmpresa = 1) ";
+            $condicion .= " AND (mp.idEmpresa = " . (int)$idEmpresa . " OR i.idEmpresa = " . (int)$idEmpresa . ") ";
         }
         $sql = "SELECT mp.idMateriaPrima AS Codigo, mp.NombreMP AS Materia_Prima,
                        i.Existencias AS Stock,

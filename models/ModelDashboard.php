@@ -73,7 +73,7 @@ class ModelDashboard extends Conexion {
             $data['stockCritico'] = (int)($res->fetch_assoc()['total'] ?? 0);
         }
 
-        $condM = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condM = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("SELECT COUNT(*) AS total FROM materiaprima $condM");
         if ($res) {
             $data['totalMateriasPrimas'] = (int)($res->fetch_assoc()['total'] ?? 0);
@@ -100,7 +100,7 @@ class ModelDashboard extends Conexion {
         return $data;
     }
 
-    public function obtenerResumenCliente(string $correo): array {
+    public function obtenerResumenCliente(string $correo, int $idEmpresa = 0): array {
         $data = [
             'totalPedidos' => 0,
             'totalPagosWompi' => 0,
@@ -108,9 +108,9 @@ class ModelDashboard extends Conexion {
             'promocionesActivas' => 0
         ];
 
-        $stmt = $this->con->prepare("SELECT c.idCliente, u.idUsuario 
-                                     FROM cliente c 
-                                     INNER JOIN usuarios u ON c.idUsuario = u.idUsuario 
+        $stmt = $this->con->prepare("SELECT p.idPersona AS idCliente, u.idUsuario, COALESCE(p.idEmpresa, u.idEmpresa, 1) AS idEmpresaCli 
+                                     FROM persona p 
+                                     INNER JOIN usuarios u ON p.idUsuario = u.idUsuario 
                                      WHERE u.username = ? LIMIT 1");
         if ($stmt) {
             $stmt->bind_param("s", $correo);
@@ -121,6 +121,9 @@ class ModelDashboard extends Conexion {
             if ($cli) {
                 $idCli = (int)$cli['idCliente'];
                 $idUser = (int)$cli['idUsuario'];
+                if ($idEmpresa <= 0) {
+                    $idEmpresa = (int)$cli['idEmpresaCli'];
+                }
 
                 $resP = $this->con->query("SELECT COUNT(*) AS total FROM pedido WHERE idCliente = $idCli");
                 if ($resP) {
@@ -135,7 +138,8 @@ class ModelDashboard extends Conexion {
             }
         }
 
-        $resPromo = $this->con->query("SELECT COUNT(*) AS total FROM receta WHERE en_promocion = 1 AND (fecha_fin_promo IS NULL OR NOW() <= fecha_fin_promo)");
+        $condPromo = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
+        $resPromo = $this->con->query("SELECT COUNT(*) AS total FROM receta WHERE en_promocion = 1 AND (fecha_fin_promo IS NULL OR NOW() <= fecha_fin_promo) $condPromo");
         if ($resPromo) {
             $data['promocionesActivas'] = (int)($resPromo->fetch_assoc()['total'] ?? 0);
         }
@@ -148,14 +152,14 @@ class ModelDashboard extends Conexion {
                                             GROUP_CONCAT(CONCAT(r.nombreReceta, ' (x', dp.cantidad, ')') SEPARATOR ', ') AS detalle, 
                                             SUM(dp.cantidad) AS totalCantidad
                                      FROM pedido p
-                                     INNER JOIN cliente c ON p.idCliente = c.idCliente
+                                     INNER JOIN persona c ON p.idCliente = c.idPersona
                                      INNER JOIN usuarios u ON c.idUsuario = u.idUsuario
                                      INNER JOIN detallepedido dp ON p.idPedido = dp.IdPedido
                                      INNER JOIN receta r ON dp.idReceta = r.idReceta
                                      WHERE u.username = ?
-                                     GROUP BY p.idPedido, p.fechaPedido
-                                     ORDER BY p.idPedido DESC 
-                                     LIMIT 10");
+                                     GROUP BY p.idPedido
+                                     ORDER BY p.idPedido DESC
+                                     LIMIT 5");
         if (!$stmt) return [];
         $stmt->bind_param("s", $correo);
         $stmt->execute();
@@ -174,7 +178,7 @@ class ModelDashboard extends Conexion {
                                      INNER JOIN usuarios u ON p.idUsuario = u.idUsuario 
                                      WHERE u.username = ? 
                                      ORDER BY p.idPago DESC 
-                                     LIMIT 10");
+                                     LIMIT 5");
         if (!$stmt) return [];
         $stmt->bind_param("s", $correo);
         $stmt->execute();
@@ -188,7 +192,7 @@ class ModelDashboard extends Conexion {
     }
 
     public function obtenerPromocionesActivas(int $idEmpresa = 0): array {
-        $cond = ($idEmpresa > 0) ? " AND (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $cond = ($idEmpresa > 0) ? " AND idEmpresa = " . (int)$idEmpresa : "";
         $sql = "SELECT idReceta, nombreReceta, PrecioUnitario as precio, precio_anterior, porcentaje_descuento, fecha_inicio_promo, fecha_fin_promo 
                 FROM receta 
                 WHERE en_promocion = 1 AND (fecha_fin_promo IS NULL OR NOW() <= fecha_fin_promo) $cond
@@ -267,20 +271,20 @@ class ModelDashboard extends Conexion {
 
     public function obtenerPedidosRecientes(int $idEmpresa = 0): array {
         $cond = ($idEmpresa > 0) ? " WHERE (p.idEmpresa = " . (int)$idEmpresa . ") " : "";
-        $sql = "SELECT p.idPedido, c.NombreCliente,
+        $sql = "SELECT p.idPedido, c.nombrePersona, c.apellidoPersona, c.nombrePersona AS NombreCliente,
                        CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado,
                        GROUP_CONCAT(DISTINCT r.nombreReceta SEPARATOR ', ') AS recetas,
                        p.fechaPedido, SUM(dp.cantidad) AS cantidad,
                        COALESCE(emp.nombreEmpresa, 'Concentrados El Gordito') AS nombreEmpresa
                 FROM pedido p
-                INNER JOIN cliente c ON p.idCliente = c.idCliente
+                INNER JOIN persona c ON p.idCliente = c.idPersona
                 INNER JOIN detallepedido dp ON p.idPedido = dp.IdPedido
                 INNER JOIN receta r ON dp.idReceta = r.idReceta
                 LEFT JOIN produccion pr ON p.idPedido = pr.idPedido
                 LEFT JOIN empleado e ON pr.idEmpleado = e.idEmpleado
                 LEFT JOIN empresas emp ON p.idEmpresa = emp.idEmpresa
                 $cond
-                GROUP BY p.idPedido, c.NombreCliente, e.nombreEmp, e.apellido, p.fechaPedido, emp.nombreEmpresa
+                GROUP BY p.idPedido, c.nombrePersona, c.apellidoPersona, e.nombreEmp, e.apellido, p.fechaPedido, emp.nombreEmpresa
                 ORDER BY p.fechaPedido DESC
                 LIMIT 10";
         $res = $this->con->query($sql);
@@ -298,14 +302,14 @@ class ModelDashboard extends Conexion {
 
     public function obtenerProduccionPorEmpleado(int $idEmpresa = 0): array {
         $cond = ($idEmpresa > 0) ? " WHERE (pr.idEmpresa = " . (int)$idEmpresa . " OR e.idEmpresa = " . (int)$idEmpresa . ") " : "";
-        $sql = "SELECT CONCAT(e.nombreEmp, ' ', e.apellido) AS empleado,
-                       COUNT(*) AS totalProduccion
+        $sql = "SELECT e.nombreEmp, e.apellido, SUM(dp.cantidad) AS total_kilos
                 FROM produccion pr
                 INNER JOIN empleado e ON pr.idEmpleado = e.idEmpleado
+                INNER JOIN pedido p ON pr.idPedido = p.idPedido
+                INNER JOIN detallepedido dp ON p.idPedido = dp.IdPedido
                 $cond
-                GROUP BY e.idEmpleado
-                ORDER BY totalProduccion DESC
-                LIMIT 8";
+                GROUP BY e.idEmpleado, e.nombreEmp, e.apellido
+                ORDER BY total_kilos DESC";
         $res = $this->con->query($sql);
         if (!$res) return [];
         $r = [];
@@ -320,6 +324,23 @@ class ModelDashboard extends Conexion {
     }
 
     public function obtenerDatosUsuarioPorSesion(string $correo): array {
+        // 1. Buscar en persona
+        $stmtPer = $this->con->prepare("SELECT p.idPersona, p.nombrePersona, p.apellidoPersona, p.nombrePersona AS NombreCliente, p.apellidoPersona AS apellidosCliente 
+                                        FROM persona p 
+                                        INNER JOIN usuarios u ON p.idUsuario = u.idUsuario 
+                                        WHERE u.username = ? LIMIT 1");
+        if ($stmtPer) {
+            $stmtPer->bind_param("s", $correo);
+            $stmtPer->execute();
+            $res = $stmtPer->get_result();
+            if ($row = $res->fetch_assoc()) {
+                $stmtPer->close();
+                return $row;
+            }
+            $stmtPer->close();
+        }
+
+        // 2. Fallback en empleado
         $stmt = $this->con->prepare("SELECT e.idEmpleado, e.nombreEmp, e.apellido 
                                      FROM empleado e 
                                      INNER JOIN usuarios u ON e.idUsuario = u.idUsuario 
@@ -333,21 +354,6 @@ class ModelDashboard extends Conexion {
                 return $row;
             }
             $stmt->close();
-        }
-
-        $stmtCli = $this->con->prepare("SELECT c.idCliente, c.NombreCliente, c.apellidosCliente 
-                                        FROM cliente c 
-                                        INNER JOIN usuarios u ON c.idUsuario = u.idUsuario 
-                                        WHERE u.username = ? LIMIT 1");
-        if ($stmtCli) {
-            $stmtCli->bind_param("s", $correo);
-            $stmtCli->execute();
-            $res = $stmtCli->get_result();
-            if ($row = $res->fetch_assoc()) {
-                $stmtCli->close();
-                return $row;
-            }
-            $stmtCli->close();
         }
 
         return [];

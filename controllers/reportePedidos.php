@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/sesiones.php';
-require dirname(__DIR__) . '/controllers/vendor/autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 include '../models/ReportePedidosModel.php';
 
 $correo = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? '');

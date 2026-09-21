@@ -15,14 +15,14 @@ include 'configuracion.php';
   <title>⚙️ Gestión de Usuarios - Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
-  <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Page level plugin CSS-->
-  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="../controllers/vendor/sb-admin.css" rel="stylesheet">
+  <link href="../vendor/sb-admin.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
@@ -261,7 +261,7 @@ include 'configuracion.php';
                   elseif (isset($userCli)):
                     foreach ($userCli as $u):
                       $idU = (int)$u["idUsuario"];
-                      $nombreC = $u["nombreCliente"];
+                      $nombreC = trim(($u["nombrePersona"] ?? ($u["nombreCliente"] ?? '')) . ' ' . ($u["apellidoPersona"] ?? ($u["apellidosCliente"] ?? '')));
                       $usern = $u["username"];
                       $rolId = (int)$u['id_Rol'];
                       $nombreRol = $u['nombreRol'] ?? 'Cliente';
@@ -271,7 +271,7 @@ include 'configuracion.php';
                       <td class="align-middle font-weight-bold">
                         <span class="badge badge-light border px-2 py-1">#<?php echo $idU; ?></span>
                       </td>
-                      <td class="align-middle font-weight-bold text-dark"><?php echo htmlspecialchars($nombreC); ?></td>
+                      <td class="align-middle font-weight-bold text-dark"><?php echo htmlspecialchars($nombreC ?: 'Persona General'); ?></td>
                       <td class="align-middle"><code class="text-primary"><?php echo htmlspecialchars($usern); ?></code></td>
                       <td class="align-middle"><span class="badge role-pill-user"><?php echo htmlspecialchars($nombreRol); ?></span></td>
                       <td class="text-center align-middle">
@@ -367,15 +367,15 @@ include 'configuracion.php';
   </a>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-  <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-  <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="../vendor/datatables/jquery.dataTables.js"></script>
+  <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
 
   <!-- Custom scripts for all pages-->
   <script src="../controllers/js/sb-admin.min.js"></script>

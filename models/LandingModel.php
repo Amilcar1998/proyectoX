@@ -13,7 +13,7 @@ if (!class_exists('LandingModel')) {
          * Obtiene todos los productos/recetas con sus precios reales y metadata enriquecida
          * @return array
          */
-        public function obtenerProductosCatalogo(): array
+        public function obtenerProductosCatalogo(int $idEmpresa = 0): array
         {
             // Auto-finalizar promociones cuya fecha de fin ya expiró
             $this->con->query("
@@ -26,10 +26,13 @@ if (!class_exists('LandingModel')) {
                   AND NOW() > fecha_fin_promo
             ");
 
+            $condicion = ($idEmpresa > 0) ? " WHERE r.idEmpresa = " . (int)$idEmpresa . " " : "";
+
             $consulta = "
-                SELECT r.idReceta, r.nombreReceta, r.PrecioUnitario, 
+                SELECT r.idReceta, r.idEmpresa, r.nombreReceta, r.categoriaRubro, r.PrecioUnitario, 
                        r.precio_base_regular, r.precio_anterior, r.en_promocion, 
                        r.porcentaje_descuento, r.fecha_inicio_promo, r.fecha_fin_promo,
+                       rub.nombreRubro, rub.slugRubro, rub.icono AS iconoRubro,
                        CASE 
                            WHEN r.en_promocion = 1 
                                 AND (r.fecha_inicio_promo IS NULL OR NOW() >= r.fecha_inicio_promo) 
@@ -40,9 +43,12 @@ if (!class_exists('LandingModel')) {
                        GROUP_CONCAT(DISTINCT CONCAT(mp.NombreMP, ' (', dr.cantidaSa, ' lb)') ORDER BY dr.idDetalleReceta ASC SEPARATOR ', ') AS formula_detallada,
                        GROUP_CONCAT(DISTINCT mp.NombreMP ORDER BY dr.idDetalleReceta ASC SEPARATOR ', ') AS lista_ingredientes
                 FROM receta r
+                LEFT JOIN empresas e ON r.idEmpresa = e.idEmpresa
+                LEFT JOIN rubros rub ON e.idRubro = rub.idRubro
                 LEFT JOIN detallereceta dr ON r.idReceta = dr.IdReceta
                 LEFT JOIN materiaprima mp ON dr.idMateriaPrima = mp.idMateriaPrima
-                GROUP BY r.idReceta, r.nombreReceta, r.PrecioUnitario, r.precio_base_regular, r.precio_anterior, r.en_promocion, r.porcentaje_descuento, r.fecha_inicio_promo, r.fecha_fin_promo
+                $condicion
+                GROUP BY r.idReceta, r.idEmpresa, r.nombreReceta, r.categoriaRubro, r.PrecioUnitario, r.precio_base_regular, r.precio_anterior, r.en_promocion, r.porcentaje_descuento, r.fecha_inicio_promo, r.fecha_fin_promo, rub.nombreRubro, rub.slugRubro, rub.icono
                 ORDER BY r.idReceta ASC
             ";
             $resultado = $this->con->query($consulta);
@@ -66,28 +72,39 @@ if (!class_exists('LandingModel')) {
                     $formula = trim((string)($fila['formula_detallada'] ?? ''));
                     $ingredientes = trim((string)($fila['lista_ingredientes'] ?? ''));
 
-                    $categoria = 'Balanceados';
-                    $filtro = 'balanceados';
-                    $imagen = 'views/Recursos/pollos.jpg';
-                    $icono = 'fas fa-seedling';
-                    $etapa = 'Fórmula General Balanceada';
-                    $proteina = 'Nutrición Integral';
+                    $rubroNombre = trim((string)($fila['nombreRubro'] ?? 'Agropecuario'));
+                    $categoriaCustom = trim((string)($fila['categoriaRubro'] ?? ''));
+                    if (empty($categoriaCustom) || $categoriaCustom === 'General') {
+                        $categoria = 'Balanceados';
+                        $filtro = 'balanceados';
+                        $imagen = 'views/Recursos/pollos.jpg';
+                        $icono = !empty($fila['iconoRubro']) ? $fila['iconoRubro'] : 'fas fa-seedling';
+                        $etapa = 'Línea de Producto Premium';
+                        $proteina = 'Calidad Garantizada';
 
-                    if (stripos($nombre, 'Pollo') !== false || stripos($nombre, 'Aves') !== false) {
-                        $categoria = 'Aves de Corral';
-                        $filtro = 'aves';
-                        $imagen = 'views/Recursos/pollo.jpg';
-                        $icono = 'fas fa-feather-alt';
-                    } elseif (stripos($nombre, 'Cerdo') !== false) {
-                        $categoria = 'Porcinos';
-                        $filtro = 'cerdos';
-                        $imagen = 'views/Recursos/cerdo.jpg';
-                        $icono = 'fas fa-paw';
-                    } elseif (stripos($nombre, 'Ganado') !== false) {
-                        $categoria = 'Ganado Bovino';
-                        $filtro = 'ganado';
-                        $imagen = 'views/Recursos/vaca.jpg';
-                        $icono = 'fas fa-hat-cowboy';
+                        if (stripos($nombre, 'Pollo') !== false || stripos($nombre, 'Aves') !== false) {
+                            $categoria = 'Aves de Corral';
+                            $filtro = 'aves';
+                            $imagen = 'views/Recursos/pollo.jpg';
+                            $icono = 'fas fa-feather-alt';
+                        } elseif (stripos($nombre, 'Cerdo') !== false) {
+                            $categoria = 'Porcinos';
+                            $filtro = 'cerdos';
+                            $imagen = 'views/Recursos/cerdo.jpg';
+                            $icono = 'fas fa-paw';
+                        } elseif (stripos($nombre, 'Ganado') !== false) {
+                            $categoria = 'Ganado Bovino';
+                            $filtro = 'ganado';
+                            $imagen = 'views/Recursos/vaca.jpg';
+                            $icono = 'fas fa-hat-cowboy';
+                        }
+                    } else {
+                        $categoria = $categoriaCustom;
+                        $filtro = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($categoriaCustom));
+                        $imagen = 'views/Recursos/icon.jpg';
+                        $icono = !empty($fila['iconoRubro']) ? $fila['iconoRubro'] : 'fas fa-box-open';
+                        $etapa = $rubroNombre;
+                        $proteina = 'Producto Certificado';
                     }
 
                     if (stripos($nombre, 'Inicio') !== false) {
@@ -104,6 +121,7 @@ if (!class_exists('LandingModel')) {
                     $productos[] = [
                         'id' => (int)$fila['idReceta'],
                         'nombre' => $nombre,
+                        'rubro' => $rubroNombre,
                         'precio' => $precio,
                         'precio_formato' => number_format($precio, 2),
                         'en_promocion' => $enPromocion,
@@ -111,8 +129,8 @@ if (!class_exists('LandingModel')) {
                         'precio_anterior_formato' => number_format($precioAnterior, 2),
                         'porcentaje_descuento' => $porcentajeDescuento,
                         'ahorro_formato' => number_format($ahorro, 2),
-                        'formula' => $formula ?: 'Fórmula balanceada con materias primas seleccionadas',
-                        'ingredientes' => $ingredientes ?: 'Materias primas certificadas',
+                        'formula' => $formula ?: 'Fórmula balanceada con insumos certificados',
+                        'ingredientes' => $ingredientes ?: 'Insumos y materias de primera calidad',
                         'categoria' => $categoria,
                         'filtro' => $filtro,
                         'imagen' => $imagen,
@@ -125,6 +143,23 @@ if (!class_exists('LandingModel')) {
             }
 
             return $productos;
+        }
+
+        /**
+         * Obtiene todos los rubros comerciales activos
+         * @return array
+         */
+        public function obtenerRubrosActivos(): array
+        {
+            $consulta = "SELECT * FROM rubros WHERE activo = 1 ORDER BY idRubro ASC";
+            $res = $this->con->query($consulta);
+            $rubros = [];
+            if ($res) {
+                while ($f = $res->fetch_assoc()) {
+                    $rubros[] = $f;
+                }
+            }
+            return $rubros;
         }
 
         /**
@@ -214,7 +249,7 @@ if (!class_exists('LandingModel')) {
                 $totalFormulas = max((int)$filaF['total'], 10);
             }
 
-            $resC = $this->con->query("SELECT COUNT(*) AS total FROM cliente");
+            $resC = $this->con->query("SELECT COUNT(*) AS total FROM persona");
             if ($resC && $filaC = $resC->fetch_assoc()) {
                 $totalClientes = max((int)$filaC['total'], 50);
             }

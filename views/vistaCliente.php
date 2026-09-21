@@ -12,13 +12,13 @@
   <title>👤 Clientes - Concentrados El Gordito</title>
 
   <!-- Custom fonts for this template-->
-  <link href="../controllers/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Page level plugin CSS-->
-  <link href="../controllers/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
   <!-- Custom styles for this template-->
-  <link href="../controllers/vendor/sb-admin.css" rel="stylesheet" />
+  <link href="../vendor/sb-admin.css" rel="stylesheet" />
 
   <style>
     body {
@@ -101,22 +101,53 @@
                 <div class="modal-body">
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="idCliente">ID Cliente</label>
+                      <label for="idCliente">ID Persona</label>
                       <input type="text" name="idCliente" id="idCliente" readonly class="form-control" placeholder="Automático">
                     </div>
                     <div class="form-group col-md-6">
-                      <label for="nombreC">Nombre</label>
-                      <input type="text" name="nombreC" id="nombreC" class="form-control" required placeholder="Nombre del cliente">
+                      <label for="nombreC">Nombre Persona</label>
+                      <input type="text" name="nombreC" id="nombreC" class="form-control" required placeholder="Nombre de la persona">
                     </div>
                   </div>
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="apellidoC">Apellidos</label>
-                      <input type="text" class="form-control" id="apellidoC" name="apellidoC" required placeholder="Apellidos del cliente">
+                      <label for="apellidoC">Apellido Persona</label>
+                      <input type="text" class="form-control" id="apellidoC" name="apellidoC" required placeholder="Apellido de la persona">
                     </div>
                     <div class="form-group col-md-6">
                       <label for="telefonoC">Teléfono</label>
                       <input type="text" class="form-control" id="telefonoC" name="telefonoC" placeholder="Teléfono">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <?php if ($esSuperUsuario): ?>
+                      <div class="form-group col-md-6">
+                        <label for="idEmpresa" class="font-weight-bold text-primary"><i class="fas fa-building mr-1"></i>Empresa / Sucursal <span class="text-danger">*</span></label>
+                        <select name="idEmpresa" id="idEmpresa" class="form-control" required onchange="actualizarUsuarioPreview()">
+                          <?php foreach ($listaEmpresas as $emp): 
+                            $domEmp = 'gordito.com';
+                            if (!empty($emp['correo']) && strpos($emp['correo'], '@') !== false) {
+                              $domEmp = trim(explode('@', $emp['correo'])[1]);
+                            } elseif (!empty($emp['slug'])) {
+                              $domEmp = trim(str_replace('-', '', $emp['slug'])) . '.com';
+                            }
+                          ?>
+                            <option value="<?php echo (int)$emp['idEmpresa']; ?>" data-dominio="<?php echo htmlspecialchars($domEmp); ?>" <?php echo ((int)$emp['idEmpresa'] === $idEmpresaSesion ? 'selected' : ''); ?>>
+                              <?php echo htmlspecialchars($emp['nombreEmpresa']); ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+                    <?php else: ?>
+                      <input type="hidden" name="idEmpresa" id="idEmpresa" value="<?php echo $idEmpresaSesion; ?>" data-dominio="<?php echo htmlspecialchars($dominioEmpresaActual); ?>">
+                      <div class="form-group col-md-6">
+                        <label class="font-weight-bold"><i class="fas fa-building mr-1"></i>Empresa Asignada</label>
+                        <input type="text" class="form-control bg-light" readonly value="<?php echo htmlspecialchars($empresaActual['nombreEmpresa'] ?? 'Concentrados El Gordito'); ?>">
+                      </div>
+                    <?php endif; ?>
+                    <div class="form-group col-md-6">
+                      <label for="usuarioC" class="font-weight-bold"><i class="fas fa-user-circle mr-1"></i>Usuario Autogenerado</label>
+                      <input type="text" name="usuarioC" id="usuarioC" readonly class="form-control bg-light font-weight-bold text-primary" placeholder="Se autogenerará (ej: nombre.apellido26@empresa.com)">
                     </div>
                   </div>
                   <div class="form-row">
@@ -128,20 +159,13 @@
                       <label for="generoC">Género</label>
                       <select id="generoC" name="generoC" class="form-control">
                         <option value="">Seleccione género...</option>
-                        <option value="Hombre">Hombre</option>
-                        <option value="Mujer">Mujer</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
                       </select>
                     </div>
                     <div class="form-group col-md-4">
-                      <label for="usuarioC">Usuario</label>
-                      <select name="usuarioC" id="usuarioC" class="form-control">
-                        <option value="">Seleccione usuario...</option>
-                        <?php foreach ($user as $u): ?>
-                          <option value="<?php echo htmlspecialchars($u['idUsuario']); ?>">
-                            <?php echo htmlspecialchars($u['username']); ?>
-                          </option>
-                        <?php endforeach; ?>
-                      </select>
+                      <label class="small text-muted d-block font-weight-bold">Clave Inicial</label>
+                      <span class="badge badge-light border p-2 text-muted d-block text-center font-monospace">123456 (Temporal)</span>
                     </div>
                   </div>
                 </div>
@@ -167,7 +191,7 @@
               <table class="table table-custom table-hover datatable" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>Nombre y Apellidos</th>
+                    <th>Nombre y Apellido Persona</th>
                     <th>Teléfono</th>
                     <th>Edad</th> 
                     <th>Género</th>
@@ -179,8 +203,10 @@
                   <?php if (!empty($Rcliente)): ?>
                     <?php foreach ($Rcliente as $e): 
                       $nombreCompleto = trim($e->getNombreCi() . ' ' . $e->getApellidos());
-                      $genero = $e->getGenero();
+                      $genero = (string)$e->getGenero();
                       $user = $e->getUsername();
+                      $esMasc = (strtoupper($genero) === 'M' || stripos($genero, 'masc') !== false || stripos($genero, 'hombre') !== false);
+                      $esFem = (strtoupper($genero) === 'F' || stripos($genero, 'fem') !== false || stripos($genero, 'mujer') !== false);
                     ?>
                       <tr>
                         <td class="font-weight-bold text-dark">
@@ -195,10 +221,12 @@
                         </td>
                         <td><span class="badge badge-light border px-2 py-1"><?php echo htmlspecialchars($e->getEdad() ?: 'N/A'); ?></span></td>
                         <td>
-                          <?php if (strtolower($genero) === 'hombre' || strtolower($genero) === 'm'): ?>
-                            <span class="text-muted"><i class="fas fa-mars mr-1 text-primary"></i>Hombre</span>
+                          <?php if ($esMasc): ?>
+                            <span class="text-dark font-weight-bold"><i class="fas fa-mars mr-1 text-primary"></i>Masculino</span>
+                          <?php elseif ($esFem): ?>
+                            <span class="text-dark font-weight-bold"><i class="fas fa-venus mr-1 text-danger"></i>Femenino</span>
                           <?php else: ?>
-                            <span class="text-muted"><i class="fas fa-venus mr-1 text-danger"></i>Mujer</span>
+                            <span class="text-muted"><?php echo htmlspecialchars($genero ?: 'No especificado'); ?></span>
                           <?php endif; ?>
                         </td>
                         <td>
@@ -256,16 +284,16 @@
   </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="../controllers/vendor/jquery/jquery.min.js"></script>
-  <script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script type="text/javascript" src="../controllers/vendor/sweetalert2.all.min.js"></script>
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="../vendor/sweetalert2.all.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-  <script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="../vendor/datatables/jquery.dataTables.js"></script>
+  <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
 
   <!-- Custom scripts for all pages-->
   <script src="../controllers/js/sb-admin.min.js"></script>
@@ -276,14 +304,55 @@
   <script src="js/demo/datatables-demo.js"></script>
 
   <script>
+    function obtenerDominioSeleccionado() {
+      var sel = $('#idEmpresa');
+      if (sel.is('select')) {
+        var dom = sel.find('option:selected').data('dominio');
+        if (dom) return dom;
+      }
+      var domHidden = sel.data('dominio');
+      return domHidden || 'gordito.com';
+    }
+
+    function actualizarUsuarioPreview() {
+      if ($('#idCliente').val() === '') {
+        var n = $('#nombreC').val().trim().split(/\s+/)[0] || '';
+        var a = $('#apellidoC').val().trim().split(/\s+/)[0] || '';
+        n = n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        a = a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        var dominio = obtenerDominioSeleccionado();
+        var num = '26'; // Sufijo de año o número incremental
+
+        if (n || a) {
+          var base = (n && a ? n + '.' + a : (n || a));
+          $('#usuarioC').val(base + num + '@' + dominio);
+        } else {
+          $('#usuarioC').val('');
+        }
+      }
+    }
+
+    $('#nombreC, #apellidoC').on('input', actualizarUsuarioPreview);
+
+    function normalizarGenero(genero) {
+      if (!genero) return '';
+      const g = genero.toString().trim().toUpperCase();
+      if (g === 'M' || g.indexOf('MASC') !== -1 || g === 'HOMBRE') {
+        return 'Masculino';
+      } else if (g === 'F' || g.indexOf('FEM') !== -1 || g === 'MUJER') {
+        return 'Femenino';
+      }
+      return genero;
+    }
+
     function cargarCliente(id, nombre, apellidos, telefono, edad, genero, usuario) {
       $('#idCliente').val(id);
       $('#nombreC').val(nombre);
       $('#apellidoC').val(apellidos);
       $('#telefonoC').val(telefono);
       $('#edadC').val(edad);
-      $('#generoC').val(genero);
-      $('#usuarioC').val(usuario);
+      $('#generoC').val(normalizarGenero(genero));
+      $('#usuarioC').val(usuario || '');
     }
 
     function limpiarCliente() {
@@ -294,6 +363,7 @@
       $('#edadC').val('');
       $('#generoC').val('');
       $('#usuarioC').val('');
+      actualizarUsuarioPreview();
     }
   </script>
 

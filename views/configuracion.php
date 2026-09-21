@@ -6,18 +6,6 @@ require_once __DIR__ . '/../models/PermisoModel.php';
 
 $permisoModel = new PermisoModel();
 
-$nombres = $nombres ?? '';
-$nombres = is_array($nombres) ? '' : $nombres;
-if (empty($nombres)) {
-    $nombres = $permisoModel->obtenerNombreUsuario();
-    if (empty($nombres)) {
-        $nombres = $_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? 'Usuario'));
-    }
-}
-$nombres = html_entity_decode((string)$nombres, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-$nombres = str_replace(["\xc2\xa0", '&nbsp;'], ' ', $nombres);
-$nombres = preg_replace('/\s+/', ' ', trim($nombres));
-
 $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? ($_SERVER['PHP_SELF'] ?? ''));
 
 $idRol = (int)($_SESSION['id_Rol'] ?? 0);
@@ -32,9 +20,42 @@ if ($idRol === 0) {
 }
 
 $idUsuarioSesion = (int)($_SESSION['idUsuario'] ?? 0);
+$usuarioSesion = (string)($_SESSION['s1'] ?? ($_SESSION['s2'] ?? ($_SESSION['c1'] ?? '')));
+
+$nombres = $nombres ?? '';
+$nombres = is_array($nombres) ? '' : $nombres;
+if (empty($nombres)) {
+    $nombres = $permisoModel->obtenerNombreUsuario($idUsuarioSesion, $usuarioSesion);
+    if (empty($nombres)) {
+        $nombres = $usuarioSesion ?: 'Usuario';
+    }
+}
+$nombres = html_entity_decode((string)$nombres, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+$nombres = str_replace(["\xc2\xa0", '&nbsp;'], ' ', $nombres);
+$nombres = preg_replace('/\s+/', ' ', trim($nombres));
+
 $brandHome = $permisoModel->obtenerRutaHome($idRol);
 $modulosPermitidos = $permisoModel->obtenerModulosPorRol($idRol, $idUsuarioSesion);
 $rolNombre = $permisoModel->obtenerNombreRol($idRol);
+
+// Validación de suscripción para empresas / inquilinos (Multi-Tenant)
+require_once __DIR__ . '/../models/EmpresaModel.php';
+$empresaModelConf = new EmpresaModel();
+$idEmpresaSesion = (int)($_SESSION['idEmpresa'] ?? 1);
+$esSuperUsuario = !empty($_SESSION['esSuperUsuario']) || ($usuarioSesion === 'amilcar199819@gmail.com');
+
+$esClienteDirecto = ($idRol === 3) || isset($_SESSION['c1']);
+
+$infoSuscripcionConf = $empresaModelConf->verificarSuscripcionEmpresa($idEmpresaSesion);
+$suscripcionInactiva = (!$esSuperUsuario && !$esClienteDirecto && $idEmpresaSesion > 1 && empty($infoSuscripcionConf['activa']));
+
+if ($suscripcionInactiva) {
+    // Si la empresa no tiene suscripción activa, ocultar todos los módulos operativos a gerentes/empleados de ese tenant
+    $modulosPermitidos = array_values(array_filter($modulosPermitidos, function($m) {
+        $ctrl = basename(explode('?', (string)($m['controlador'] ?? ''))[0]);
+        return in_array($ctrl, ['controllerDashboard.php', 'controllerPlanPago.php', 'controllerPagos.php'], true);
+    }));
+}
 
 $badgeRolClass = 'badge-primary';
 if ($idRol === 1) {
@@ -51,14 +72,24 @@ require_once __DIR__ . '/../models/ServicioCorreo.php';
 $servicioCorreoCheck = new ServicioCorreo();
 $estadoLimiteCorreo = $servicioCorreoCheck->obtenerEstadoLimite();
 $alertaCorreoHtml = '';
-if (!empty($estadoLimiteCorreo['alerta'])) {
-    $enviadosCount = $estadoLimiteCorreo['enviados'];
-    $limiteCount = $estadoLimiteCorreo['limite'];
-    $restantesCount = $estadoLimiteCorreo['restantes'];
-    $alertaCorreoHtml = "<div class='bg-danger text-white py-1 px-3 text-center font-weight-bold d-flex align-items-center justify-content-center' style='font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1000;'>
-      <i class='fas fa-exclamation-triangle mr-2 text-warning'></i>
-      <span><strong>Aviso de Cuota de Correos:</strong> El servicio de mensajería está por llegar a su límite mensual ({$enviadosCount}/{$limiteCount} enviados. Restan solo <strong>{$restantesCount}</strong> correos).</span>
-    </div>";
+
+// Notificación visible exclusivamente para Superadministrador (Rol 4) y Gerente (Rol 1)
+if (($idRol === 1 || $idRol === 4) && !empty($estadoLimiteCorreo['alerta'])) {
+    $enviadosCount = number_format($estadoLimiteCorreo['enviados']);
+    $limiteCount = number_format($estadoLimiteCorreo['limite']);
+    $restantesCount = number_format($estadoLimiteCorreo['restantes']);
+
+    if (!empty($estadoLimiteCorreo['finalizada'])) {
+        $alertaCorreoHtml = "<div class='bg-danger text-white py-2 px-3 text-center font-weight-bold d-flex align-items-center justify-content-center' style='font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 1050;'>
+          <i class='fas fa-ban mr-2 text-warning fa-lg'></i>
+          <span><strong>⚠️ Alerta Crítica (Superadministración):</strong> La cuota mensual de correos de Resend ha <u>FINALIZADO</u> ({$enviadosCount}/{$limiteCount} enviados. <strong>0 correos restantes</strong>). Los envíos de comprobantes y recuperación de contraseña estarán deshabilitados hasta la renovación de la cuota.</span>
+        </div>";
+    } else {
+        $alertaCorreoHtml = "<div class='bg-warning text-dark py-2 px-3 text-center font-weight-bold d-flex align-items-center justify-content-center' style='font-size: 0.86rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 1050;'>
+          <i class='fas fa-exclamation-triangle mr-2 text-danger fa-lg'></i>
+          <span><strong>Aviso de Cuota de Correos (Resend):</strong> El servicio de mensajería está próximo a su límite mensual ({$enviadosCount}/{$limiteCount} enviados. Restan solo <strong>{$restantesCount}</strong> correos disponibles).</span>
+        </div>";
+    }
 }
 
 $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
@@ -72,8 +103,8 @@ $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
     
     <div class='d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0'>
       <div class='text-white d-flex align-items-center'>
-        <span class='badge {$badgeRolClass} text-uppercase px-2 py-1 mr-2' style='font-size: 0.75rem;'><i class='fas fa-user-shield mr-1'></i>" . htmlspecialchars($rolNombre) . "</span>
-        <span class='font-weight-bold text-light mr-3'><i class='fas fa-user-circle mr-1 text-info'></i>" . htmlspecialchars((string)$nombres) . "</span>
+        <span class='badge {$badgeRolClass} text-uppercase px-2 py-1 mr-2' style='font-size: 0.75rem;'><i class='fas fa-user-shield mr-1'></i>{$rolNombre}</span>
+        <span class='font-weight-bold text-light mr-3'><i class='fas fa-user-circle mr-1 text-info'></i>{$nombres}</span>
       </div>
     </div>
     <ul class='navbar-nav ml-auto ml-md-0'>
@@ -84,150 +115,22 @@ $nav = "<nav class='navbar navbar-expand navbar-dark bg-dark static-top'>
 
   </nav>
   {$alertaCorreoHtml}
-  <style>
-    html {
-      min-height: 100%;
-    }
-    body {
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      background-color: #f1f5f9;
-      display: flex;
-      flex-direction: column;
-    }
-    #wrapper {
-      display: flex;
-      flex: 1 0 auto;
-      width: 100%;
-      align-items: stretch;
-    }
-    .sidebar {
-      width: 235px !important;
-      min-width: 235px !important;
-      background-color: #111827 !important;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      position: sticky !important;
-      top: 0;
-      height: 100vh !important;
-      max-height: 100vh !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      scrollbar-width: thin;
-      scrollbar-color: #64748b #1e293b;
-      transition: width 0.2s ease, min-width 0.2s ease;
-    }
-    .sidebar.toggled {
-      width: 80px !important;
-      min-width: 80px !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-    }
-    .sidebar.toggled .nav-item {
-      text-align: center;
-      width: 80px;
-    }
-    .sidebar.toggled .nav-item .nav-link {
-      text-align: center;
-      padding: 0.75rem 0.25rem !important;
-      width: 80px !important;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .sidebar.toggled .nav-item .nav-link span {
-      font-size: 0.65rem !important;
-      display: block !important;
-      line-height: 1.1;
-      margin-top: 4px;
-      white-space: normal;
-      text-align: center;
-      word-break: break-word;
-    }
-    .sidebar.toggled .nav-item .nav-link i.fa-fw {
-      font-size: 1.15rem;
-      margin-right: 0 !important;
-    }
-    .sidebar.toggled .nav-item .nav-link .fa-chevron-down {
-      display: none !important;
-    }
-    .sidebar.toggled .collapse {
-      display: none !important;
-    }
-    .sidebar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .sidebar::-webkit-scrollbar-track {
-      background: #1e293b;
-      border-radius: 4px;
-    }
-    .sidebar::-webkit-scrollbar-thumb {
-      background: #64748b;
-      border-radius: 4px;
-    }
-    .sidebar::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-    #content-wrapper {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      width: calc(100% - 235px);
-      min-width: 0;
-      background-color: #f1f5f9;
-      transition: width 0.2s ease;
-    }
-    body.sidebar-toggled #content-wrapper {
-      width: calc(100% - 80px);
-    }
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 0 !important;
-        min-width: 0 !important;
-        overflow: hidden !important;
-      }
-      .sidebar.toggled {
-        width: 235px !important;
-        min-width: 235px !important;
-        position: fixed !important;
-        z-index: 1050;
-      }
-      #content-wrapper, body.sidebar-toggled #content-wrapper {
-        width: 100% !important;
-      }
-    }
-    .container-fluid {
-      flex: 1 0 auto;
-      width: 100%;
-    }
-    .table-responsive {
-      width: 100% !important;
-      overflow-x: auto;
-      overflow-y: visible;
-      -webkit-overflow-scrolling: touch;
-    }
-    footer.sticky-footer {
-      position: static !important;
-      width: 100% !important;
-      background-color: #111827 !important;
-      color: #94a3b8 !important;
-      border-top: 1px solid #1f2937 !important;
-      margin-top: auto;
-      padding: 1.1rem 0 !important;
-      flex-shrink: 0;
-    }
-    footer.sticky-footer .copyright, footer.sticky-footer span {
-      color: #cbd5e1 !important;
-      font-size: 0.86rem;
-      font-weight: 500;
-    }
-  </style>
+  <link href='../views/css/layout.css' rel='stylesheet'>
 ";
 
 $menu = "<ul class='sidebar navbar-nav' style='padding-bottom: 2.5rem;'>";
+
+if ($suscripcionInactiva) {
+    $menu .= "<li class='nav-item'>
+        <div class='alert alert-danger mx-2 my-2 py-2 px-2 small font-weight-bold text-center shadow-sm' style='border-radius: 8px; font-size: 0.78rem;'>
+            <i class='fas fa-lock mr-1'></i>Suscripción Inactiva<br>
+            <span class='font-weight-normal' style='font-size:0.72rem;'>Módulos restringidos</span>
+            <a href='controllerPlanPago.php' class='btn btn-danger btn-sm btn-block mt-2 font-weight-bold text-white shadow-sm' style='font-size: 0.75rem; border-radius: 6px;'>
+                <i class='fas fa-shopping-cart mr-1'></i>Renovar Plan
+            </a>
+        </div>
+    </li>";
+}
 
 foreach ($modulosPermitidos as $item) {
     $submodulos = $item['submodulos'] ?? [];

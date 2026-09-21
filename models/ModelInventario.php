@@ -74,7 +74,7 @@ class ModelInventario extends Conexion{
       }
 
       public function getMateriasPrimas(int $idEmpresa = 0): array {
-          $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+          $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
           $res = $this->con->query("select idMateriaPrima, NombreMP from materiaprima $condicion ORDER BY NombreMP ASC");
           $r = [];
           if ($res) {

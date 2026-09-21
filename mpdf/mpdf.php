@@ -1,7 +1,7 @@
 <?php
 // mPDF legacy compatibility wrapper - PHP 8
 // Redirects to vendor mPDF library
-require_once dirname(__DIR__) . '/controllers/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 use Mpdf\Mpdf;
 
 class_alias(Mpdf::class, 'mPDF');

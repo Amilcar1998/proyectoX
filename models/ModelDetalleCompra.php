@@ -7,11 +7,13 @@ class ModelDetalleCompra extends Conexion {
         parent::__construct();
     }
 
-    public function obtenerTabla(): array {
+    public function obtenerTabla(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " WHERE (f.idEmpresa = " . (int)$idEmpresa . ") " : "";
         $sql = "SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac 
                 FROM detallecompra dc 
                 INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima 
                 INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP 
+                $cond
                 ORDER BY dc.idDetalleCompra DESC";
         $res = $this->con->query($sql);
         $r = [];
@@ -23,8 +25,8 @@ class ModelDetalleCompra extends Conexion {
         return $r;
     }
 
-    public function getTabla(): array {
-        return $this->obtenerTabla();
+    public function getTabla(int $idEmpresa = 0): array {
+        return $this->obtenerTabla($idEmpresa);
     }
 
     public function insertar($obj): bool {
@@ -93,8 +95,9 @@ class ModelDetalleCompra extends Conexion {
         return $this->obtenerSesionEmpleado($correo);
     }
 
-    public function obtenerMateriasPrimas(): array {
-        $res = $this->con->query("SELECT idMateriaPrima, NombreMP FROM materiaprima ORDER BY NombreMP ASC");
+    public function obtenerMateriasPrimas(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
+        $res = $this->con->query("SELECT idMateriaPrima, NombreMP FROM materiaprima $cond ORDER BY NombreMP ASC");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -102,12 +105,13 @@ class ModelDetalleCompra extends Conexion {
         return $r;
     }
 
-    public function getMateriasPrimas(): array {
-        return $this->obtenerMateriasPrimas();
+    public function getMateriasPrimas(int $idEmpresa = 0): array {
+        return $this->obtenerMateriasPrimas($idEmpresa);
     }
 
-    public function obtenerFacturas(): array {
-        $res = $this->con->query("SELECT idFacturaMP, numeroFac FROM factura ORDER BY idFacturaMP DESC");
+    public function obtenerFacturas(int $idEmpresa = 0): array {
+        $cond = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
+        $res = $this->con->query("SELECT idFacturaMP, numeroFac FROM factura $cond ORDER BY idFacturaMP DESC");
         $r = [];
         while ($row = $res->fetch_assoc()) {
             $r[] = $row;
@@ -115,8 +119,8 @@ class ModelDetalleCompra extends Conexion {
         return $r;
     }
 
-    public function getFacturas(): array {
-        return $this->obtenerFacturas();
+    public function getFacturas(int $idEmpresa = 0): array {
+        return $this->obtenerFacturas($idEmpresa);
     }
 }
 ?>

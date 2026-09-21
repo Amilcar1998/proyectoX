@@ -1,0 +1,18 @@
+[
+  {
+    "id": "2026_09_20_000001_sincronizacion_inicial_cloud_a_local",
+    "fecha": "2026-09-20 19:26:00",
+    "descripcion": "Clonación y sincronización inicial completa del esquema y datos desde la base de datos remota (Aiven Cloud) a MySQL local (XAMPP). Total de 33 tablas.",
+    "autor": "Antigravity AI",
+    "estado_local": "aplicado",
+    "estado_remoto": "sincronizado"
+  },
+  {
+    "id": "2026_09_20_000002_creacion_tabla_registro_correos",
+    "fecha": "2026-09-20 19:13:40",
+    "descripcion": "Creación de la tabla registro_correos con comentarios SQL para auditoría y conteo mensual de cuota de emails.",
+    "autor": "Antigravity AI",
+    "estado_local": "aplicado",
+    "estado_remoto": "sincronizado"
+  }
+]

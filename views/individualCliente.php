@@ -129,6 +129,33 @@ echo $cli;
     <!-- ==================================================== -->
     <div class="tab-pane fade show active" id="pills-productos" role="tabpanel" aria-labelledby="tab-productos">
       
+      <?php if (!empty($suscripcionEmpresaCaducada)): ?>
+        <!-- BLOQUEO POR SUSCRIPCIÓN CADUCADA -->
+        <div class="card border-0 shadow-lg text-center p-5 mb-4" style="border-radius: 20px; background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%); border: 2px solid #fecdd3 !important;">
+          <div class="card-body">
+            <div class="mb-3">
+              <span class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle shadow" style="width: 80px; height: 80px; font-size: 36px;">
+                <i class="fas fa-lock"></i>
+              </span>
+            </div>
+            <h3 class="font-weight-bold text-danger mb-2">¡Suscripción Comercial Caducada!</h3>
+            <p class="text-muted lead mx-auto mb-4" style="max-width: 650px; font-size: 1.05rem;">
+              La empresa no cuenta con un paquete de suscripción activo o su plan ha vencido recientemente.
+              <br>
+              Por esta razón, la visualización de productos, precios y la creación de nuevos pedidos se encuentra temporalmente suspendida.
+            </p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+              <a href="../#planes" target="_blank" class="btn btn-danger btn-lg font-weight-bold px-4 py-3 shadow mr-3 mb-2" style="border-radius: 30px;">
+                <i class="fas fa-shopping-cart mr-2"></i>Comprar / Renovar Paquete
+              </a>
+              <a href="controllerPagos.php" class="btn btn-outline-danger btn-lg font-weight-bold px-4 py-3 shadow-sm mb-2" style="border-radius: 30px;">
+                <i class="fas fa-credit-card mr-2"></i>Consultar Pagos
+              </a>
+            </div>
+          </div>
+        </div>
+      <?php else: ?>
+
       <!-- Banner informativo / Pedido Activo -->
       <?php if (!empty($idPedidoActual)): ?>
         <div class="alert alert-success d-flex flex-wrap align-items-center justify-content-between mb-4 shadow-sm">
@@ -162,8 +189,9 @@ echo $cli;
       <div class="row" id="seccionProductos">
         <?php foreach ($receta as $prod): 
           $nom = strtolower($prod['nombreReceta'] ?? '');
-          $iconCard = 'fa-seedling';
+          $iconCard = !empty($prod['iconoRubro']) ? str_replace('fas ', '', $prod['iconoRubro']) : 'fa-seedling';
           $colorTheme = 'primary';
+          $catEtiqueta = !empty($prod['categoriaRubro']) && $prod['categoriaRubro'] !== 'General' ? $prod['categoriaRubro'] : ($prod['nombreRubro'] ?? 'Calidad Premium');
 
           if (strpos($nom, 'pollo') !== false || strpos($nom, 'ave') !== false) {
             $iconCard = 'fa-feather-alt';
@@ -197,8 +225,8 @@ echo $cli;
                       <i class="fas fa-tag mr-1"></i>-<?php echo $descuento; ?>% OFF
                     </span>
                   <?php else: ?>
-                    <span class="badge badge-light border text-muted px-2 py-1">
-                      Calidad Premium
+                    <span class="badge badge-light border text-muted px-2 py-1 font-weight-bold">
+                      <?php echo htmlspecialchars($catEtiqueta); ?>
                     </span>
                   <?php endif; ?>
                 </div>
@@ -250,6 +278,7 @@ echo $cli;
           </div>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
 
     </div>
 
@@ -617,15 +646,15 @@ echo $cli;
 </a>
 
 <!-- Bootstrap core JavaScript-->
-<script src="../controllers/vendor/jquery/jquery.min.js"></script>
-<script src="../controllers/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="../controllers/vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="../vendor/jquery/jquery.min.js"></script>
+<script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <!-- Page level plugin JavaScript-->
-<script src="../controllers/vendor/datatables/jquery.dataTables.js"></script>
-<script src="../controllers/vendor/datatables/dataTables.bootstrap4.js"></script>
+<script src="../vendor/datatables/jquery.dataTables.js"></script>
+<script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
 <script src="../controllers/js/sb-admin.min.js"></script>
-<script src="../controllers/vendor/sweetalert2.all.min.js"></script>
+<script src="../vendor/sweetalert2.all.min.js"></script>
 <script src="../controllers/js/translations.js"></script>
 <script src="../controllers/js/demo/datatables-demo.js"></script>
 
@@ -779,7 +808,7 @@ echo $cli;
     const total = parseFloat(data.total || 0).toFixed(2);
     const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     const idPedido = p.idPedido || '---';
-    const nombreCliente = ((p.NombreCliente || '') + ' ' + (p.apellidosCliente || '')).trim() || <?php echo json_encode($nombres); ?>;
+    const nombreCliente = ((p.nombrePersona || p.NombreCliente || '') + ' ' + (p.apellidoPersona || p.apellidosCliente || '')).trim() || <?php echo json_encode($nombres); ?>;
     const telCliente = p.telefono || 'Sin teléfono';
     const correoCliente = p.correoCliente || <?php echo json_encode($correo); ?>;
     const fechaPedido = p.fechaPedido || '---';
@@ -941,16 +970,20 @@ echo $cli;
   }
 
   function abrirVentanaImpresionPago(data) {
-    const p = data.pago || {};
-    const items = data.items || [];
-    const idTxn = p.idTransaccionWompi || (p.referencia || 'N/D');
-    const formaPago = p.metodo_pago || 'Wompi SV (Tarjeta)';
+    const p = (data && data.pago) ? data.pago : (data || {});
+    const meta = p.metadatos_array || {};
+    const items = data.items || (meta.items || (p.items_comprados || []));
+    let idTxn = p.idTransaccionWompi || (data.idTransaccion || '');
+    if (!idTxn && meta.wompi_retorno && meta.wompi_retorno.id) idTxn = meta.wompi_retorno.id;
+    if (!idTxn) idTxn = p.referencia || 'N/D';
+    const formaPago = p.metodo_pago || (data.formaPago || 'Wompi SV (Tarjeta)');
     const idPago = p.idPago || '---';
     const monto = parseFloat(p.monto || 0).toFixed(2);
     const fechaEmision = new Date().toLocaleDateString('es-SV', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     const fechaTxn = p.fecha_hora || '---';
-    const nombreCliente = p.nombreCliente || <?php echo json_encode($nombres); ?>;
-    const correoCliente = p.correoCliente || <?php echo json_encode($correo); ?>;
+    const nombreCliente = p.nombrePersona ? (p.nombrePersona + ' ' + (p.apellidoPersona || '')).trim() : (p.nombreCliente || (p.NombreCliente || <?php echo json_encode($nombres); ?>));
+    const telCliente = p.telefonoCliente || (p.telefono || 'Sin teléfono');
+    const correoCliente = p.correoCliente || (p.correo || <?php echo json_encode($correo); ?>);
     const estado = (p.estado || 'completado').toUpperCase();
     const esAprobado = estado === 'COMPLETADO' || estado === 'PAGADO' || estado === 'APROBADO';
 
@@ -1040,6 +1073,7 @@ echo $cli;
               <td style="width: 50%; vertical-align: top; padding-right: 10px;">
                 <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 2px;">Datos del Pagador:</div>
                 <div style="font-size: 14px; font-weight: bold; color: #0f172a;">${nombreCliente}</div>
+                <div style="color: #475569; margin-top: 2px;">📞 Tel: ${telCliente}</div>
                 <div style="color: #475569;">✉️ Correo: ${correoCliente}</div>
               </td>
               <td style="width: 50%; vertical-align: top; border-left: 1px solid #cbd5e1; padding-left: 10px;">

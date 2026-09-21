@@ -19,8 +19,13 @@ class ReportModel extends Conexion {
     }
 
     public function dataClientes(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (cliente.idEmpresa = " . (int)$idEmpresa . ") " : "";
-        $res = $this->con->query("SELECT idCliente, NombreCliente, NombreCliente AS nombreCliente, apellidosCliente, telefono, edad, genero, username FROM cliente INNER JOIN usuarios ON cliente.idUsuario=usuarios.idUsuario $condicion ORDER BY idCliente ASC");
+        $condicion = ($idEmpresa > 0) ? " AND (p.idEmpresa = " . (int)$idEmpresa . ") " : "";
+        $res = $this->con->query("SELECT p.idPersona AS idCliente, p.idPersona, p.nombrePersona, p.apellidoPersona, p.nombrePersona AS NombreCliente, p.nombrePersona AS nombreCliente, p.apellidoPersona AS apellidosCliente, p.telefono, p.edad, p.genero, u.username 
+                                  FROM persona p 
+                                  INNER JOIN usuarios u ON p.idUsuario = u.idUsuario 
+                                  INNER JOIN rol r ON u.id_Rol = r.id_Rol 
+                                  WHERE (u.id_Rol = 3 OR u.id_Rol = 2) $condicion 
+                                  ORDER BY p.idPersona ASC");
         $r = [];
         if ($res) {
             while ($row = $res->fetch_assoc()) {
@@ -31,7 +36,7 @@ class ReportModel extends Conexion {
     }
 
     public function dataProveedor(int $idEmpresa = 0): array {
-        $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
+        $condicion = ($idEmpresa > 0) ? " WHERE idEmpresa = " . (int)$idEmpresa . " " : "";
         $res = $this->con->query("SELECT * FROM proveedor $condicion ORDER BY idProveedor ASC");
         $r = [];
         if ($res) {

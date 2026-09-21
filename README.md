@@ -158,7 +158,7 @@ proyectoX/
 ```
 
 > [!NOTE]
-> **Saneamiento de Recursos**: La carpeta huérfana `views/vendor/` fue eliminada y todas las vistas han sido redirigidas para consumir los recursos estáticos de forma unificada desde `controllers/vendor/` y las librerías PHP desde `vendor/`.
+> **Saneamiento de Recursos**: La estructura de dependencias fue unificada para consumir todos los recursos estáticos y librerías PHP desde la única carpeta oficial `vendor/` en la raíz del proyecto.
 
 ---
 

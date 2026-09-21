@@ -23,8 +23,8 @@ if (!class_exists('ModelClienteIn')) {
             }
 
             $stmt = $this->con->prepare(
-                "SELECT c.idCliente, c.NombreCliente, c.apellidosCliente, c.telefono, c.edad, c.genero, c.idUsuario, u.username
-                 FROM cliente c
+                "SELECT c.idPersona AS idCliente, c.idPersona, c.nombrePersona, c.apellidoPersona, c.nombrePersona AS NombreCliente, c.apellidoPersona AS apellidosCliente, c.telefono, c.edad, c.genero, c.idUsuario, u.username
+                 FROM persona c
                  INNER JOIN usuarios u ON c.idUsuario = u.idUsuario
                  WHERE u.username = ?
                  LIMIT 1"
@@ -53,7 +53,7 @@ if (!class_exists('ModelClienteIn')) {
 
                 if ($usuario) {
                     $idUsuario = (int)$usuario['idUsuario'];
-                    $stmtC = $this->con->prepare("SELECT idCliente, NombreCliente, apellidosCliente, telefono, edad, genero, idUsuario FROM cliente WHERE idUsuario = ? LIMIT 1");
+                    $stmtC = $this->con->prepare("SELECT p.idPersona AS idCliente, p.idPersona, p.nombrePersona, p.apellidoPersona, p.nombrePersona AS NombreCliente, p.apellidoPersona AS apellidosCliente, p.telefono, p.edad, p.genero, p.idUsuario, COALESCE(p.idEmpresa, u.idEmpresa, 1) AS idEmpresa FROM persona p INNER JOIN usuarios u ON p.idUsuario = u.idUsuario WHERE u.idUsuario = ? LIMIT 1");
                     $stmtC->bind_param("i", $idUsuario);
                     $stmtC->execute();
                     $clienteExistente = $stmtC->get_result()->fetch_assoc();
@@ -64,9 +64,9 @@ if (!class_exists('ModelClienteIn')) {
                         return $clienteExistente;
                     }
 
-                    // Crear registro inicial de cliente si no existe
+                    // Crear registro inicial de persona si no existe
                     $nombreDefecto = ucfirst(explode('@', $correo)[0]);
-                    $stmtIns = $this->con->prepare("INSERT INTO cliente (NombreCliente, apellidosCliente, telefono, edad, genero, idUsuario) VALUES (?, 'Comercial', '0000-0000', 25, 'M', ?)");
+                    $stmtIns = $this->con->prepare("INSERT INTO persona (nombrePersona, apellidoPersona, telefono, edad, genero, idUsuario) VALUES (?, 'Comercial', '0000-0000', 25, 'M', ?)");
                     if ($stmtIns) {
                         $stmtIns->bind_param("si", $nombreDefecto, $idUsuario);
                         $stmtIns->execute();
@@ -75,6 +75,9 @@ if (!class_exists('ModelClienteIn')) {
 
                         return [
                             'idCliente' => $nuevoId,
+                            'idPersona' => $nuevoId,
+                            'nombrePersona' => $nombreDefecto,
+                            'apellidoPersona' => 'Comercial',
                             'NombreCliente' => $nombreDefecto,
                             'apellidosCliente' => 'Comercial',
                             'telefono' => '0000-0000',
@@ -198,9 +201,20 @@ if (!class_exists('ModelClienteIn')) {
         /**
          * Obtiene el listado de recetas y productos disponibles
          */
-        public function obtenerRecetas(): array
+        public function obtenerRecetas(int $idEmpresa = 0): array
         {
-            $res = $this->con->query("SELECT idReceta, nombreReceta, PrecioUnitario, precio_anterior, en_promocion, porcentaje_descuento, precio_base_regular FROM receta ORDER BY nombreReceta ASC");
+            $condicion = ($idEmpresa > 0) ? " WHERE r.idEmpresa = " . (int)$idEmpresa . " " : "";
+            $sql = "
+                SELECT r.idReceta, r.idEmpresa, r.nombreReceta, r.categoriaRubro, r.PrecioUnitario, 
+                       r.precio_anterior, r.en_promocion, r.porcentaje_descuento, r.precio_base_regular,
+                       rub.nombreRubro, rub.icono AS iconoRubro
+                FROM receta r
+                LEFT JOIN empresas e ON r.idEmpresa = e.idEmpresa
+                LEFT JOIN rubros rub ON e.idRubro = rub.idRubro
+                $condicion 
+                ORDER BY r.nombreReceta ASC
+            ";
+            $res = $this->con->query($sql);
             if (!$res) {
                 return [];
             }
@@ -270,13 +284,14 @@ if (!class_exists('ModelClienteIn')) {
         /**
          * Registra un nuevo pedido para el cliente
          */
-        public function crearPedido(string $fecha, int $idCliente, int $idEstado = 1): int
+        public function crearPedido(string $fecha, int $idCliente, int $idEstado = 1, int $idEmpresa = 1): int
         {
-            $stmt = $this->con->prepare("INSERT INTO pedido (fechaPedido, idCliente, idEstadoPedido) VALUES (?, ?, ?)");
+            if ($idEmpresa <= 0) $idEmpresa = 1;
+            $stmt = $this->con->prepare("INSERT INTO pedido (fechaPedido, idCliente, idEstadoPedido, idEmpresa) VALUES (?, ?, ?, ?)");
             if (!$stmt) {
                 return 0;
             }
-            $stmt->bind_param("sii", $fecha, $idCliente, $idEstado);
+            $stmt->bind_param("siii", $fecha, $idCliente, $idEstado, $idEmpresa);
             $stmt->execute();
             $nuevoId = (int)$this->con->insert_id;
             $stmt->close();
