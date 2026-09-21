@@ -48,11 +48,11 @@ class ModelProduccion extends Conexion
     public function getPedido($id): array
     {
         $id = (int)$id;
-        $res = $this->con->query("SELECT detallePedido.idReceta, nombreReceta, SUM(cantidad) AS total_Unidades 
-                                  FROM detallePedido 
-                                  INNER JOIN receta ON detallePedido.idReceta = receta.idReceta 
+        $res = $this->con->query("SELECT detallepedido.idReceta, nombreReceta, SUM(cantidad) AS total_Unidades 
+                                  FROM detallepedido 
+                                  INNER JOIN receta ON detallepedido.idReceta = receta.idReceta 
                                   WHERE idPedido = '$id' 
-                                  GROUP BY detallePedido.idReceta");
+                                  GROUP BY detallepedido.idReceta");
         $r = [];
         if ($res) {
             while ($row = $res->fetch_assoc()) {
@@ -66,8 +66,8 @@ class ModelProduccion extends Conexion
     {
         $receta = (int)$receta;
         $res = $this->con->query("SELECT idDetalleReceta, cantidaSa, inventario.idInventario, Existencias, (cantidaSa/100) AS quintal 
-                                  FROM detalleReceta 
-                                  INNER JOIN inventario ON detalleReceta.idInventario = inventario.idInventario 
+                                  FROM detallereceta 
+                                  INNER JOIN inventario ON detallereceta.idInventario = inventario.idInventario 
                                   WHERE idReceta = '$receta' 
                                   GROUP BY inventario.idMateriaPrima");
         $r = [];

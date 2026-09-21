@@ -9,14 +9,16 @@ class ModelDetalleCompra extends Conexion {
 
     public function obtenerTabla(): array {
         $sql = "SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac 
-                FROM detalleCompra dc 
+                FROM detallecompra dc 
                 INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima 
                 INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP 
                 ORDER BY dc.idDetalleCompra DESC";
         $res = $this->con->query($sql);
         $r = [];
-        while ($row = $res->fetch_assoc()) {
-            $r[] = $row;
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $r[] = $row;
+            }
         }
         return $r;
     }
@@ -26,7 +28,7 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function insertar($obj): bool {
-        $stmt = $this->con->prepare("INSERT INTO detalleCompra (idDetalleCompra, idMateriaPrima, cantidadMP, precioMP, idFacturaMP) VALUES (?,?,?,?,?)");
+        $stmt = $this->con->prepare("INSERT INTO detallecompra (idDetalleCompra, idMateriaPrima, cantidadMP, precioMP, idFacturaMP) VALUES (?,?,?,?,?)");
         $id = $obj->getIdDetalleCompra();
         $mp = $obj->getIdMateriaPrima();
         $cantidad = $obj->getCantidadMP();
@@ -37,13 +39,13 @@ class ModelDetalleCompra extends Conexion {
     }
 
     public function eliminar(int $idDetalleCompra): bool {
-        $stmt = $this->con->prepare("DELETE FROM detalleCompra WHERE idDetalleCompra=?");
+        $stmt = $this->con->prepare("DELETE FROM detallecompra WHERE idDetalleCompra=?");
         $stmt->bind_param("i", $idDetalleCompra);
         return $stmt->execute();
     }
 
     public function modificar($obj): bool {
-        $stmt = $this->con->prepare("UPDATE detalleCompra SET idMateriaPrima=?, cantidadMP=?, precioMP=?, idFacturaMP=? WHERE idDetalleCompra=?");
+        $stmt = $this->con->prepare("UPDATE detallecompra SET idMateriaPrima=?, cantidadMP=?, precioMP=?, idFacturaMP=? WHERE idDetalleCompra=?");
         $mp = $obj->getIdMateriaPrima();
         $cantidad = $obj->getCantidadMP();
         $precio = $obj->getPrecioMP();
@@ -55,7 +57,7 @@ class ModelDetalleCompra extends Conexion {
 
     public function obtenerFiltro(string $buscar, string $criterio): array {
         $sql = "SELECT dc.idDetalleCompra, dc.idMateriaPrima, dc.cantidadMP, dc.precioMP, dc.idFacturaMP, mp.NombreMP, f.numeroFac
-                FROM detalleCompra dc
+                FROM detallecompra dc
                 INNER JOIN materiaprima mp ON dc.idMateriaPrima=mp.idMateriaPrima
                 INNER JOIN factura f ON dc.idFacturaMP=f.idFacturaMP
                 WHERE $criterio LIKE ?";
@@ -65,8 +67,10 @@ class ModelDetalleCompra extends Conexion {
         $stmt->execute();
         $result = $stmt->get_result();
         $r = [];
-        while ($row = $result->fetch_assoc()) {
-            $r[] = $row;
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $r[] = $row;
+            }
         }
         return $r;
     }

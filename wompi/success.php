@@ -251,14 +251,14 @@ if ($pago) {
             $stmtPed->execute();
             $stmtPed->close();
 
-            // C. Insertar detalles en detallePedido
+            // C. Insertar detalles en detallepedido
             if (!empty($items)) {
                 // Carrito de productos — un detalle por cada ítem
                 foreach ($items as $it) {
                     $idReceta = (int)($it['id'] ?? 1);
                     $cantidad = max(1, (int)($it['cantidad'] ?? 1));
                     $stmtDet  = $conn->prepare(
-                        "INSERT INTO detallePedido (cantidad, idReceta, IdPedido) VALUES (?, ?, ?)"
+                        "INSERT INTO detallepedido (cantidad, idReceta, IdPedido) VALUES (?, ?, ?)"
                     );
                     if ($stmtDet) {
                         $stmtDet->bind_param("iii", $cantidad, $idReceta, $pedidoCreadoId);
@@ -271,7 +271,7 @@ if ($pago) {
                 $cantPlan   = 1;
                 $idRecetaRef = 1;
                 $stmtDet    = $conn->prepare(
-                    "INSERT INTO detallePedido (cantidad, idReceta, IdPedido) VALUES (?, ?, ?)"
+                    "INSERT INTO detallepedido (cantidad, idReceta, IdPedido) VALUES (?, ?, ?)"
                 );
                 if ($stmtDet) {
                     $stmtDet->bind_param("iii", $cantPlan, $idRecetaRef, $pedidoCreadoId);

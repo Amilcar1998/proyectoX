@@ -32,7 +32,7 @@ class ReportModel extends Conexion {
 
     public function dataProveedor(int $idEmpresa = 0): array {
         $condicion = ($idEmpresa > 0) ? " WHERE (idEmpresa = " . (int)$idEmpresa . " OR idEmpresa = 1) " : "";
-        $res = $this->con->query("select * from Proveedor $condicion ORDER BY idProveedor ASC");
+        $res = $this->con->query("SELECT * FROM proveedor $condicion ORDER BY idProveedor ASC");
         $r = [];
         if ($res) {
             while ($row = $res->fetch_assoc()) {
